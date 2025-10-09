@@ -1,41 +1,45 @@
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
+ * */
 package models;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
-import exceptions.CustomEndPointException;
 import exceptions.InterfaceDoesNotHaveIPAddressException;
 import exceptions.NotValidIPException;
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
+import lombok.Data;
 
+@Data
 public class Ip {
 	public static final Logger LOGGER = Logger.getLogger(Ip.class.getName());
 	private ArrayList<String> ipv4DnsServers;
 	private ArrayList<String> ipv6DnsServers;
 	private static final String COMMAND = "powershell.exe $ip=Get-NetIPConfiguration; $ip.'DNSServer' | ForEach-Object -Process {$_.ServerAddresses}";
-	private String clouflareIp[];
-	private String googleIp;
 	private String dohUserInputIp;
 
 	public Ip() {
 		try {
-			googleIp = "";
 			setupArrays();
 			parseDnsServersIp();
-			getDoHIps();
 		} catch (Exception e) {
 		}
 	}
 
-	private void setupArrays() throws IOException {
+	private void setupArrays() {
 		ipv4DnsServers = new ArrayList<String>();
 		ipv6DnsServers = new ArrayList<String>();
 	}
@@ -50,38 +54,55 @@ public class Ip {
 			if (isIPv4Address(line)) {
 				ipv4DnsServers.add(line);
 			} else {
-				if (isIpv6Address(line) && !line.startsWith("fe"))
+				if (isIpv6Address(line) && !line.startsWith("fe") && !ipv6DnsServers.contains(line))
 					ipv6DnsServers.add(line);
 			}
 		}
 		stdout.close();
 	}
 
-	private void getDoHIps() throws UnknownHostException {
-		updateCloudflareIp();
-		updateGoogleIp();
-	}
-
-	public void updateCloudflareIp() throws UnknownHostException {
-		InetAddress[] records = InetAddress.getAllByName("cloudflare-dns.com");
-		clouflareIp = new String[records.length];
-		int i = 0;
-		for (InetAddress address : records) {
-			clouflareIp[i] = address.getHostAddress();
-			i++;
+	public static String getIpV6OfDomainName(String domainName) throws UnknownHostException
+	{
+		InetAddress addresses[] = InetAddress.getAllByName(domainName);
+		if (returnFirstInet6Address(addresses) == null)
+		{
+			return null;
 		}
+		return returnFirstInet6Address(addresses).getHostAddress();
 	}
 
-	public void updateGoogleIp() throws UnknownHostException {
-		googleIp = InetAddress.getByName("dns.google").getHostAddress();
-	}
-
-	public void getUserDoHurlIP(String domain) throws CustomEndPointException {
-		try {
-			dohUserInputIp = InetAddress.getByName(domain).getHostAddress();
-		} catch (Exception e) {
-			throw new CustomEndPointException();
+	private static Inet6Address returnFirstInet6Address(InetAddress[] addresses)
+	{
+		for (InetAddress address: addresses)
+		{
+			if (address instanceof Inet6Address)
+			{
+				return (Inet6Address) address;
+			}
 		}
+		return null;
+	}
+
+	public static String getIpV4OfDomainName(String domainName) throws UnknownHostException
+	{
+		InetAddress addresses[] = InetAddress.getAllByName(domainName);
+		if (returnFirstInet4Address(addresses) == null)
+		{
+			return null;
+		}
+		return returnFirstInet4Address(addresses).getHostAddress();
+	}
+
+	private static InetAddress returnFirstInet4Address(InetAddress[] addresses)
+	{
+		for (InetAddress address: addresses)
+		{
+			if (!(address instanceof Inet6Address))
+			{
+				return (InetAddress) address;
+			}
+		}
+		return null;
 	}
 
 	public String getIpv4DnsServer() {
@@ -134,40 +155,13 @@ public class Ip {
 		}
 	}
 
-	public static String getPrimaryDNSIp() {
-		try {
-			String[] lineParts = null;
-			ProcessBuilder builder = new ProcessBuilder("nslookup");
-			builder.redirectErrorStream(true);
-			Process p = builder.start();
-			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line;
-			while (true) {
-				line = r.readLine();
-				if (line == null) {
-					break;
-				}
-				if (line.contains("Address:")) {
-					lineParts = line.split(":");
-					break;
-				}
-
-			}
-			String res = lineParts[1];
-			res = res.replaceAll("\\s", "");
-			LOGGER.info("Found primary DNS ip addres");
-			return res;
-		} catch (Exception e) {
-			return "No primary address";
-		}
-
-	}
-
 	public static InetAddress getIpAddressFromInterface(NetworkInterface interfaceToSend, String resolverIP)
 			throws InterfaceDoesNotHaveIPAddressException {
-		ArrayList<InterfaceAddress> ipAdrresses = (ArrayList<InterfaceAddress>) interfaceToSend.getInterfaceAddresses();
+		//ArrayList<InterfaceAddress> ipAdrresses = (ArrayList<InterfaceAddress>) interfaceToSend.getInterfaceAddresses();
+		List<InterfaceAddress> ipAdrresses = interfaceToSend.getInterfaceAddresses();
 		for (InterfaceAddress sourceIp : ipAdrresses) {
 			String sourceIpString = sourceIp.getAddress().getHostAddress();
+			//System.out.println("IP addr: " + sourceIp.getAddress());
 			if (Ip.isIpv6Address(resolverIP) && Ip.isIpv6Address(sourceIpString)) {
 				return sourceIp.getAddress();
 			}
@@ -176,17 +170,5 @@ public class Ip {
 			}
 		}
 		throw new InterfaceDoesNotHaveIPAddressException();
-	}
-
-	public String[] getClouflareIp() {
-		return clouflareIp;
-	}
-
-	public String getGoogleIp() {
-		return googleIp;
-	}
-
-	public String getUserInputIp() {
-		return dohUserInputIp;
 	}
 }

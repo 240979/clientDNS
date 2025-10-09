@@ -1,3 +1,9 @@
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Added Lombok annotation and removed manual written getters
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
+ * */
 package models;
 
 import java.io.UnsupportedEncodingException;
@@ -5,6 +11,8 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import lombok.Data;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import enums.APPLICATION_PROTOCOL;
@@ -12,25 +20,9 @@ import enums.CACHE;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
 import javafx.scene.control.TreeItem;
-import records.Record;
-import records.RecordA;
-import records.RecordAAAA;
-import records.RecordCAA;
-import records.RecordCNAME;
-import records.RecordDNSKEY;
-import records.RecordDS;
-import records.RecordMX;
-import records.RecordNS;
-import records.RecordNSEC;
-import records.RecordNSEC3;
-import records.RecordNSEC3PARAM;
-import records.RecordOPT;
-import records.RecordPTR;
-import records.RecordRRSIG;
-import records.RecordSOA;
-import records.RecordSRV;
-import records.RecordTXT;
+import records.*;
 
+@Data
 public class Response {
 
 	private byte[] rawMessage;
@@ -41,7 +33,7 @@ public class Response {
 	private UInt16 rdLenght;
 	private int byteSize;
 	private int endIndex;
-	private Record rdata;
+	private DnsRecord rdata;
 	private byte rCode;
 	private byte version;
 	private UInt16 doBit;
@@ -50,6 +42,7 @@ public class Response {
 	private String srvProtocol;
 	private String srvName;
 	private CACHE cache;
+	private JSONArray dohData = null;
 	private static final int COMPRESS_CONTANT_NUMBER = 49152;
 	private static final int DO_BIT_VALUE = 32768;
 	private static final int MAX_UDP_SIZE = 1232;
@@ -72,6 +65,10 @@ public class Response {
 
 	public Response() {
 
+	}
+
+	public Response(JSONArray dohData) {
+		this.dohData = dohData;
 	}
 
 	public Response parseResponse(byte[] rawMessage, int startIndex)
@@ -182,42 +179,49 @@ public class Response {
 		return startIndex;
 	}
 
-	private Record parseRecord(int currentIndex) throws UnknownHostException, UnsupportedEncodingException {
+	/*
+	* Added records CDS and CDNSKEY
+	* */
+	private DnsRecord parseRecord(int currentIndex) throws UnknownHostException, UnsupportedEncodingException {
 		switch (qcount) {
-		case A:
-			return new RecordA(rawMessage, rdLenght.getValue(), currentIndex);
-		case AAAA:
-			return new RecordAAAA(rawMessage, rdLenght.getValue(), currentIndex);
-		case CNAME:
-			return new RecordCNAME(rawMessage, rdLenght.getValue(), currentIndex);
-		case NS:
-			return new RecordNS(rawMessage, rdLenght.getValue(), currentIndex);
-		case TXT:
-			return new RecordTXT(rawMessage, rdLenght.getValue(), currentIndex);
-		case MX:
-			return new RecordMX(rawMessage, rdLenght.getValue(), currentIndex);
-		case SOA:
-			return new RecordSOA(rawMessage, rdLenght.getValue(), currentIndex);
-		case DNSKEY:
-			return new RecordDNSKEY(rawMessage, rdLenght.getValue(), currentIndex);
-		case CAA:
-			return new RecordCAA(rawMessage, rdLenght.getValue(), currentIndex);
-		case RRSIG:
-			return new RecordRRSIG(rawMessage, rdLenght.getValue(), currentIndex);
-		case OPT:
-			return new RecordOPT(rawMessage, rdLenght.getValue(), currentIndex);
-		case PTR:
-			return new RecordPTR(rawMessage, rdLenght.getValue(), currentIndex);
-		case DS:
-			return new RecordDS(rawMessage, rdLenght.getValue(), currentIndex);
-		case NSEC:
-			return new RecordNSEC(rawMessage, rdLenght.getValue(), currentIndex);
-		case NSEC3:
-			return new RecordNSEC3(rawMessage, rdLenght.getValue(), currentIndex);
-		case NSEC3PARAM:
-			return new RecordNSEC3PARAM(rawMessage, rdLenght.getValue(), currentIndex);
-		case SRV:
-			return new RecordSRV(rawMessage, rdLenght.getValue(), currentIndex);
+			case A:
+				return new DnsRecordA(rawMessage, rdLenght.getValue(), currentIndex);
+			case AAAA:
+				return new DnsRecordAAAA(rawMessage, rdLenght.getValue(), currentIndex);
+			case CNAME:
+				return new DnsRecordCNAME(rawMessage, rdLenght.getValue(), currentIndex);
+			case NS:
+				return new DnsRecordNS(rawMessage, rdLenght.getValue(), currentIndex);
+			case TXT:
+				return new DnsRecordTXT(rawMessage, rdLenght.getValue(), currentIndex);
+			case MX:
+				return new DnsRecordMX(rawMessage, rdLenght.getValue(), currentIndex);
+			case SOA:
+				return new DnsRecordSOA(rawMessage, rdLenght.getValue(), currentIndex);
+			case DNSKEY:
+				return new DnsRecordDNSKEY(rawMessage, rdLenght.getValue(), currentIndex);
+			case CAA:
+				return new DnsRecordCAA(rawMessage, rdLenght.getValue(), currentIndex);
+			case RRSIG:
+				return new DnsRecordRRSIG(rawMessage, rdLenght.getValue(), currentIndex);
+			case OPT:
+				return new DnsRecordOPT(rawMessage, rdLenght.getValue(), currentIndex);
+			case PTR:
+				return new DnsRecordPTR(rawMessage, rdLenght.getValue(), currentIndex);
+			case DS:
+				return new DnsRecordDS(rawMessage, rdLenght.getValue(), currentIndex);
+			case NSEC:
+				return new DnsRecordNSEC(rawMessage, rdLenght.getValue(), currentIndex);
+			case NSEC3:
+				return new DnsRecordNSEC3(rawMessage, rdLenght.getValue(), currentIndex);
+			case NSEC3PARAM:
+				return new DnsRecordNSEC3PARAM(rawMessage, rdLenght.getValue(), currentIndex);
+			case SRV:
+				return new DnsRecordSRV(rawMessage, rdLenght.getValue(), currentIndex);
+			case CDS:
+				return new DnsRecordCDS(rawMessage, rdLenght.getValue(), currentIndex);
+			case CDNSKEY:
+				return new DnsRecordCDNSKEY(rawMessage,rdLenght.getValue(),currentIndex);
 		default:
 			return null;
 		}
@@ -332,7 +336,7 @@ public class Response {
 
 		json.put(KEY_OPT_DO_BIT, doBit.getValue() >= DO_BIT_VALUE ? true : false);
 
-		RecordOPT r = (RecordOPT) rdata;
+		DnsRecordOPT r = (DnsRecordOPT) rdata;
 		if (!r.getIsNull()) {
 			json.put(KEY_OPT_OPTIONS, rdata.getAsJson());
 		}
@@ -361,21 +365,21 @@ public class Response {
 		return returnArray;
 	}
 
-	public byte[] getDnssecAsBytesMDNS(boolean dnssecSignatures) {
+	public static byte[] getDnssecAsBytesMDNS(boolean dnssecSignatures) {
 		ArrayList<Byte> bytes = new ArrayList<Byte>();
 		bytes.add((byte) 0x00);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[1]);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[0]);
-		bytes.add((byte) new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[1]);
-		bytes.add((byte) new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[0]);
+		bytes.add(new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[1]);
+		bytes.add(new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[0]);
 		bytes.add((byte) 0x00);
 		bytes.add((byte) 0x00);
 		if (dnssecSignatures) {
-			bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[1]);
-			bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[0]);
+			bytes.add( new UInt16(DO_BIT_VALUE).getAsBytes()[1]);
+			bytes.add( new UInt16(DO_BIT_VALUE).getAsBytes()[0]);
 		} else {
-			bytes.add((byte) new UInt16(0).getAsBytes()[1]);
-			bytes.add((byte) new UInt16(0).getAsBytes()[0]);
+			bytes.add(new UInt16(0).getAsBytes()[1]);
+			bytes.add(new UInt16(0).getAsBytes()[0]);
 		}
 		bytes.add((byte) 0x00);
 		bytes.add((byte) 0x00);
@@ -386,42 +390,6 @@ public class Response {
 			returnArray[i] = bytes.get(i);
 		}
 		return returnArray;
-	}
-
-	public byte[] getRawMessage() {
-		return rawMessage;
-	}
-
-	public String getNameAsString() {
-		return nameAsString;
-	}
-
-	public Q_COUNT getQcount() {
-		return qcount;
-	}
-
-	public Q_TYPE getQtype() {
-		return qtype;
-	}
-
-	public int getTtl() {
-		return ttl;
-	}
-
-	public UInt16 getRdLenght() {
-		return rdLenght;
-	}
-
-	public int getByteSize() {
-		return byteSize;
-	}
-
-	public int getEndIndex() {
-		return endIndex;
-	}
-
-	public Record getRdata() {
-		return rdata;
 	}
 
 	public String getDomain() {

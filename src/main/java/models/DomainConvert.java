@@ -1,3 +1,8 @@
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
+ * */
 package models;
 
 import java.io.UnsupportedEncodingException;
@@ -194,6 +199,9 @@ public class DomainConvert {
 
 	public static boolean isValidDomainName(String domainName) {
 
+		if (domainName.contains(":")){
+			return false;
+		}
 		if (domainName.endsWith(".")) {
 			domainName = domainName.substring(0, domainName.length() - 1);
 		}

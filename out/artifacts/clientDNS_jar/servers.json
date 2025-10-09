@@ -1,0 +1,87 @@
+[
+    {
+        "name":"Google",
+        "domainName":"dns.google.com",
+        "ipv4":["8.8.8.8","8.8.4.4"],
+        "ipv6":["2001:4860:4860::8888","2001:4860:4860::8844"],
+        "dot": true
+    },
+    {
+        "name":"Cloudflare",
+        "domainName":"one.one.one.one",
+        "ipv4":["1.1.1.1","1.0.0.1"],
+        "ipv6":["2606:4700:4700::1111","2606:4700:4700::1001"]
+    },
+    {
+        "name":"CZ.NIC",
+        "domainName":"odvr.nic.cz",
+        "ipv4":["193.17.47.1","185.43.135.1"],
+        "ipv6":["2001:148f:ffff::1","2001:148f:fffe::1"],
+        "dot": true
+    },
+
+    {
+        "name":"Quad9 'secure'",
+        "domainName":"dns.quad9.net",
+        "ipv4":["9.9.9.9"],
+        "ipv6":["2620:fe::fe"],
+        "dot": true,
+        "dotOnly": true
+    },
+    {
+        "name":"Quad9 'insecure'",
+        "domainName":"dns.quad9.net",
+        "ipv4":["9.9.9.10"],
+        "ipv6":["2620:fe::10"],
+        "dot": true,
+        "dotOnly": true
+    },
+    {
+        "name":"Cloudflare (GET)",
+        "domainName":"one.one.one.one",
+        "path": "dns-query",
+        "ipv4":["1.1.1.1","1.0.0.1"],
+        "ipv6":["2606:4700:4700::1111","2606:4700:4700::1001"],
+        "doh": true,
+        "isGet": true,
+        "dohOnly": true
+    },
+    {
+        "name":"Google (GET)",
+        "domainName":"dns.google.com",
+        "path": "resolve",
+        "ipv4":["8.8.8.8","8.8.4.4"],
+        "ipv6":["2001:4860:4860::8888","2001:4860:4860::8844"],
+        "doh": true,
+        "isGet": true,
+        "dohOnly": true
+    },
+    {
+        "name":"Google (POST)",
+        "domainName":"dns.google.com",
+        "path": "resolve",
+        "ipv4":["8.8.8.8","8.8.4.4"],
+        "ipv6":["2001:4860:4860::8888","2001:4860:4860::8844"],
+        "doh": true,
+        "isGet": false,
+        "dohOnly": true
+    },
+    {
+        "name":"CZ.NIC (nefunguje)",
+        "domainName":"odvr.nic.cz",
+        "ipv4":["193.17.47.1","185.43.135.1"],
+        "ipv6":["2001:148f:ffff::1","2001:148f:fffe::1"],
+        "doh": true,
+        "dohOnly": true,
+        "path": "dns-query",
+        "isGet": true
+    },
+    {
+        "name":"dns.adguard-dns.com",
+        "domainName":"dns.adguard-dns.com",
+        "ipv4":["94.140.15.15","94.140.14.14"],
+        "ipv6":["2a10:50c0::ad1:ff","2a10:50c0::ad2:ff"],
+        "doq":true,
+        "port": 784
+    }
+]

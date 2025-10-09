@@ -1,21 +1,24 @@
 # Client DNS
 GUI for DNS Client
 
-
 ## Setup
-- JAVA version 11
-- JAVAFX SDK version 15.0.1
+- JAVA version 24
+- JAVAFX SDK version 24.0.2
 - GLUON Scene Builder
-- Eclipse 2020.09
+- IntelliJ IDEA Community Edition 2025.1.3
 
-
-## Deploy
-- import project into Elipse IDE
+## Import
+- import project into IDE
 - Run configuration  
-- Main: application.Main
-- Set Goals -> Goals: **javafx:run**
+- Main: application.App
 
-## Convetion
+## Deployment
+- IDE: 
+  - Maven clean 
+  - Maven package
+- .exe is located in ./target/clientDNS/clientDNS.exe
+
+## Convention
 
 Classes - Starts With Cap. Letter, no spaces **MainClass**
 

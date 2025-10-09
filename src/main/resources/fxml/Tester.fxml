@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="vboxRoot" maxHeight="1.7976931348623157E308" prefHeight="480.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.TesterController">
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+        <Menu fx:id="actionMenu" mnemonicParsing="false" text="%actionMenu">
+          <items>
+            <MenuItem fx:id="backMenuItem" mnemonicParsing="false" onAction="#backButtonFired" text="%backMenuItem" />
+             <MenuItem fx:id="filterInterfacesItem" mnemonicParsing="false" onAction="#filterInterfacesFired" text="%filterInterfacesItem" />
+          </items>
+        </Menu>
+        <Menu fx:id="languageMenu" mnemonicParsing="false" text="%languageMenu">
+          <items>
+                  <RadioMenuItem fx:id="czechRadioButton" mnemonicParsing="false" onAction="#changeLanguageMenu" text="Čeština" />
+                  <RadioMenuItem fx:id="englishRadioButton" mnemonicParsing="false" onAction="#changeLanguageMenu" text="English" />
+          </items>
+        </Menu>
+        <Menu fx:id="historyMenu" mnemonicParsing="false" text="%historyMenu">
+          <items>
+            <MenuItem fx:id="deleteDomainNameHistory" mnemonicParsing="false" onAction="#deleteDomainNameHistoryFired" text="%deleteDomainNameHistory" />
+          </items>
+        </Menu>
+            <Menu fx:id="resultMenu" mnemonicParsing="false" text="%resultMenu">
+              <items>
+                <MenuItem fx:id="copyCsv" mnemonicParsing="false" text="%copyCsv" />
+                  <MenuItem fx:id="copyJson" mnemonicParsing="false" text="%copyJson" />
+                  <MenuItem fx:id="copyJsonResponses" mnemonicParsing="false" text="%copyJsonResponses" />
+              </items>
+            </Menu>
+            <Menu fx:id="wiresharkMenu" mnemonicParsing="false" text="Wireshark" />
+            <Menu fx:id="interfaceMenu" mnemonicParsing="false" text="%interfaceMenu" />
+            <Menu mnemonicParsing="false" text="%darkModeMenu">
+               <items>
+                  <RadioMenuItem fx:id="darkModeMenuItem" mnemonicParsing="false" text="%darkModeMenuItem" />
+               </items>
+            </Menu>
+      </menus>
+    </MenuBar>
+      <HBox maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+         <children>
+            <VBox maxHeight="1.7976931348623157E308" prefWidth="500.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="sendButton" maxWidth="350.0" minHeight="30.0" minWidth="195.0" mnemonicParsing="false" onAction="#sendButtonFired" prefWidth="350.0" text="%sendButton" textFill="#036507">
+                     <VBox.margin>
+                        <Insets bottom="7.0" top="7.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+                  <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="350.0" minViewportWidth="185.0" prefWidth="350.0" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                     <content>
+                        <VBox maxHeight="1.7976931348623157E308" minWidth="185.0" prefWidth="350.0">
+                           <children>
+                              <TitledPane fx:id="domainNameTitledPane" expanded="false" prefWidth="350.0" text="%domainNameTitledPane">
+                                 <content>
+                                    <VBox prefWidth="100.0">
+                                       <children>
+                                          <TextField fx:id="domainNameTextField" maxWidth="1.7976931348623157E308" minWidth="170.0" onAction="#onDomainNameAction" promptText="Zadaj domenu" text="seznam.cz;facebook.com" VBox.vgrow="ALWAYS" />
+                                          <ComboBox fx:id="savedDomainNamesChoiseBox" maxWidth="1.7976931348623157E308" minWidth="170.0" onAction="#onDomainNameChoiseBoxAction" VBox.vgrow="ALWAYS" />
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
+                              <TitledPane fx:id="DNSSECTitledPane" expanded="false" maxWidth="1.7976931348623157E308" minWidth="150.0" text="DNSSEC">
+                                 <content>
+                                    <HBox>
+                                       <children>
+                                          <CheckBox fx:id="DNSSECOkCheckBox" mnemonicParsing="false" text="DO">
+                                             <HBox.margin>
+                                                <Insets right="8.0" />
+                                             </HBox.margin>
+                                          </CheckBox>
+                                          <CheckBox fx:id="authenticateDataCheckBox" mnemonicParsing="false" text="AD">
+                                             <HBox.margin>
+                                                <Insets right="8.0" />
+                                             </HBox.margin>
+                                          </CheckBox>
+                                          <CheckBox fx:id="checkingDisabledCheckBox" mnemonicParsing="false" text="CD">
+                                             <HBox.margin>
+                                                <Insets right="8.0" />
+                                             </HBox.margin>
+                                          </CheckBox>
+                                       </children>
+                                    </HBox>
+                                 </content>
+                              </TitledPane>
+                              <TitledPane fx:id="protocolTitledPane" expanded="false" maxWidth="1.7976931348623157E308" text="%protocolTitledPane">
+                                 <content>
+                                    <VBox>
+                                       <children>
+                                          <RadioButton fx:id="dnsUdpButton" mnemonicParsing="false" selected="true" text="DNS - UDP" />
+                                          <RadioButton fx:id="dnsTcpButton" mnemonicParsing="false" text="DNS - TCP" />
+                                          <CheckBox fx:id="holdConnectionCheckbox" mnemonicParsing="false" text="%holdConnectionCheckbox">
+                                             <padding>
+                                                <Insets left="20.0" />
+                                             </padding>
+                                          </CheckBox>
+                                          <RadioButton fx:id="dnsDohButton" mnemonicParsing="false" text="DoH" />
+                                          <RadioButton fx:id="dnsDotButton" mnemonicParsing="false" text="DoT" />
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
+                              <TitledPane fx:id="iterativeTitledPane" expanded="false" maxWidth="1.7976931348623157E308" text="%iterativeTitledPane">
+                                 <content>
+                                    <VBox>
+                                       <children>
+                                          <RadioButton fx:id="recursiveQueryRadioButton" mnemonicParsing="false" selected="true" text="%recursiveQueryRadioButton" />
+                                          <RadioButton fx:id="iterativeQueryRadioButton" mnemonicParsing="false" text="%iterativeQueryRadioButton" />
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
+                              <TitledPane fx:id="cooldownTitledPane" maxWidth="1.7976931348623157E308" text="%cooldownTitledPane">
+                                 <content>
+                                    <VBox alignment="CENTER">
+                                       <children>
+                                          <HBox alignment="CENTER">
+                                             <children>
+                                                <TextField fx:id="cooldownTextField" alignment="CENTER" maxWidth="50.0" minWidth="80.0" prefWidth="50.0" text="5" />
+                                                <Label text="ms">
+                                                   <HBox.margin>
+                                                      <Insets left="5.0" />
+                                                   </HBox.margin>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
+                              <TitledPane fx:id="durationTitledPane" layoutX="10.0" layoutY="107.0" maxWidth="1.7976931348623157E308" text="%durationTitledPane">
+                                 <content>
+                                    <VBox alignment="CENTER">
+                                       <children>
+                                          <HBox alignment="CENTER">
+                                             <children>
+                                                <Button fx:id="minusButton" minWidth="30.0" mnemonicParsing="false" onAction="#subButton" text="-" />
+                                                <TextField fx:id="numberOfRequests" alignment="CENTER" maxWidth="50.0" minWidth="80.0" prefWidth="50.0" text="5" />
+                                                <Button fx:id="plusButton" minWidth="30.0" mnemonicParsing="false" onAction="#addButton" text="+" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
+                              <TitledPane fx:id="networkTitledPane" expanded="false" text="%networkTitledPane">
+                                 <content>
+                                    <VBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <RadioButton fx:id="IPv4RadioButton" mnemonicParsing="false" onAction="#IPv4RadioButtonAction" selected="true" text="IPv4" />
+                                          <RadioButton fx:id="IPv6RadioButton" mnemonicParsing="false" onAction="#IPv6RadioButtonAction" text="IPv6" />
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
+                              <TitledPane fx:id="recordTypeTitledPane" layoutX="10.0" layoutY="159.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="160.0" text="%recordTypeTitledPane">
+                                 <content>
+                                    <VBox prefWidth="100.0">
+                                       <children>
+                                          <HBox prefHeight="100.0" prefWidth="200.0">
+                                             <children>
+                                                <VBox prefHeight="200.0" prefWidth="100.0">
+                                                   <children>
+                                                      <CheckBox fx:id="aCheckBox" mnemonicParsing="false" selected="true" text="A" />
+                                                      <CheckBox fx:id="nsCheckBox" mnemonicParsing="false" text="NS" />
+                                                      <CheckBox fx:id="soaCheckBox" mnemonicParsing="false" text="SOA" />
+                                                      <CheckBox fx:id="ptrCheckBox" mnemonicParsing="false" text="PTR" />
+                                                      <CheckBox fx:id="dsCheckBox" mnemonicParsing="false" text="DS" />
+                                                      <CheckBox fx:id="txtCheckBox" mnemonicParsing="false" text="TXT" />
+                                                      <CheckBox fx:id="nsecCheckBox" mnemonicParsing="false" text="NSEC" />
+                                                   </children>
+                                                </VBox>
+                                                <VBox prefHeight="200.0" prefWidth="100.0">
+                                                   <children>
+                                                      <CheckBox fx:id="aaaaCheckBox" mnemonicParsing="false" text="AAAA" />
+                                                      <CheckBox fx:id="mxCheckBox" mnemonicParsing="false" text="MX" />
+                                                      <CheckBox fx:id="cnameCheckBox" mnemonicParsing="false" text="CNAME" />
+                                                      <CheckBox fx:id="dnskeyCheckBox" mnemonicParsing="false" text="DNSKEY" />
+                                                      <CheckBox fx:id="caaCheckBox" mnemonicParsing="false" text="CAA" />
+                                                      <CheckBox fx:id="rrsigCheckBox" mnemonicParsing="false" text="RRSIG" />
+                                                      <CheckBox fx:id="nsec3CheckBox" mnemonicParsing="false" text="NSEC3" />
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </HBox>
+                                          <CheckBox fx:id="nsec3paramCheckBox" layoutX="20.0" layoutY="156.0" mnemonicParsing="false" text="NSEC3PARAM" />
+                                          <CheckBox fx:id="anyCheckBox" mnemonicParsing="false" text="ANY" />
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
+                              <TitledPane fx:id="dnsServerTitledPane" layoutX="10.0" layoutY="175.0" maxWidth="1.7976931348623157E308" text="%dnsServerTitledPane">
+                                 <content>
+                                    <VBox alignment="TOP_CENTER">
+                                       <children>
+                                          <Button fx:id="testAllButton" alignment="CENTER" contentDisplay="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#testAllFired" prefWidth="150.0" text="%testAllButton" />
+                                          <VBox fx:id="otherDNSVbox" />
+                                          <VBox fx:id="rootServersVBox" alignment="CENTER" prefWidth="100.0">
+                                             <children>
+                                                <Label fx:id="rootServerLabel" alignment="TOP_CENTER" contentDisplay="CENTER" text="%rootServerLabel" />
+                                                <Separator prefWidth="200.0" />
+                                                <HBox fx:id="rootServersHBox">
+                                                   <children>
+                                                      <VBox fx:id="leftRootServersVBox" prefWidth="100.0" HBox.hgrow="ALWAYS" />
+                                                      <VBox fx:id="rightRootServersVBox" layoutX="10.0" layoutY="10.0" prefWidth="100.0" HBox.hgrow="ALWAYS" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
+                           </children>
+                        </VBox>
+                     </content>
+                  </ScrollPane>
+               </children>
+            </VBox>
+            <VBox prefWidth="5000.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <TableView fx:id="resultsTableView" VBox.vgrow="ALWAYS">
+                    <columns>
+                      <TableColumn fx:id="nameColumn" editable="false" minWidth="135.0" prefWidth="-1.0" text="%nameColumn" />
+                        <TableColumn fx:id="domainColumn" editable="false" minWidth="135.0" prefWidth="-1.0" text="%domainColumn" />
+                      <TableColumn fx:id="durationColumn" editable="false" minWidth="100.0" prefWidth="-1.0" text="%durationColumn" />
+                        <TableColumn fx:id="minColumn" editable="false" minWidth="75.0" prefWidth="-1.0" text="Min [ms]" />
+                        <TableColumn fx:id="maxColumn" editable="false" minWidth="75.0" prefWidth="-1.0" text="Max [ms]" />
+                        <TableColumn fx:id="succColumn" prefWidth="75.0" text="%succColumn" />
+                        <TableColumn fx:id="failColumn" prefWidth="75.0" text="%failColumn" />
+                        <TableColumn fx:id="sizeColumn" prefWidth="88.0" text="%sizeColumn" />
+                    </columns>
+                  </TableView>
+                  <ProgressBar fx:id="progressBar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" progress="0.0" VBox.vgrow="NEVER" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+  </children>
+</VBox>

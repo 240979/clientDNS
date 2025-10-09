@@ -1,644 +1,490 @@
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
+ * Changed hierarchy of class, changed FXML file and changed some mechanics
+ * */
 package ui;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.logging.Logger;
+import application.App;
+import application.Config;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
-import enums.WIRESHARK_FILTER;
-import exceptions.CouldNotUseHoldConnectionException;
-import exceptions.DnsServerIpIsNotValidException;
-import exceptions.InterfaceDoesNotHaveIPAddressException;
-import exceptions.MessageTooBigForUDPException;
-import exceptions.MoreRecordsTypesWithPTRException;
-import exceptions.NonRecordSelectedException;
-import exceptions.NotValidDomainNameException;
-import exceptions.NotValidIPException;
-import exceptions.QueryIdNotMatchException;
-import exceptions.TimeoutException;
+import exceptions.*;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.image.ImageView;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Modality;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import models.DomainConvert;
+import lombok.Getter;
+import lombok.Setter;
 import models.Ip;
-import models.MessageParser;
-import models.MessageSender;
+import models.NameServer;
 import models.TCPConnection;
+import models.WiresharkFilter;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import tasks.DNSOverTCPTask;
+import tasks.DNSOverUDPTask;
 
-public class DNSController extends MDNSController {
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
-	public static final String FXML_FILE_NAME = "/fxml/DNS.fxml";
+@Getter
+@Setter
+public class DNSController extends GeneralController {
 
-	// text fields
-	@FXML
-	private TextField dnsServerTextField;
+    public static final String FXML_FILE_NAME_SMALL = "/fxml/DNS_small.fxml";
+    public static final String FXML_FILE_NAME_LARGE = "/fxml/DNS_small.fxml";
 
-	@FXML
-	protected Label wiresharkLabel;
+    public static boolean layoutLarge = true;
+    @FXML
+    protected Label wiresharkLabel;
+    @FXML
+    protected RadioButton dnssecYesRadioButton;
+    @FXML
+    protected RadioButton dnssecNoRadioButton;
+    // menu items
+    @FXML
+    protected RadioMenuItem justIp;
+    @FXML
+    protected RadioMenuItem ipAsFilter;
+    @FXML
+    protected RadioMenuItem ipwithTCPAsFilter;
+    @FXML
+    protected CheckBox nsec3CheckBox;
+    @FXML
+    protected GridPane dnsServerGridPane;
+    @FXML
+    protected VBox rootServersVBox;
+    @FXML
+    protected VBox leftRootServersVBox;
+    @FXML
+    protected VBox rightRootServersVBox;
 
-	// radio buttons
-	@FXML
-	private RadioButton tcpRadioButton;
-	@FXML
-	private RadioButton udpRadioButton;
-	@FXML
-	private RadioButton recursiveQueryRadioButton;
-	@FXML
-	private RadioButton iterativeQueryRadioButton;
-	@FXML
-	private RadioButton cloudflareIpv4RadioButton;
-	@FXML
-	private RadioButton googleIpv4RadioButton;
-	@FXML
-	private RadioButton cznicIpv4RadioButton;
-	@FXML
-	private RadioButton cloudflareIpv6RadioButton;
-	@FXML
-	private RadioButton googleIpv6RadioButton;
-	@FXML
-	private RadioButton cznicIpv6RadioButton;
-	@FXML
-	private RadioButton systemIpv4DNSRadioButton;
-	@FXML
-	private RadioButton systemIpv6DNSRadioButton;
-	@FXML
-	private RadioButton customDNSRadioButton;
+    @FXML
+    protected TitledPane dnsServerTitledPane;
 
-	@FXML
-	protected RadioButton dnssecYesRadioButton;
-	@FXML
-	protected RadioButton dnssecNoRadioButton;
-	// menu items
-	@FXML
-	protected MenuItem deleteDomainNameHistory;
-	@FXML
-	private MenuItem deleteDNSServersHistory;
+    protected ToggleGroup otherDNSToggleGroup;
+    protected ToggleGroup dnssecToggleGroup;
 
-	// checkboxes
-	@FXML
-	protected CheckBox soaCheckBox;
-	@FXML
-	protected CheckBox dnskeyCheckBox;
-	@FXML
-	protected CheckBox dsCheckBox;
-	@FXML
-	protected CheckBox caaCheckBox;
-	@FXML
-	protected CheckBox cnameCheckBox;
-	@FXML
-	protected CheckBox nsCheckBox;
-	@FXML
-	protected CheckBox mxCheckBox;
-	@FXML
-	protected CheckBox rrsigCheckBox;
-	@FXML
-	protected CheckBox holdConectionCheckbox;
-	@FXML
-	protected CheckBox nsec3paramCheckBox;
-	@FXML
-	protected RadioMenuItem justIp;
-	@FXML
-	protected RadioMenuItem ipAsFilter;
-	@FXML
-	private RadioMenuItem ipWithUDPAsFilter;
-	@FXML
-	protected RadioMenuItem ipwithTCPAsFilter;
-	@FXML
-	private RadioMenuItem ipWithUDPandTcpAsFilter;
-	@FXML
-	protected CheckBox nsec3CheckBox;
+    @FXML
+    private VBox vboxRoot;
+    // text fields
+    @FXML
+    private TextField dnsServerTextField;
+    @FXML
+    private TitledPane DNSSECTitledPane;
+    // radio buttons
+    @FXML
+    private RadioButton tcpRadioButton;
+    @FXML
+    private RadioButton udpRadioButton;
+    @FXML
+    private RadioMenuItem ipWithUDPAsFilter;
+    @FXML
+    private RadioMenuItem ipWithUDPandTcpAsFilter;
+    // titledpane
+    @FXML
+    @Translation
+    protected TitledPane transportTitledPane;
+    // toogleGroup
+    // toogleGroup
+    private ToggleGroup transportToggleGroup;
+    private ToggleGroup iterativeToggleGroup;
+    // choice box
+    @FXML
+    private ComboBox<String> savedDNSChoiceBox;
 
-	// titledpane
-	@FXML
-	private TitledPane transportTitledPane;
-	@FXML
-	protected TitledPane dnsServerTitledPane;
-	@FXML
-	protected TitledPane iterativeTitledPane;
 
-	// toogleGroup
-	private ToggleGroup transportToggleGroup;
-	private ToggleGroup iterativeToggleGroup;
-	protected ToggleGroup dnsserverToggleGroup;
-	protected ToggleGroup wiresharkFilterToogleGroup;
-	protected ToggleGroup dnssecToggleGroup;
-	// choice box
-	@FXML
-	private ComboBox<String> savedDNSChoiceBox;
-	@FXML
-	protected ImageView cloudflareIpv4ImageView;
-	@FXML
-	protected ImageView googleIpv4IamgeView;
-	@FXML
-	private ImageView cznicIpv4RadioIamgeView;
-	@FXML
-	private ImageView cloudflareIpv6ImageView;
-	@FXML
-	private ImageView googleIpv6ImagaView;
-	@FXML
-	private ImageView cznicIpv6ImageView;
-	@FXML
-	private ImageView systemIpv4DNSImageView;
-	@FXML
-	private ImageView systemIpv6DNSIamgeView;
-	@FXML
-	private ImageView custumImageView;
+    private Map<KeyCode, RadioButton> keyMappings;
 
-	private TCPConnection tcpConnection;
+    private TCPConnection tcp;
 
-	public DNSController() {
+    public DNSController() {
 
-		super();
-		LOGGER = Logger.getLogger(DNSController.class.getName());
-		PROTOCOL = "DNS";
+        super();
+        LOGGER = Logger.getLogger(DNSController.class.getName());
+        PROTOCOL = "DNS";
 
-	}
+    }
 
-	public void initialize() {
-		transportToggleGroup = new ToggleGroup();
-		tcpRadioButton.setToggleGroup(transportToggleGroup);
-		udpRadioButton.setToggleGroup(transportToggleGroup);
+    @Override
+    protected void updateCustomParameters() {
+        parameters.put(WiresharkFilter.Parameters.TCPPORT, "53");
+        parameters.put(WiresharkFilter.Parameters.UDPPORT, "53");
+    }
 
-		iterativeToggleGroup = new ToggleGroup();
-		iterativeQueryRadioButton.setToggleGroup(iterativeToggleGroup);
-		recursiveQueryRadioButton.setToggleGroup(iterativeToggleGroup);
+    public void initialize() {
+        super.initialize();
 
-		dnssecToggleGroup = new ToggleGroup();
+        transportToggleGroup = new ToggleGroup();
+        tcpRadioButton.setToggleGroup(transportToggleGroup);
+        udpRadioButton.setToggleGroup(transportToggleGroup);
 
-		dnssecYesRadioButton.setToggleGroup(dnssecToggleGroup);
-		dnssecNoRadioButton.setToggleGroup(dnssecToggleGroup);
+        iterativeToggleGroup = new ToggleGroup();
+        iterativeQueryRadioButton.setToggleGroup(iterativeToggleGroup);
+        recursiveQueryRadioButton.setToggleGroup(iterativeToggleGroup);
 
-		dnsserverToggleGroup = new ToggleGroup();
-		cloudflareIpv4RadioButton.setToggleGroup(dnsserverToggleGroup);
-		cloudflareIpv6RadioButton.setToggleGroup(dnsserverToggleGroup);
-		googleIpv4RadioButton.setToggleGroup(dnsserverToggleGroup);
-		googleIpv6RadioButton.setToggleGroup(dnsserverToggleGroup);
-		cznicIpv4RadioButton.setToggleGroup(dnsserverToggleGroup);
-		cznicIpv6RadioButton.setToggleGroup(dnsserverToggleGroup);
-		systemIpv4DNSRadioButton.setToggleGroup(dnsserverToggleGroup);
-		systemIpv6DNSRadioButton.setToggleGroup(dnsserverToggleGroup);
-		customDNSRadioButton.setToggleGroup(dnsserverToggleGroup);
+        dnssecToggleGroup = new ToggleGroup();
 
-		wiresharkFilterToogleGroup = new ToggleGroup();
-		justIp.setToggleGroup(wiresharkFilterToogleGroup);
-		ipAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-		ipWithUDPAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-		ipwithTCPAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-		ipWithUDPandTcpAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-	}
+        IPprotToggleGroup = new ToggleGroup();
 
-	@FXML
-	private void copyImageViewFired(MouseEvent event) {
-		String ip = "";
-		String response = "";
-		String prefix = "ip";
-		if (event.getSource() == custumImageView) {
-			if (Ip.isIpValid(dnsServerTextField.getText()))
-				ip = dnsServerTextField.getText();
-		} else {
+        IPv4RadioButton.setToggleGroup(IPprotToggleGroup);
+        IPv6RadioButton.setToggleGroup(IPprotToggleGroup);
 
-			ImageView v = (ImageView) event.getSource();
-			ip = v.getUserData().toString();
+        keyMappings = new HashMap<>();
 
-		}
-		if (Ip.isIpv6Address(ip))
-			prefix = "ipv6";
-		switch ((WIRESHARK_FILTER) wiresharkFilterToogleGroup.getSelectedToggle().getUserData()) {
-		case JUST_IP:
-			response = ip;
-			break;
-		case IP_FILTER:
-			response = prefix + ".addr == " + ip;
-			break;
-		case IP_WITH_UDP:
-			response = prefix + ".addr == " + ip + " && udp.port == 53";
-			break;
-		case IP_WITH_TCP:
-			response = prefix + ".addr == " + ip + " && tcp.port == 53";
-			break;
-		case IP_WITH_UDP_AND_TCP:
-			response = prefix + ".addr == " + ip + " && (udp.port == 53 || tcp.port == 53)";
-		default:
-			break;
-		}
-		LOGGER.info("Copy to clipboard: " + response);
-		copyDataToClipBoard(response);
-	}
+        dnsserverToggleGroup = new ToggleGroup();
+        int i = 0;
+        for (NameServer ns : Config.getRootNameServers()) {
+            RadioButton rb = new RadioButton(ns.getKeyCode().toString().toUpperCase());
+            if (i % 2 == 0) {
+                leftRootServersVBox.getChildren().add(rb);
+            } else {
+                rightRootServersVBox.getChildren().add(rb);
+            }
+            rb.setUserData(ns);
+            rb.setTooltip(new Tooltip(ns.getIpv4() + "\n" + ns.getIpv6()));
+            rb.setToggleGroup(dnsserverToggleGroup);
+            keyMappings.put(ns.getKeyCode(), rb);
+            i++;
+        }
 
-	private void setSystemDNS() {
-		if (ipDns.getIpv4DnsServer().equals("")) {
-			systemIpv4DNSRadioButton.setSelected(false);
-			systemIpv4DNSRadioButton.setText(language.getLanguageBundle().getString("ipv4SystemDNSIsNotEnabled"));
-			systemIpv4DNSRadioButton.setDisable(true);
-			systemIpv4DNSImageView.setDisable(true);
-			;
+        Ip ip = new Ip();
 
-		} else {
-			systemIpv4DNSRadioButton.setText(ipDns.getIpv4DnsServer());
-			systemIpv4DNSRadioButton.setUserData(ipDns.getIpv4DnsServer());
-			systemIpv4DNSImageView.setDisable(false);
-			systemIpv4DNSImageView.setUserData(ipDns.getIpv4DnsServer());
-		}
-		if (ipDns.getIpv6DnsServer().equals("")) {
-			systemIpv6DNSRadioButton.setSelected(false);
-			systemIpv6DNSRadioButton.setText(language.getLanguageBundle().getString("ipv6SystemDNSIsNotEnabled"));
-			systemIpv6DNSRadioButton.setDisable(true);
+        Config.getNameServers().add(new NameServer("System DNS", "System DNS", ip.getIpv4DnsServers(),
+                ip.getIpv6DnsServers()));
+        Config.getNameServers().stream().filter(nameServer1 -> !nameServer1.isDohOnly() && !nameServer1.isDotOnly())
+                .forEach(ns -> otherDNSVbox.getChildren().add(new NameServerVBox(ns, dnsserverToggleGroup, this)));
+        NameServerVBox nsVBox = ((NameServerVBox)otherDNSVbox.getChildren().get(otherDNSVbox.getChildren().size()-1));
+        nsVBox.selectFirst();
+        HBox customDNS = new HBox();
+        RadioButton customToggle = new RadioButton();
+        customToggle.setToggleGroup(dnsserverToggleGroup);
+        TextField input = new TextField();
+        //input.setPromptText(language.getLanguageBundle().getString("dnsServerDropDownLabel"));
+        customToggle.setUserData(input);
+        input.setOnMouseClicked(actionEvent -> {
+            customToggle.setSelected(true);
+        });
+        customDNS.getChildren().addAll(customToggle, input);
+        Separator separator = new Separator();
+        separator.setPadding(new Insets(10, 0, 5, 0));
+        otherDNSVbox.getChildren().add(separator);
+        otherDNSVbox.getChildren().add(customDNS);
 
-		} else {
-			systemIpv6DNSRadioButton.setText(ipDns.getIpv6DnsServer());
-			systemIpv6DNSRadioButton.setUserData(ipDns.getIpv6DnsServer());
-			systemIpv6DNSIamgeView.setDisable(false);
-			systemIpv6DNSIamgeView.setUserData(ipDns.getIpv6DnsServer());
-		}
-	}
+        // hide root tree item in tree view, so it is expanded after receiving response
+        requestTreeView.setShowRoot(false);
+        responseTreeView.setShowRoot(false);
 
-	public void setLabels() {
-		// define group to iterate over it
-		TitledPane titlePaneArray[] = new TitledPane[] { domainNameTitledPane, transportTitledPane, dnssecTitledPane,
-				recordTypeTitledPane, dnsServerTitledPane, iterativeTitledPane, responseTitledPane, queryTitledPane };
+        // disable checkbox for holding TCP connection, because default selected transport protocol is UDP
+        holdConnectionCheckbox.setDisable(true);
+        tcpRadioButton.selectedProperty().addListener((observable, oldValue, newValue) ->
+        {
+            if (newValue) {
+                holdConnectionCheckbox.setDisable(false);
+            } else {
+                holdConnectionCheckbox.setDisable(true);
+            }
+        });
+        setLanguageRadioButton();
+    }
 
-		// same for radio buttons
-		RadioButton[] radioButtonArray = new RadioButton[] { dnssecYesRadioButton, dnssecNoRadioButton,
-				iterativeQueryRadioButton, recursiveQueryRadioButton };
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    protected void setCustomUserDataRecords() {
+        nsCheckBox.setUserData(Q_COUNT.NS);
+        checkBoxArray.add(nsCheckBox);
+        mxCheckBox.setUserData(Q_COUNT.MX);
+        checkBoxArray.add(mxCheckBox);
+        soaCheckBox.setUserData(Q_COUNT.SOA);
+        checkBoxArray.add(soaCheckBox);
+        cnameCheckBox.setUserData(Q_COUNT.CNAME);
+        checkBoxArray.add(cnameCheckBox);
+        dnskeyCheckBox.setUserData(Q_COUNT.DNSKEY);
+        checkBoxArray.add(dnskeyCheckBox);
+        dsCheckBox.setUserData(Q_COUNT.DS);
+        checkBoxArray.add(dsCheckBox);
+        caaCheckBox.setUserData(Q_COUNT.CAA);
+        checkBoxArray.add(caaCheckBox);
+        rrsigCheckBox.setUserData(Q_COUNT.RRSIG);
+        checkBoxArray.add(rrsigCheckBox);
+        nsec3CheckBox.setUserData(Q_COUNT.NSEC3);
+        checkBoxArray.add(nsec3CheckBox);
+        nsec3paramCheckBox.setUserData(Q_COUNT.NSEC3PARAM);
+        checkBoxArray.add(nsec3paramCheckBox);
+        cdsCheckBox.setUserData(Q_COUNT.CDS);
+        checkBoxArray.add(cdsCheckBox);
+        cdnskeyCheckBox.setUserData(Q_COUNT.CDNSKEY);
+        checkBoxArray.add(cdnskeyCheckBox);
+        // 240979
+        svcbCheckBox.setUserData(Q_COUNT.SVCB);
+        checkBoxArray.add(svcbCheckBox);
+    }
 
-		Label[] labelsArray = new Label[] { responseTimeLabel, numberOfMessagesLabel };
+    @Override
+    public String getProtocol() {
+        return "DNS";
+    }
 
-		RadioMenuItem[] radioMenuItemsArray = new RadioMenuItem[] { justIp, ipAsFilter, ipWithUDPAsFilter,
-				ipwithTCPAsFilter, ipWithUDPandTcpAsFilter };
-		// set labels to current language in menu
-		backMenuItem.setText(language.getLanguageBundle().getString(backMenuItem.getId()));
-		actionMenu.setText(language.getLanguageBundle().getString(actionMenu.getId()));
-		languageMenu.setText(language.getLanguageBundle().getString(languageMenu.getId()));
-		historyMenu.setText(language.getLanguageBundle().getString(historyMenu.getId()));
-		for (TitledPane titledPane : titlePaneArray) {
-			titledPane.setText(language.getLanguageBundle().getString(titledPane.getId()));
-		}
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    public void setLabels() {
+        setKeyboardShortcuts();
+        setUserDataTransportProtocol();
 
-		for (RadioButton radioButton : radioButtonArray) {
-			radioButton.setText(language.getLanguageBundle().getString(radioButton.getId()));
-		}
+    }
 
-		for (Label label : labelsArray) {
-			label.setText(language.getLanguageBundle().getString(label.getId()));
-		}
+    private void setKeyboardShortcuts() {
+        vboxRoot.getScene().addEventFilter(KeyEvent.KEY_PRESSED, ke -> {
+            // System.out.println(ke.getCode());
+            LOGGER.fine(ke.getCode().getChar());
+            if (!ke.isShiftDown()) {
+                return;
+            }
+            if (keyMappings.get(ke.getCode()) != null) {
+                keyMappings.get(ke.getCode()).setSelected(true);
+            }
+            ke.consume();
+        });
+    }
 
-		for (RadioMenuItem item : radioMenuItemsArray) {
-			item.setText(language.getLanguageBundle().getString(item.getId()));
-		}
-		// set sendButton
-		sendButton.setText(language.getLanguageBundle().getString(sendButton.getId()));
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    private void setUserDataTransportProtocol() {
+        tcpRadioButton.setUserData(TRANSPORT_PROTOCOL.TCP);
+        udpRadioButton.setUserData(TRANSPORT_PROTOCOL.UDP);
+    }
 
-		holdConectionCheckbox.setText(language.getLanguageBundle().getString(holdConectionCheckbox.getId()));
-		dnssecRecordsRequestCheckBox
-				.setText(language.getLanguageBundle().getString(dnssecRecordsRequestCheckBox.getId()));
-
-		setLanguageRadioButton();
-		// set system dns
-		setSystemDNS();
-		// setUserData
-
-		setUserDataDnsServers();
-		setUserDataRecords();
-		setUserDataTransportProtocol();
-		setUserDataWiresharkRadioMenuItem();
-		// permform radio buttons actions
-		onRadioButtonChange(null);
-
-		responseTreeView.setStyle("-fx-font-size: 12");
-		requestTreeView.setStyle("-fx-font-size: 12");
-
-		copyRequestJsonButton.setText(language.getLanguageBundle().getString(copyRequestJsonButton.getId()));
-		copyResponseJsonButton.setText(language.getLanguageBundle().getString(copyResponseJsonButton.getId()));
-		deleteDomainNameHistory.setText(language.getLanguageBundle().getString(deleteDomainNameHistory.getId()));
-		deleteDNSServersHistory.setText(language.getLanguageBundle().getString(deleteDNSServersHistory.getId()));
-
-		wiresharkLabel.setText(language.getLanguageBundle().getString(wiresharkLabel.getId()));
-		setTitle();
-		interfaceMenu.setText(language.getLanguageBundle().getString(interfaceMenu.getId()));
-	}
-
-	private void setUserDataWiresharkRadioMenuItem() {
-		justIp.setUserData(WIRESHARK_FILTER.JUST_IP);
-		ipAsFilter.setUserData(WIRESHARK_FILTER.IP_FILTER);
-		ipWithUDPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_UDP);
-		ipwithTCPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_TCP);
-		ipWithUDPandTcpAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_UDP_AND_TCP);
-	}
-
-	private void setUserDataTransportProtocol() {
-		tcpRadioButton.setUserData(TRANSPORT_PROTOCOL.TCP);
-		udpRadioButton.setUserData(TRANSPORT_PROTOCOL.UDP);
-	}
-
-	private void setUserDataDnsServers() {
-		cloudflareIpv4RadioButton.setUserData("1.1.1.1");
-		googleIpv4RadioButton.setUserData("8.8.8.8");
-		cznicIpv4RadioButton.setUserData("193.17.47.1");
-		cloudflareIpv6RadioButton.setUserData("2606:4700:4700::1111");
-		googleIpv6RadioButton.setUserData("2001:4860:4860::8888");
-		cznicIpv6RadioButton.setUserData("2001:148f:ffff::1");
-		cloudflareIpv4ImageView.setUserData("1.1.1.1");
-		googleIpv4IamgeView.setUserData("8.8.8.8");
-		cznicIpv4RadioIamgeView.setUserData("193.17.47.1");
-		cloudflareIpv6ImageView.setUserData("2606:4700:4700::1111");
-		googleIpv6ImagaView.setUserData("2001:4860:4860::8888");
-		cznicIpv6ImageView.setUserData("2001:148f:ffff::1");
-
-	}
-
-	protected void setUserDataRecords() {
-		aCheckBox.setUserData(Q_COUNT.A);
-		aaaaCheckBox.setUserData(Q_COUNT.AAAA);
-		cnameCheckBox.setUserData(Q_COUNT.CNAME);
-		mxCheckBox.setUserData(Q_COUNT.MX);
-		nsCheckBox.setUserData(Q_COUNT.NS);
-		caaCheckBox.setUserData(Q_COUNT.CAA);
-		ptrCheckBox.setUserData(Q_COUNT.PTR);
-		txtCheckBox.setUserData(Q_COUNT.TXT);
-		dnskeyCheckBox.setUserData(Q_COUNT.DNSKEY);
-		soaCheckBox.setUserData(Q_COUNT.SOA);
-		dsCheckBox.setUserData(Q_COUNT.DS);
-		rrsigCheckBox.setUserData(Q_COUNT.RRSIG);
-		nsecCheckBox.setUserData(Q_COUNT.NSEC);
-		nsec3CheckBox.setUserData(Q_COUNT.NSEC3);
-		nsec3paramCheckBox.setUserData(Q_COUNT.NSEC3PARAM);
-		anyCheckBox.setUserData(Q_COUNT.ANY);
-	}
-
-	public void loadDataFromSettings() {
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    public void loadDataFromSettings() {
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
-		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
-	}
+		//savedDNSChoiceBox.getItems().addAll(settings.getDnsServers())
+    }
 
-	@FXML
-	private void onRadioButtonChange(ActionEvent event) {
-		if (dnsserverToggleGroup.getSelectedToggle().getUserData() != null) {
-			dnsServerTextField.setText("");
-		}
+    @FXML
+    protected void backButtonFired(ActionEvent event) {
+        otherDNSVbox.getChildren().clear();
+        super.backButtonFired(event);
+    }
 
-	}
+    @Override
+    protected void saveDomain(String domain) {
+        settings.addDNSDomain(domain);
+    }
 
-	private String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException {
-		if (dnsServerTextField.getText().equals("") && customDNSRadioButton.isSelected())
-			throw new DnsServerIpIsNotValidException();
-		if (DomainConvert.isValidDomainName(dnsServerTextField.getText()) && customDNSRadioButton.isSelected()) {
-			InetAddress ipaddress = InetAddress.getByName(dnsServerTextField.getText());
-			System.out.println("IP address: " + ipaddress.getHostAddress());
-			String ipAddr = ipaddress.getHostAddress().toString();
-			Alert info = new Alert(Alert.AlertType.INFORMATION);
-			info.setTitle(language.getLanguageBundle().getString("translated"));
-			info.setContentText(dnsServerTextField.getText() + " "
-					+ language.getLanguageBundle().getString("rootServerWasTranslated") + ipAddr);
-			info.initModality(Modality.APPLICATION_MODAL);
-			info.initOwner((Stage) sendButton.getScene().getWindow());
-			info.show();
-			dnsServerTextField.setText(ipAddr);
-			settings.addDNSServer(ipAddr);
-			return ipAddr;
-		}
+    /*
+     * Body of method taken from Martin Biolek thesis
+     * */
+    private TRANSPORT_PROTOCOL getTransportProtocol() {
+        if (udpRadioButton.isSelected()) {
+            return TRANSPORT_PROTOCOL.UDP;
+        } else {
+            return TRANSPORT_PROTOCOL.TCP;
+        }
+    }
 
-		if ((!dnsServerTextField.getText().equals("")) && customDNSRadioButton.isSelected()) {
-			if (Ip.isIpValid(dnsServerTextField.getText())) {
-				System.out.println(dnsServerTextField);
-				settings.addDNSServer(dnsServerTextField.getText());
-				return dnsServerTextField.getText();
-			} else {
-				throw new DnsServerIpIsNotValidException();
-			}
-		} else {
-			return dnsserverToggleGroup.getSelectedToggle().getUserData().toString();
-		}
+    private boolean isRecursiveSet() {
+        return recursiveQueryRadioButton.isSelected();
+    }
 
-	}
+    /*
+     * Body of method taken from Martin Biolek thesis
+     * */
+    private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec,
+                            TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection) {
+        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + records.toString()
+                + "\n" + "Recursive:" + recursive + "\n" + "DNSSEC: " + dnssec + "\n" + "DNSSEC sig records"
+                + dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n" + "Hold connection: " + holdConnection
+                + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
+    }
 
-	protected String getDomain() throws NotValidDomainNameException {
-		try {
-			String domain = (domainNameTextField.getText());
-			LOGGER.info("Domain name: " + domain);
-			if (domain.equals(".")) {
-				return domain;
-			}
-			if (domain == "") {
-				throw new NotValidDomainNameException();
-			}
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec,
+                            TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection,
+                            boolean checkingdisabled) {
+        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + records.toString()
+                + "\n" + "Recursive:" + recursive + "\n" + "DNSSEC: " + dnssec + "\n" + "DNSSEC sig records"
+                + dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n" + "Hold connection: " + holdConnection
+                + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS + "\n" + "Checking disabled " + checkingdisabled);
+    }
 
-			if ((domain.contains(".arpa")) && ptrCheckBox.isSelected()) {
-				return domain;
-			}
-			if ((Ip.isIPv4Address(domain) || Ip.isIpv6Address(domain)) && ptrCheckBox.isSelected()) {
-				LOGGER.info("PTR record request");
-				return Ip.getIpReversed(domain);
-			}
-			if (DomainConvert.isValidDomainName(domain)) {
-				settings.addDNSDomain(domain);
 
-				return DomainConvert.encodeIDN(domain);
-			} else {
-				throw new NotValidDomainNameException();
-			}
-		} catch (Exception e) {
-			LOGGER.warning(e.toString());
-			throw new NotValidDomainNameException();
-		}
-	}
+    @FXML
+    protected void sendButtonFired(ActionEvent event) {
+        super.sendButtonFired(event);
+        if (isTerminatingThread()){
+            return;
+        }
+        try {
+            String dnsServer = getDnsServerIp();
+            if (dnsServer == null) {
+                Platform.runLater(()->{
+                    sendButton.setText(getButtonText());
+                    progressBar.setProgress(0);
+                });
+                return;
+            }
+            //addServerToList();
+            LOGGER.info(dnsServer);
+            Q_COUNT[] records = getRecordTypes();
+            TRANSPORT_PROTOCOL transport = getTransportProtocol();
+            String domain = getDomain();
+            boolean recursive = isRecursiveSet();
+            boolean holdConnection = holdConnectionCheckbox.isSelected();
+            boolean caFlag = checkingDisabledCheckBox.isSelected();
+            boolean adFlag = authenticateDataCheckBox.isSelected();
+            boolean doFlag = DNSSECOkCheckBox.isSelected();
+            logMessage(dnsServer, domain, records, recursive, adFlag, transport, doFlag, holdConnection, caFlag);
 
-	protected Q_COUNT[] getRecordTypes() throws MoreRecordsTypesWithPTRException, NonRecordSelectedException {
-		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
-		CheckBox[] checkBoxArray = { aCheckBox, aaaaCheckBox, nsCheckBox, mxCheckBox, soaCheckBox, cnameCheckBox,
-				ptrCheckBox, dnskeyCheckBox, dsCheckBox, caaCheckBox, txtCheckBox, rrsigCheckBox, nsecCheckBox,
-				nsec3CheckBox, nsec3paramCheckBox, anyCheckBox };
-		for (int i = 0; i < checkBoxArray.length; i++) {
-			if (checkBoxArray[i].isSelected()) {
-				list.add((Q_COUNT) checkBoxArray[i].getUserData());
-			}
-		}
-		if (list.contains(Q_COUNT.PTR) && list.size() > 1) {
-			throw new MoreRecordsTypesWithPTRException();
-		}
-		if (list.size() == 0) {
-			throw new NonRecordSelectedException();
-		}
-		Q_COUNT returnList[] = new Q_COUNT[list.size()];
-		for (int i = 0; i < returnList.length; i++) {
-			returnList[i] = list.get(i);
-		}
-		return returnList;
-	}
+            if (transport == TRANSPORT_PROTOCOL.TCP) {
+                task = new DNSOverTCPTask(recursive, adFlag, caFlag, doFlag, holdConnection, domain, records,
+                        transport, APPLICATION_PROTOCOL.DNS, dnsServer, getInterface());
+            } else {
+                task = new DNSOverUDPTask(recursive, adFlag, caFlag, doFlag, domain, records, transport,
+                        APPLICATION_PROTOCOL.DNS,
+                        dnsServer, getInterface());
+            }
+            task.setController(this);
+            numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
+            responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());
+            requestTreeView.rootProperty().bind(task.requestPropertyProperty());
+            responseTreeView.rootProperty().bind(task.responsePropertyProperty());
+            querySizeLabel.textProperty().bind(task.querySizeProperty().asString());
+            responseSizeLabel.textProperty().bind(task.responseSizeProperty().asString());
+            thread = new Thread(task);
+            // pass new progress bar to Task
+            progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+            task.setProgressBar(progressBar);
+            thread.start();
+        } catch (NotValidDomainNameException | NotValidIPException | DnsServerIpIsNotValidException
+                | MoreRecordsTypesWithPTRException | NonRecordSelectedException | NoIpAddrForDomainName | IOException e) {
+            Platform.runLater(()->{
+                sendButton.setText(getButtonText());
+                progressBar.setProgress(0);
+            });
+            //String fullClassName = e.getClass().getSimpleName();
+            //LOGGER.info(fullClassName);
+            //showAlert(fullClassName);
+            showAlert(e);
+        } catch (Exception e) {
+            Platform.runLater(()->{
+                sendButton.setText(getButtonText());
+                progressBar.setProgress(0);
+            });
+            //LOGGER.warning(e.toString());
+            //showAlert("Exception");
+            showAlert(e);
+        }
 
-	private TRANSPORT_PROTOCOL getTransportProtocol() {
-		if (udpRadioButton.isSelected()) {
-			return TRANSPORT_PROTOCOL.UDP;
-		} else {
-			return TRANSPORT_PROTOCOL.TCP;
-		}
-	}
+    }
 
-	private void closeHoldedConnection() {
-		try {
-			if (tcpConnection != null)
-				tcpConnection.closeAll();
-		} catch (Exception e) {
-			LOGGER.warning("Can not close connection to object null");
-		}
-	}
 
-	private boolean isRecursiveSet() {
-		return recursiveQueryRadioButton.isSelected();
-	}
-
-	private boolean isDNSSECSet() {
-		return dnssecYesRadioButton.isSelected();
-	}
-
-	private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec,
-			TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection) {
-		LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + records.toString()
-				+ "\n" + "Recursive:" + recursive + "\n" + "DNSSEC: " + dnssec + "\n" + "DNSSEC sig records"
-				+ dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n" + "Hold connection: " + holdConnection
-				+ "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
-	}
-
-	@FXML
-	protected void sendButtonFired(ActionEvent event) {
-		try {
-			String dnsServer = getDnsServerIp();
-			LOGGER.info(dnsServer);
-			Q_COUNT[] records = getRecordTypes();
-			TRANSPORT_PROTOCOL transport = getTransportProtocol();
-			String domain = getDomain();
-			boolean recursive = isRecursiveSet();
-			boolean dnssec = isDNSSECSet();
-			boolean dnssecRRSig = dnssecRecordsRequestCheckBox.isSelected();
-			boolean holdConnection = holdConectionCheckbox.isSelected();
-			logMessage(dnsServer, domain, records, recursive, dnssec, transport, dnssecRRSig, holdConnection);
-			sender = new MessageSender(recursive, dnssec, dnssecRRSig, domain, records, transport,
-					APPLICATION_PROTOCOL.DNS, dnsServer);
-			if (transport == TRANSPORT_PROTOCOL.TCP) {
-				sender.setTcp(tcpConnection);
-				sender.setCloseConnection(!holdConnection);
-			} else {
-				closeHoldedConnection();
-			}
-			sender.setInterfaceToSend(getInterface());
-			sender.send();
-			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), transport);
-			parser.parse();
-			tcpConnection = sender.getTcp();
-			setControls();
-		} catch (NotValidDomainNameException | NotValidIPException | DnsServerIpIsNotValidException
-				| MoreRecordsTypesWithPTRException | NonRecordSelectedException | TimeoutException | IOException
-				| QueryIdNotMatchException | MessageTooBigForUDPException | CouldNotUseHoldConnectionException
-				| InterfaceDoesNotHaveIPAddressException e) {
-			String fullClassName = e.getClass().getSimpleName();
-			LOGGER.info(fullClassName);
-			if (sender != null)
-				numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
-			if (sender.getWasSend()) {
-				setRequestAfterNotRieciveResponse();
-			}
-			showAller(fullClassName);
-		} catch (Exception e) {
-			LOGGER.warning(e.toString());
-			showAller("Exception");
-		}
-
-	}
-
-	@FXML
-	private void onSavedDNSChoiseBoxFired(MouseEvent e) {
-		customDNSRadioButton.setSelected(true);
-		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
-		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
-	}
-
-	@FXML
-	protected void onDomainNameChoiseBoxAction(ActionEvent event) {
-		try {
-			if (!savedDomainNamesChoiseBox.getValue().equals(null)
-					&& !savedDomainNamesChoiseBox.getValue().equals("")) {
-				domainNameTextField.setText(savedDomainNamesChoiseBox.getValue());
-			}
-		} catch (Exception e) {
-			LOGGER.warning(e.toString());
-		}
-	}
-
-	@FXML
-	protected void onDomainNameChoiseBoxFired() {
-		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
-		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
-	}
-
-	@FXML
-	private void onDnsServerNameChoiseBoxAction(ActionEvent event) {
-		try {
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    @FXML
+    private void onDnsServerNameChoiseBoxAction(ActionEvent event) {
+		/*try {
 			if (!savedDNSChoiceBox.getValue().equals(null) && !savedDNSChoiceBox.getValue().equals("")) {
 				dnsServerTextField.setText(savedDNSChoiceBox.getValue());
 				copyDataToClipBoard(dnsServerTextField.getText());
 			}
 		} catch (Exception e) {
 			LOGGER.warning(e.toString());
-		}
-	}
+		}*/
+    }
 
-	@FXML
-	protected void domainNameKeyPressed(KeyEvent event) {
-		controlKeys(event, domainNameTextField);
-		autobinging(domainNameTextField.getText(), settings.getDomainNamesDNS(), savedDomainNamesChoiseBox);
-	}
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    @FXML
+    protected void domainNameKeyPressed(KeyEvent event) {
+		/*controlKeys(event, domainNameTextField);
+		autobinging(domainNameTextField.getText(), settings.getDomainNamesDNS(), savedDomainNamesChoiseBox);*/
+    }
 
-	@FXML
-	private void dnsServerKeyPressed(KeyEvent event) {
-		customDNSRadioButton.setSelected(true);
-		controlKeys(event, dnsServerTextField);
-		autobinging(dnsServerTextField.getText(), settings.getDnsServers(), savedDNSChoiceBox);
-	}
-
-	@FXML
-	private void deleteDomainNameHistoryFired(Event event) {
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    @FXML
+    private void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
-	}
+    }
 
-	@FXML
-	private void deleteDNSServerHistoryFired(Event event) {
-		settings.eraseDNSServers();
-		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
-	}
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    @FXML
+    private void transportProtocolAction(ActionEvent event) {
+        if (tcpRadioButton.isSelected()) {
+            holdConnectionCheckbox.setDisable(false);
+        } else {
+            holdConnectionCheckbox.setDisable(true);
+            holdConnectionCheckbox.setSelected(false);
+        }
+    }
 
-	@FXML
-	private void transportProtocolAction(ActionEvent event) {
-		if (tcpRadioButton.isSelected()) {
-			holdConectionCheckbox.setDisable(false);
-		} else {
-			holdConectionCheckbox.setDisable(true);
-			holdConectionCheckbox.setSelected(false);
-			closeHoldedConnection();
-		}
-	}
+    @FXML
+    private void changeLayout(ActionEvent event) {
+        // change to small layout
+        try {
+            FXMLLoader loader = null;
+            if (layoutLarge) {
+                loader = new FXMLLoader(getClass().getResource(FXML_FILE_NAME_SMALL));
+            } else {
+                loader = new FXMLLoader(getClass().getResource(FXML_FILE_NAME_LARGE));
+            }
+            Stage newStage = new Stage();
 
-	@FXML
-	private void holdConnectionAction(ActionEvent event) {
-		if (!holdConectionCheckbox.isSelected()) {
-			closeHoldedConnection();
-		}
-	}
+            newStage.setScene(new Scene((Parent) loader.load()));
+            GeneralController controller = (GeneralController) loader.getController();
+
+            Stage oldStage = (Stage) sendButton.getScene().getWindow();
+            newStage.setX(oldStage.getX());
+            newStage.setY(oldStage.getY());
+            newStage.getIcons().add(new Image(App.ICON_URI));
+            controller.setSettings(settings);
+            controller.setIpDns(ipDns);
+            controller.setLabels();
+            controller.loadDataFromSettings();
+            controller.networkInterfaces();
+            App.stage = newStage;
+            newStage.show();
+            oldStage.close();
+            layoutLarge = !layoutLarge;
+        } catch (Exception e) {
+            //e.printStackTrace();
+            //LOGGER.severe("Could not open new window:" + e.toString());
+            LOGGER.severe("Could not open new window. Caused by: " + ExceptionUtils.getStackTrace(e));
+            Alert alert = new Alert(AlertType.ERROR, GeneralController.language.getLanguageBundle().getString("windowError"));
+            alert.showAndWait();
+        }
+    }
+
 }

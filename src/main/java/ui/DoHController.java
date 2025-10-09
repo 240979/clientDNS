@@ -1,344 +1,296 @@
 package ui;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-
-import javax.net.ssl.SSLPeerUnverifiedException;
-
-import org.json.simple.parser.ParseException;
+import application.Config;
 import enums.APPLICATION_PROTOCOL;
 import enums.DOH_FORMAT;
 import enums.Q_COUNT;
 import enums.WIRESHARK_FILTER;
-import exceptions.CouldNotUseHoldConnectionException;
-import exceptions.CustomEndPointException;
-import exceptions.HttpCodeException;
-import exceptions.InterfaceDoesNotHaveIPAddressException;
-import exceptions.MessageTooBigForUDPException;
-import exceptions.MoreRecordsTypesWithPTRException;
-import exceptions.NonRecordSelectedException;
-import exceptions.NotValidDomainNameException;
-import exceptions.NotValidIPException;
-import exceptions.OtherHttpException;
-import exceptions.TimeoutException;
+import exceptions.*;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Alert.AlertType;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.layout.HBox;
+import models.DomainConvert;
 import models.Ip;
-import models.MessageParser;
-import models.MessageSender;
+import models.NameServer;
+import models.WiresharkFilter;
+import org.w3c.dom.Text;
+import tasks.DNSOverHTTPS2Task;
+import tasks.DNSOverHTTPSTask;
 
-public class DoHController extends DNSController {
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.net.UnknownHostException;
+import java.util.List;
 
-	public static final String FXML_FILE_NAME = "/fxml/DoH.fxml";
+public class DoHController extends GeneralController {
 
-	@FXML
-	private TextArea requestTextArea;
-	@FXML
-	private RadioButton jsonApiRadioButton;
-	@FXML
-	private RadioButton wireRadioButton;
-	@FXML
-	private RadioButton cloudflareRadionButton;
-	@FXML
-	private RadioButton googleRadioButton;
-	@FXML
-	private ImageView cloudflareImageView;
-	@FXML
-	private ImageView googleImageView;
-	@FXML
-	private ImageView customDnsImageView;
-	@FXML
-	private TextArea responseTextArea;
-	@FXML
-	private RadioButton customEndPointRadioButton;
-	@FXML
-	private TextField customEndPointTextField;
+    public static final String FXML_FILE_NAME = "/fxml/DoH_small.fxml";
 
-	private ToggleGroup formatDoHToggleGroup;
+    private RadioButton isGetRadioButton;
 
-	public DoHController() {
-		super();
-		PROTOCOL = "DNS over Https";
-	}
+    public DoHController() {
+        super();
+        PROTOCOL = "DNS over Https";
+    }
 
-	public void initialize() {
-		formatDoHToggleGroup = new ToggleGroup();
-		dnssecToggleGroup = new ToggleGroup();
-		dnsserverToggleGroup = new ToggleGroup();
-		wiresharkFilterToogleGroup = new ToggleGroup();
+    @Override
+    protected void updateCustomParameters() {
+        parameters.put(WiresharkFilter.Parameters.TCPPORT, "443");
+        parameters.put(WiresharkFilter.Parameters.UDPPORT, "443");
+    }
 
-		jsonApiRadioButton.setToggleGroup(formatDoHToggleGroup);
-		wireRadioButton.setToggleGroup(formatDoHToggleGroup);
+    @Override
+    public String getProtocol() {
+        return "DoH";
+    }
 
-		dnssecYesRadioButton.setToggleGroup(dnssecToggleGroup);
-		dnssecNoRadioButton.setToggleGroup(dnssecToggleGroup);
+    public void initialize() {
+        super.initialize();
+        dnsserverToggleGroup = new ToggleGroup();
 
-		cloudflareRadionButton.setToggleGroup(dnsserverToggleGroup);
-		googleRadioButton.setToggleGroup(dnsserverToggleGroup);
-		customEndPointRadioButton.setToggleGroup(dnsserverToggleGroup);
+        IPprotToggleGroup = new ToggleGroup();
+        IPv4RadioButton.setToggleGroup(IPprotToggleGroup);
+        IPv6RadioButton.setToggleGroup(IPprotToggleGroup);
+        iterativeToggleGroup = new ToggleGroup();
+        recursiveQueryRadioButton.setToggleGroup(iterativeToggleGroup);
+        iterativeQueryRadioButton.setToggleGroup(iterativeToggleGroup);
 
-		justIp.setToggleGroup(wiresharkFilterToogleGroup);
-		ipAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-		ipwithTCPAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-	}
 
-	public void setLabels() {
-		TitledPane[] titlePanes = new TitledPane[] { domainNameTitledPane, queryTitledPane, recordTypeTitledPane,
-				iterativeTitledPane, responseTitledPane };
-		Menu[] menuItems = new Menu[] { actionMenu, languageMenu, historyMenu, };
-		for (TitledPane titledPane : titlePanes) {
-			titledPane.setText(language.getLanguageBundle().getString(titledPane.getId()));
-		}
-		for (Menu menu : menuItems) {
-			menu.setText(language.getLanguageBundle().getString(menu.getId()));
-		}
-		MenuItem[] menuItems1 = new MenuItem[] { deleteDomainNameHistory, justIp, ipAsFilter, ipwithTCPAsFilter };
-		for (MenuItem menuItem : menuItems1) {
-			menuItem.setText(language.getLanguageBundle().getString(menuItem.getId()));
-		}
-		wiresharkLabel.setText(language.getLanguageBundle().getString(wiresharkLabel.getId()));
-		setUserDataRecords();
-		setFormatUserData();
-		setDNSServerUserData();
-		setTitle();
-		setLanguageRadioButton();
-		setWiresharkUserData();
-		setImageViewUserData();
-		customEndPointTextField.setPromptText(language.getLanguageBundle().getString(customEndPointTextField.getId()));
+        Config.getNameServers().stream().filter(NameServer::isDoh).forEach(nameServer -> otherDNSVbox.getChildren()
+                .add(new NameServerVBox(nameServer, dnsserverToggleGroup, this)));
+        HBox customDNS = new HBox();
+        RadioButton customToggle = new RadioButton();
+        isGetRadioButton = new RadioButton();
+        isGetRadioButton.setText("GET");
+        isGetRadioButton.setTooltip(new Tooltip("GET"));
+        customToggle.setToggleGroup(dnsserverToggleGroup);
+        TextField input = new TextField();
+        //input.setPromptText(language.getLanguageBundle().getString("dnsServerDropDownLabel"));
+        customToggle.setUserData(input);
+        input.setOnMouseClicked(actionEvent -> {
+            customToggle.setSelected(true);
+        });
+        customDNS.getChildren().addAll(customToggle, input,isGetRadioButton);
+        Separator separator = new Separator();
+        separator.setPadding(new Insets(10, 0, 5, 0));
+        otherDNSVbox.getChildren().add(separator);
+        otherDNSVbox.getChildren().add(customDNS);
 
-		interfaceMenu.setText(language.getLanguageBundle().getString(interfaceMenu.getId()));
-		sendButton.setText(language.getLanguageBundle().getString(sendButton.getId()));
-		responseTimeLabel.setText(language.getLanguageBundle().getString(responseTimeLabel.getId()));
-		numberOfMessagesLabel.setText(language.getLanguageBundle().getString(numberOfMessagesLabel.getId()));
+        setLanguageRadioButton();
+        // TODO add option for custom DNS server
+    }
 
-	}
+    public void setLabels() {
 
-	private void setImageViewUserData() {
-		cloudflareImageView.setUserData(ipDns.getClouflareIp());
-		googleImageView.setUserData(ipDns.getGoogleIp());
-	}
+    }
 
-	private void setWiresharkUserData() {
-		justIp.setUserData(WIRESHARK_FILTER.JUST_IP);
-		ipAsFilter.setUserData(WIRESHARK_FILTER.IP_FILTER);
-		ipwithTCPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_TCP);
-	}
+    private void setWiresharkUserData() {
 
-	private void setFormatUserData() {
-		jsonApiRadioButton.setUserData(DOH_FORMAT.JSON_API);
-		wireRadioButton.setUserData(DOH_FORMAT.WIRE);
-	}
+    }
 
-	private void setDNSServerUserData() {
-		cloudflareRadionButton.setUserData("cloudflare-dns.com/dns-query");
-		googleRadioButton.setUserData("dns.google/resolve");
-		customDnsImageView.setUserData("custom");
-	}
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    protected void setCustomUserDataRecords()
+    {
+        cnameCheckBox.setUserData(Q_COUNT.CNAME);
+        mxCheckBox.setUserData(Q_COUNT.MX);
+        nsCheckBox.setUserData(Q_COUNT.NS);
+        caaCheckBox.setUserData(Q_COUNT.CAA);
+        dnskeyCheckBox.setUserData(Q_COUNT.DNSKEY);
+        soaCheckBox.setUserData(Q_COUNT.SOA);
+        dsCheckBox.setUserData(Q_COUNT.DS);
+        rrsigCheckBox.setUserData(Q_COUNT.RRSIG);
+        nsec3paramCheckBox.setUserData(Q_COUNT.NSEC3PARAM);
+        nsec3CheckBox.setUserData(Q_COUNT.NSEC3);
+        soaCheckBox.setUserData(Q_COUNT.SOA);
+        checkBoxArray.add(soaCheckBox);
+        checkBoxArray.add(nsec3CheckBox);
+        checkBoxArray.add(cnameCheckBox);
+        checkBoxArray.add(mxCheckBox);
+        checkBoxArray.add(nsCheckBox);
+        checkBoxArray.add(caaCheckBox);
+        checkBoxArray.add(dnskeyCheckBox);
+        checkBoxArray.add(dsCheckBox);
+        checkBoxArray.add(rrsigCheckBox);
+        checkBoxArray.add(nsec3paramCheckBox);
+        // 240979
+        svcbCheckBox.setUserData(Q_COUNT.SVCB);
+        checkBoxArray.add(svcbCheckBox);
 
-	@FXML
-	private void customDNSAction() {
-		customEndPointRadioButton.setSelected(true);
-	}
+    }
 
-	@FXML
-	private void predefineDNSAction(ActionEvent event) {
-		if (cloudflareRadionButton.isSelected() || googleRadioButton.isSelected()) {
-			customEndPointTextField.setText("");
-		}
-	}
+    @FXML
+    protected void sendButtonFired(ActionEvent event){
+        super.sendButtonFired(event);
+        if (isTerminatingThread()){
+            return;
+        }
+        try {
+            String domain = getDnsServerIp();
+            if (domain == null){
+                Platform.runLater(()->sendButton.setText(getButtonText()));
+                return;
+            }
+            Q_COUNT[] qCount = getRecordTypes();
+            boolean isGet = isServerGet();
+            String path = getPath();
+            String resolverURL = "dummy resolver";
+            logRequest(authenticateDataCheckBox.isSelected(), checkingDisabledCheckBox.isSelected(), domain, qCount, resolverURL);
 
-	@FXML
-	private void copyCloudflareViewFired(MouseEvent event) {
+            task = new DNSOverHTTPSTask(recursiveQueryRadioButton.isSelected(), authenticateDataCheckBox.isSelected(),
+                    checkingDisabledCheckBox.isSelected(), DNSSECOkCheckBox.isSelected(),getDomain(),
+                    getRecordTypes(), null, APPLICATION_PROTOCOL.DOH, domain+"/"+path,
+                    getInterface(), isGet, getDnsServerDomainName(getDnsServerIp()));
 
-		String result = "";
-		switch ((WIRESHARK_FILTER) wiresharkFilterToogleGroup.getSelectedToggle().getUserData()) {
-		case JUST_IP:
-			result = ipDns.getClouflareIp()[0];
-			break;
-		case IP_FILTER:
-			result = getCloudflareWiresharkIpFilter();
-			break;
-		case IP_WITH_TCP:
-			result = getCloudflareWiresharkIpFilter() + " && tcp.port == 443";
-			break;
-		default:
-			break;
-		}
-		copyDataToClipBoard(result);
-	}
+            numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
+            responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());
+            requestTreeView.rootProperty().bind(task.requestPropertyProperty());
+            responseTreeView.rootProperty().bind(task.responsePropertyProperty());
+            querySizeLabel.textProperty().bind(task.querySizeProperty().asString());
+            responseSizeLabel.textProperty().bind(task.responseSizeProperty().asString());
+            task.setController(this);
+            thread = new Thread(task);
+            // pass new progress bar to Task
+            progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+            task.setProgressBar(progressBar);
+            thread.start();
+        } catch (NotValidDomainNameException | NotValidIPException | MoreRecordsTypesWithPTRException | NonRecordSelectedException | IOException | DnsServerIpIsNotValidException e) {
+            Platform.runLater(()->{
+                sendButton.setText(getButtonText());
+                progressBar.setProgress(0);
+            });
+            //e.printStackTrace();
+            //String fullClassName = e.getClass().getSimpleName();
+            //showAlert(fullClassName);
+            showAlert(e);
+        } catch (Exception e) {
+            Platform.runLater(()->{
+                sendButton.setText(getButtonText());
+                progressBar.setProgress(0);
+            });
+            // LOGGER.warning(e.toString());
+            // showAlert("Exception");
+            showAlert(e);
+        }
+    }
 
-	private String getCloudflareWiresharkIpFilter() {
-		String result = "(";
-		for (int i = 0; i < ipDns.getClouflareIp().length; i++) {
-			String ip = ipDns.getClouflareIp()[i];
-			if (Ip.isIPv4Address(ip)) {
-				result += "ip.addr == " + ip;
-			} else {
-				result += "ipv6.addr == " + ip;
-			}
-			if (i == ipDns.getClouflareIp().length - 1) {
-				result += ")";
-			} else {
-				result += " || ";
-			}
-		}
-		return result;
-	}
+    private String getPath() {
+        if (dnsserverToggleGroup.getSelectedToggle().getUserData() instanceof TextField){
+            TextField textField = (TextField) dnsserverToggleGroup.getSelectedToggle().getUserData();
+            return textField.getText().split("/")[1];
+        }
+        return nameServer.getPath();
+    }
 
-	@FXML
-	private void copyImageViewFired(MouseEvent event) {
-		ImageView image = (ImageView) event.getSource();
-		String ip;
-		if (image.getUserData().equals("custom")) {
-			try {
-				ip = getCustomIp();
-			} catch (CustomEndPointException e) {
-				showAller("CustomEndPointException");
-				return;
-			}
-		} else {
-			ip = (String) image.getUserData();
-		}
-		String result = "";
-		String prefix = "";
-		if (Ip.isIpv6Address(ip)) {
-			prefix = "ipv6.addr == ";
-		} else {
-			prefix = "ip.addr == ";
-		}
-		switch ((WIRESHARK_FILTER) wiresharkFilterToogleGroup.getSelectedToggle().getUserData()) {
-		case JUST_IP:
-			result = ip;
-			break;
-		case IP_FILTER:
-			result = prefix + ip;
-			break;
-		case IP_WITH_TCP:
-			result = prefix + ip + " && tcp.port == 443";
-			break;
-		default:
-			break;
-		}
-		copyDataToClipBoard(result);
-	}
+    private boolean isServerGet() {
+        if (dnsserverToggleGroup.getSelectedToggle().getUserData() instanceof TextField){
+            return isGetRadioButton.isSelected();
+        }
+        return nameServer.isGet();
+    }
 
-	private String getCustomIp() throws CustomEndPointException {
-		String ip = "";
-		String domain = customEndPointTextField.getText();
-		if (Ip.isIpValid(domain))
-			ip = domain;
-		else {
-			String splited[] = domain.split("/");
-			ipDns.getUserDoHurlIP(splited[0]);
-			ip = ipDns.getUserInputIp();
-		}
-		return ip;
-	}
+    @Override
+    protected String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException, NoIpAddrForDomainName, NotValidDomainNameException {
+        Toggle selected = dnsserverToggleGroup.getSelectedToggle();
 
-	private String getResolverAndupdateItIp() throws UnknownHostException, CustomEndPointException {
-		String fullName;
-		String justDomain;
-		if (customEndPointRadioButton.isSelected()) {
-			fullName = customEndPointTextField.getText();
-		} else {
-			fullName = (String) dnsserverToggleGroup.getSelectedToggle().getUserData();
-		}
+        if (selected == null) {
+            Platform.runLater(()->sendButton.setText(getButtonText()));
+            showAlert("ChooseDNSServer");
+            return null;
+        }
 
-		justDomain = fullName.split("/")[0];
-		switch (justDomain) {
-		case "dns.google":
-			ipDns.updateGoogleIp();
-			// System.out.println("updated google");
-			break;
-		case "cloudflare-dns.com":
-			ipDns.updateCloudflareIp();
-			// System.out.println("updated cloudflare");
-		default:
-			getCustomIp();
-			break;
-		}
-		return fullName;
-	}
+        Object userDataObject = selected.getUserData();
 
-	@FXML
-	protected void sendButtonFired(ActionEvent event) {
-		try {
-			String domain = getDomain();
-			boolean dnssec = dnssecYesRadioButton.isSelected();
-			boolean signatures = dnssecRecordsRequestCheckBox.isSelected();
-			Q_COUNT[] qcount = getRecordTypes();
-			String resolverURL = getResolverAndupdateItIp();
-			logRequest(dnssec, signatures, domain, qcount, resolverURL);
-			sender = new MessageSender(false, // recursion
-					dnssec, // dnssec
-					signatures, // rrRecords
-					domain, // domain as string
-					qcount, // records
-					null, //
-					APPLICATION_PROTOCOL.DOH, // application protocol
-					resolverURL);
-			sender.setInterfaceToSend(getInterface());
-			sender.send();
-			parser = new MessageParser(sender.getHttpResponse());
-			setControls();
-		} catch (SSLPeerUnverifiedException e) {
-			String fullClassName = e.getClass().getSimpleName();
-			LOGGER.info(fullClassName);
-			showAller(fullClassName);
-		} catch (HttpCodeException e) {
-			Alert alert = new Alert(AlertType.ERROR,
-					language.getLanguageBundle().getString("HttpCodeException") + e.getCode());
-			alert.initModality(Modality.APPLICATION_MODAL);
-			alert.initOwner((Stage) sendButton.getScene().getWindow());
-			alert.show();
-		} catch (NotValidDomainNameException | NotValidIPException | MoreRecordsTypesWithPTRException
-				| NonRecordSelectedException | TimeoutException | IOException | MessageTooBigForUDPException
-				| CouldNotUseHoldConnectionException | OtherHttpException | ParseException | CustomEndPointException
-				| InterfaceDoesNotHaveIPAddressException e) {
-			e.printStackTrace();
-			String fullClassName = e.getClass().getSimpleName();
-			LOGGER.info(fullClassName);
-			showAller(fullClassName);
-		}
-	}
+        String serverIp = null;
 
-	private void logRequest(boolean dnssec, boolean signatures, String domain, Q_COUNT[] qcount, String resolverURL) {
-		String records = "";
-		for (Q_COUNT q_COUNT : qcount) {
-			records += q_COUNT + ",";
-		}
-		LOGGER.info("DoH:\n " + "dnssec: " + dnssec + "\n" + "signatures: " + signatures + "\n" + "domain: " + domain
-				+ "\n" + "records: " + records + "\n" + "resovlerURL: " + resolverURL);
+        if (userDataObject == null) {
+            return null;
+        }
 
-	}
+        if (userDataObject instanceof String) {
+            serverIp = (String) userDataObject;
+        } else if (userDataObject instanceof NameServer) {
+            serverIp = IPv4RadioButton.isSelected() ?
+                    ((NameServer) userDataObject).getIpv4().get(0) :
+                    ((NameServer) userDataObject).getIpv6().get(0);
+        } else if (userDataObject instanceof ToggleGroup) {
+            ToggleGroup group = (ToggleGroup) userDataObject;
+            Toggle selectedAddress = group.getSelectedToggle();
+            if (selectedAddress == null) {
+                sendButton.setText(getButtonText());
+                showAlert("ChooseDNSServer");
+                return null;
+            }
+            serverIp = (String) selectedAddress.getUserData();
+        } else if (userDataObject instanceof TextField) {
+            TextField input = (TextField) userDataObject;
+            String inputString = input.getText();
+            if (inputString.split("/").length < 2){
+                throw new NotValidDomainNameException();
+            }
+            if(DomainConvert.isValidDomainName(inputString.split("/")[0])){
+                if (IPv4RadioButton.isSelected()){
+                    serverIp = Ip.getIpV4OfDomainName(inputString.split("/")[0]);
+                } else {
+                    serverIp = Ip.getIpV6OfDomainName(inputString.split("/")[0]);
+                }
+                if (serverIp == null){
+                    throw new NoIpAddrForDomainName();
+                }
+            } else if (!Ip.isIpValid(inputString.split("/")[0])){
+                throw new DnsServerIpIsNotValidException();
+            } else{
+                serverIp = inputString.split("/")[0];
+            }
+        }
 
-	@Override
-	protected void setControls() {
-		requestTextArea.setText(sender.getDoHRequest());
-		responseTimeValueLabel.setText(sender.getTimeElapsed() + "");
-		numberOfMessagesValueLabel.setText(sender.getMessageSent() + "");
-		responseTextArea.setText(parser.getAsJsonString());
-		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
-				+ sender.getByteSizeQuery() + " B)");
-		responseTitledPane.setText(language.getLanguageBundle().getString(responseTitledPane.getId().toString()) + " ("
-				+ sender.getByteSizeResponseDoH() + " B)");
-	}
+        return serverIp;
+    }
 
-	public void loadDataFromSettings() {
-		this.savedDomainNamesChoiseBox.getItems().setAll(settings.getDomainNamesDNS());
-	}
+    @Override
+    protected void saveDomain(String domain) {
+        settings.addDNSDomain(domain);
+    }
 
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    private void logRequest(boolean dnssec, boolean signatures, String domain, Q_COUNT[] qcount, String resolverURL) {
+        String records = "";
+        for (Q_COUNT q_COUNT : qcount) {
+            records += q_COUNT + ",";
+        }
+        //LOGGER.info("DoH:\n " + "dnssec: " + dnssec + "\n" + "signatures: " + signatures + "\n" + "domain: " + domain
+       //         + "\n" + "records: " + records + "\n" + "resovlerURL: " + resolverURL);
+
+    }
+
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    public void loadDataFromSettings() {
+        savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
+    }
+
+    /*
+     * Body of method taken from Martin Biolek thesis and modified
+     * */
+    @FXML
+    private void deleteDomainNameHistoryFired(Event event) {
+        settings.eraseDomainNames();
+        savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+    }
+
+    @Override
+    protected void setWiresharkMenuItems() {
+        super.setWiresharkMenuItems();
+    }
 }

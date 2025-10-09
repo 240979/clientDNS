@@ -10,12 +10,12 @@ class PunycodeTest {
 
 	@Test
 	void testToPunycode() {
-		assertEquals("xn--hkyrky-ptac70bc.cz",Punycode.toPunycode("háèkyèárky.cz"));
+		assertEquals("xn--hkyrky-ptac70bc.cz",Punycode.toPunycode("hÃ¡ÄkyÄÃ¡rky.cz"));
 	}
 	
 	@Test
 	void testFromPunnycode() {
-		assertEquals("háèkyèárky.cz",Punycode.fromPunnycode("xn--hkyrky-ptac70bc.cz"));
+		assertEquals("hÃ¡ÄkyÄÃ¡rky.cz",Punycode.fromPunnycode("xn--hkyrky-ptac70bc.cz"));
 	}
 
 }

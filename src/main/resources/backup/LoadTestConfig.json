@@ -1,0 +1,13 @@
+{
+  "duration": "7",
+  "domain": "seznam.cz;facebook.com;zive.cz" ,
+  "record": "AAAA,A,NS",
+  "ipv4": false,
+  "recursive": true,
+  "protocol": "DOT",
+  "holdConnection": true,
+  "cooldown": 1000,
+  "do": true,
+  "ad": true,
+  "cd": false
+}

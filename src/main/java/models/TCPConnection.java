@@ -1,3 +1,8 @@
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
+ * */
 package models;
 
 import java.io.IOException;
@@ -6,10 +11,12 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 import exceptions.CouldNotUseHoldConnectionException;
 import exceptions.InterfaceDoesNotHaveIPAddressException;
 import exceptions.TimeoutException;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class TCPConnection {
 	private InetAddress destinationIp;
@@ -20,6 +27,7 @@ public class TCPConnection {
 	private static final int DNS_PORT = 53;
 	// private static final int SOCKET_TIME_OUT_SEC = 3;
 	private byte[] responseMessage;
+	protected static Logger LOGGER = Logger.getLogger(TCPConnection.class.getName());
 
 	public TCPConnection(InetAddress ip) {
 		this.destinationIp = ip;
@@ -30,6 +38,7 @@ public class TCPConnection {
 			throws TimeoutException, IndexOutOfBoundsException, IOException, CouldNotUseHoldConnectionException,
 			InterfaceDoesNotHaveIPAddressException {
 		this.netIntreface = netInterface;
+		System.out.println(socket==null?"empty socket slot":socket.toString());
 		if (socket == null) {
 			connect();
 		}
@@ -43,8 +52,8 @@ public class TCPConnection {
 			connect();
 		}
 		sendAndRecieve(messagesAsBytes);
-		if (closeConnection)
-			closeAll();
+		/*if (closeConnection)
+			closeAll();*/
 		return responseMessage;
 	}
 
@@ -62,25 +71,35 @@ public class TCPConnection {
 
 	public void closeAll() throws IOException {
 		if (socket.isConnected() || !socket.isClosed()) {
+			System.out.println("Closing sockets");
 			inputStream.close();
 			outputStream.close();
 			socket.close();
 		}
 	}
 
+	/*
+	* Added by Patricia Ramosova
+	* */
+	public boolean isClosed()
+	{
+		return socket.isClosed();
+	}
+
 	private void sendAndRecieve(byte[] messagesAsBytes)
 			throws CouldNotUseHoldConnectionException, TimeoutException, IOException {
 		try {
 			outputStream.write(messagesAsBytes);
-			// dns message has first two bytes which is the lenght of the rest of the
+			// dns message has first two bytes which is the length of the rest of the
 			// message
 			byte[] sizeRicieve = inputStream.readNBytes(2);
 
 			UInt16 messageSize = new UInt16().loadFromBytes(sizeRicieve[0], sizeRicieve[1]);
-			// based on size get the dns message it self
+			// based on size get the dns message itself
 			responseMessage = inputStream.readNBytes(messageSize.getValue());
 		} catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println(e.toString());
+			//System.out.println(e.toString());
+			LOGGER.severe(ExceptionUtils.getStackTrace(e));
 			closeAll();
 			throw new CouldNotUseHoldConnectionException();
 		} catch (IOException e) {

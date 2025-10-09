@@ -1,5 +1,12 @@
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
+ * */
 package models;
 
+
+import lombok.Data;
 import org.json.simple.JSONObject;
 
 import enums.AUTHENTICATE_DATA;
@@ -13,33 +20,36 @@ import enums.RD;
 import enums.TC;
 import javafx.scene.control.TreeItem;
 
+@Data
 public class Header {
-	private UInt16 id;
-	private QR qr;
-	private OP_CODE opCode;
-	private AA aa;
-	private TC tc;
-	private RD rd;
-	private RA ra;
-	private CHECKING_DISABLED cd;
-	private AUTHENTICATE_DATA ad;
-	private R_CODE rCode;
-	private UInt16 QdCount;
-	private UInt16 AnCount;
-	private UInt16 NsCount;
-	private UInt16 ArCount;
+	UInt16 id;
+	QR qr;
+	OP_CODE opCode;
+	AA aa;
+	TC tc;
+	RD rd;
+	RA ra;
+	CHECKING_DISABLED cd;
+	AUTHENTICATE_DATA ad;
+	R_CODE rCode;
+	UInt16 QdCount;
+	UInt16 AnCount;
+	UInt16 NsCount;
+	UInt16 ArCount;
 	private TreeItem<String> root;
 	private static final int size = 12;
 
 	private static final String ID_KEY = "Id";
-	private static final String QR_KEY = "Message type";
-	private static final String OPCODE_KEY = "Opcode";
+	static final String QR_KEY = "Message type";
+	static final String OPCODE_KEY = "Opcode";
+	static final String CONFLICT_KEY = "Conflict";
 	private static final String AA_KEY = "Authoritative answer";
-	private static final String TC_KEY = "Truncation";
+	static final String TC_KEY = "Truncation";
+	static final String T_KEY = "Tentative";
 	private static final String RD_KEY = "Recursion";
 	private static final String CHECKING_DISABLED_KEY = "Checking disabled";
 	private static final String AUTHENTICATE_DATA__KEY = "Authenticate data";
-	private static final String RCODE_KEY = "Response code";
+	static final String RCODE_KEY = "Response code";
 	private static final String QDCOUNT_KEY = "Number of questions";
 	private static final String ANCOUNT_KEY = "Number of answers";
 	private static final String NSCOUNT_KEY = "Number of authority answers";
@@ -66,6 +76,13 @@ public class Header {
 			ArCount = new UInt16(0);
 		}
 
+	}
+
+	public Header (boolean recursion, boolean authenticateData, int numberOfQueries, boolean rrRecord, boolean checkingDisabled)
+	{
+		this(recursion,false,numberOfQueries,rrRecord);
+		cd = CHECKING_DISABLED.getTypeByCode(checkingDisabled);
+		ad = AUTHENTICATE_DATA.getTypeByCode(authenticateData);
 	}
 
 	public Header(int numberOfQueris) {
@@ -107,11 +124,19 @@ public class Header {
 		jsonObject.put(ID_KEY, id.getValue());
 		jsonObject.put(QR_KEY, qr.code);
 		jsonObject.put(OPCODE_KEY, opCode);
-		jsonObject.put(AA_KEY, aa.code);
+		if(aa != null){
+			jsonObject.put(AA_KEY, aa.code);
+		}
 		jsonObject.put(TC_KEY, tc.code);
-		jsonObject.put(RD_KEY, rd.code);
-		jsonObject.put(CHECKING_DISABLED_KEY, cd.code);
-		jsonObject.put(AUTHENTICATE_DATA__KEY, ad.code);
+		if (rd != null) {
+			jsonObject.put(RD_KEY, rd.code);
+		}
+		if (cd != null){
+			jsonObject.put(CHECKING_DISABLED_KEY, cd.code);
+		}
+		if (ad != null){
+			jsonObject.put(AUTHENTICATE_DATA__KEY, ad.code);
+		}
 		jsonObject.put(RCODE_KEY, rCode);
 		jsonObject.put(QDCOUNT_KEY, QdCount.getValue());
 		jsonObject.put(ANCOUNT_KEY, AnCount.getValue());
@@ -130,7 +155,7 @@ public class Header {
 		return root;
 	}
 
-	private TreeItem<String> getFlagsAsTreeView() {
+	protected TreeItem<String> getFlagsAsTreeView() {
 		String flagsKeys[] = { QR_KEY, OPCODE_KEY, AA_KEY, TC_KEY, RD_KEY, CHECKING_DISABLED_KEY,
 				AUTHENTICATE_DATA__KEY, RCODE_KEY };
 		String flagsValue[] = { qr.toString(), opCode.toString(), aa.toString(), tc.toString(), rd.toString(),

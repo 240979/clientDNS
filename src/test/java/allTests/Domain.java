@@ -73,7 +73,7 @@ class Domain {
 		try {
 			
 			
-		assertEquals(Arrays.toString(resultHackyCarky),Arrays.toString(DomainConvert.encodeDNS("háèkyèárky.cz")));
+		assertEquals(Arrays.toString(resultHackyCarky),Arrays.toString(DomainConvert.encodeDNS("hÃ¡ÄkyÄÃ¡rky.cz")));
 		}
 		catch (Exception e) {
 			System.out.println("Not valid domain");

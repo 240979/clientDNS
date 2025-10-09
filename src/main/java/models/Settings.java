@@ -1,3 +1,10 @@
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
+ * Added LLMNR and load testing domain names and changed the way of storing domain names
+ * Added screen hash which is used to open app on screen where was previously closed
+ * */
 package models;
 
 import java.io.BufferedWriter;
@@ -12,33 +19,46 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.swing.filechooser.FileSystemView;
+
+import lombok.Data;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+@Data
 public class Settings {
 
 	public static final String SETTINGS_FILE_NAME = "settings.json";
 	public static final String SETTINGS_FOLDER_NAME = "DNSClient";
 	public static final String DNS_SERVERS = "DNS_SERVERS";
+	public static final String DOMAIN_NAMES_LLMNR = "DOMAIN_NAMES_LLMNR";
+	public static final String DOMAIN_NAMES_LOAD = "DOMAIN_NAMES_LOAD";
 	public static final String DOMAIN_NAMES_mDNS = "DOMAIN_NAMES_mDNS";
 	public static final String DOMAIN_NAMES_DNS = "DOMAIN_NAMES_DNS";
 	public static final String LAST_USED_INTERFACE = "LAST_USED_INTERFACE";
+	public static final String LAST_USED_SCREEN = "LAST_USED_SCREEN";
 	private String filePath;
 	private File file;
 	private NetworkInterface netInterface;
 	private ArrayList<String> dnsServers;
-	private ArrayList<String> domainNamesDNS;
-	private ArrayList<String> domainNamesMDNS;
+	private List<String> domainNamesDNS;
+	private List<String> domainNamesMDNS;
+	private List<String> domainNamesLLMNR;
+	private List<String> domainNamesLOAD;
+	private List<String> screensHash;
 	private static final Logger LOGGER = Logger.getLogger(Settings.class.getName());
 
 	public Settings() {
-		dnsServers = new ArrayList<String>();
-		domainNamesDNS = new ArrayList<String>();
-		domainNamesMDNS = new ArrayList<String>();
+		dnsServers = new ArrayList<>();
+		domainNamesDNS = new ArrayList<>();
+		domainNamesMDNS = new ArrayList<>();
+		domainNamesLLMNR = new ArrayList<>();
+		domainNamesLOAD = new ArrayList<>();
+		screensHash = new ArrayList<>();
 		checkIfFileExistsOrCreate();
 		readValues();
 	}
@@ -68,10 +88,13 @@ public class Settings {
 
 	@SuppressWarnings("unchecked")
 	private void setupJsonFile() throws IOException {
-		Map<String, ArrayList<String>> jsonMap = new HashMap<String, ArrayList<String>>();
+		Map<String, List<String>> jsonMap = new HashMap<>();
 		jsonMap.put(DNS_SERVERS, dnsServers);
 		jsonMap.put(DOMAIN_NAMES_DNS, domainNamesDNS);
 		jsonMap.put(DOMAIN_NAMES_mDNS, domainNamesMDNS);
+		jsonMap.put(DOMAIN_NAMES_LLMNR, domainNamesLLMNR);
+		jsonMap.put(DOMAIN_NAMES_LOAD, domainNamesLOAD);
+		jsonMap.put(LAST_USED_SCREEN, screensHash);
 		Map<String, String> jsonMap2 = new HashMap<String, String>();
 		if (netInterface == null) {
 			netInterface = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
@@ -94,6 +117,9 @@ public class Settings {
 			dnsServers = readJsonArraylist(DNS_SERVERS, jsonObject);
 			domainNamesMDNS = readJsonArraylist(DOMAIN_NAMES_mDNS, jsonObject);
 			domainNamesDNS = readJsonArraylist(DOMAIN_NAMES_DNS, jsonObject);
+			domainNamesLLMNR = readJsonArraylist(DOMAIN_NAMES_LLMNR, jsonObject);
+			domainNamesLOAD = readJsonArraylist(DOMAIN_NAMES_LOAD, jsonObject);
+			screensHash = readJsonArraylist(LAST_USED_SCREEN, jsonObject);
 			try {
 				netInterface = NetworkInterface.getByName((String) jsonObject.get(LAST_USED_INTERFACE));
 			} catch (Exception e) {
@@ -110,48 +136,47 @@ public class Settings {
 	private ArrayList<String> readJsonArraylist(String key, JSONObject jsonObject) {
 		JSONArray jsonArray = (JSONArray) jsonObject.get(key);
 		ArrayList<String> list = new ArrayList<String>();
-		for (int i = 0; i < jsonArray.size(); i++) {
-			list.add((String) jsonArray.get(i));
-		}
+		jsonArray.forEach(o -> list.add((String) o));
 		return list;
 	}
 
-	public void addDNSServer(String ip) {
-		if (Ip.isIpValid(ip)) {
-			if (!dnsServers.contains(ip)) {
-				dnsServers.add(ip);
-			} else {
-				LOGGER.info("IP address of DNS server already in list");
-			}
-		} else {
-			LOGGER.info("IP address of DNS server is not valid");
-		}
-	}
-
 	public void addMDNSDomain(String domain) {
-		if (DomainConvert.isValidDomainName(domain)) {
-			if (!domainNamesMDNS.contains(domain)) {
-				domainNamesMDNS.add(domain);
-				LOGGER.info("mDNS domain name added");
-			} else {
-				LOGGER.info("mDNS domain already in list");
-			}
-		} else {
-			LOGGER.warning("mDNs domain name is not valid");
-		}
+		addDomain(domain,domainNamesMDNS);
 	}
 
 	public void addDNSDomain(String domain) {
+		addDomain(domain,domainNamesDNS);
+	}
+
+	public void addLLMNRDomain(String domain){
+		addDomain(domain,domainNamesLLMNR);
+	}
+
+	public void addLoadDomain(String domain){
+		if (!domainNamesLOAD.contains(domain)) {
+			domainNamesLOAD.add(domain);
+			LOGGER.info(domain+" domain name added");
+		} else {
+			LOGGER.info(domain + " domain already in list");
+		}
+	}
+
+	private void addDomain(String domain, List<String> list){
 		if (DomainConvert.isValidDomainName(domain)) {
-			if (!domainNamesDNS.contains(domain)) {
-				domainNamesDNS.add(domain);
-				LOGGER.info("DNS domain name added");
+			if (!list.contains(domain)) {
+				list.add(domain);
+				LOGGER.info(domain+" domain name added");
 			} else {
-				LOGGER.info("DNS domain already in list");
+				LOGGER.info(domain + " domain already in list");
 			}
 		} else {
-			LOGGER.warning("DNS domain name is not valid");
+			LOGGER.warning(domain + " domain name is not valid");
 		}
+	}
+
+	public void saveScreenHash(String hash) {
+		screensHash.clear();
+		screensHash.add(hash);
 	}
 
 	public void appIsClossing() {
@@ -172,23 +197,11 @@ public class Settings {
 		this.domainNamesMDNS = new ArrayList<String>();
 	}
 
-	public ArrayList<String> getDnsServers() {
-		return dnsServers;
+	public void eraseLLMNRDomainNames() {
+		domainNamesLLMNR = new ArrayList<>();
 	}
 
-	public ArrayList<String> getDomainNamesDNS() {
-		return domainNamesDNS;
-	}
-
-	public ArrayList<String> getDomainNamesMDNS() {
-		return domainNamesMDNS;
-	}
-
-	public void setInterface(NetworkInterface netInterface) {
-		this.netInterface = netInterface;
-	}
-
-	public NetworkInterface getInterface() {
-		return this.netInterface;
+	public void eraseLOADDomainNames() {
+		domainNamesLOAD = new ArrayList<>();
 	}
 }

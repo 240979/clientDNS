@@ -1,0 +1,13 @@
+{
+  "duration": "3",
+  "domain": "idnes.cz;bbc.com",
+  "record": "A",
+  "ipv4": true,
+  "recursive": true,
+  "protocol": "UDP",
+  "holdConnection": false,
+  "cooldown": 500,
+  "do": false,
+  "ad": false,
+  "cd": false
+}
