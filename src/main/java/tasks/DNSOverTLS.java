@@ -8,11 +8,8 @@ import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.EmptyByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFactory;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
@@ -28,14 +25,11 @@ import lombok.Getter;
 import lombok.Setter;
 import models.DoTClientInitializer;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.json.simple.parser.ParseException;
 import tasks.runnables.RequestResultsUpdateRunnable;
 
 import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.UnsupportedEncodingException;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 

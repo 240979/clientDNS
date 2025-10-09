@@ -6,7 +6,6 @@ package tasks;
  * */
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
-import enums.RESPONSE_MDNS_TYPE;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
@@ -16,11 +15,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.simple.parser.ParseException;
 import tasks.runnables.ProgressUpdateRunnable;
 import tasks.runnables.RequestResultsUpdateRunnable;
-import tasks.runnables.StopProgressBar;
 
-import javax.net.ssl.SSLException;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 

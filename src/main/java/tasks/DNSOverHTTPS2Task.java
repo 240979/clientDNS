@@ -2,11 +2,9 @@ package tasks;
 
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
-import enums.RESPONSE_MDNS_TYPE;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
-import models.MessageParser;
 import org.json.simple.parser.ParseException;
 import tasks.runnables.RequestResultsUpdateRunnable;
 
@@ -17,7 +15,6 @@ import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;

@@ -26,14 +26,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import tasks.runnables.RequestResultsUpdateRunnable;
-import tasks.runnables.StopProgressBar;
 
-import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Set;

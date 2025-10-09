@@ -8,7 +8,6 @@ package tasks;
 import com.google.gson.GsonBuilder;
 import enums.*;
 import exceptions.*;
-import io.netty.channel.socket.ChannelOutputShutdownException;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
