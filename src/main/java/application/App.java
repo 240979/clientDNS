@@ -15,6 +15,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import models.Ip;
 import models.Language;
+import models.LoggerInitializer;
 import models.Settings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import ui.GeneralController;
@@ -37,6 +38,7 @@ public class App extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			LoggerInitializer.init();
 			// load language
 			GeneralController.getLanguage().changeLanguageBundle(true);
 			this.language = new Language();
@@ -81,6 +83,7 @@ public class App extends Application {
 			// show scene
 			App.stage = newStage;
 			newStage.show();
+
 
 		} catch (Exception e) {
 			//e.printStackTrace();
