@@ -11,8 +11,8 @@ public class DnsRecordNS extends DnsRecordCNAME {
 
 	private static String KEY_NAMESERVER = "NameServer";
 
-	public DnsRecordNS(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordNS(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 	}
 
 	@Override
@@ -25,8 +25,7 @@ public class DnsRecordNS extends DnsRecordCNAME {
 
 	@Override
 	public String[] getValesForTreeItem() {
-		String[] pole = { KEY_NAMESERVER + ": " + name, };
-		return pole;
+        return new String[]{ KEY_NAMESERVER + ": " + name, };
 	}
 
 	@Override

@@ -17,8 +17,8 @@ public class DnsRecordCAA extends DnsRecord {
 	private static final String KEY_TAG = "Tag";
 	private static final String KEY_VALUE = "Value";
 
-	public DnsRecordCAA(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordCAA(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 		tag = "";
 		value = "";
 		parse();
@@ -33,7 +33,7 @@ public class DnsRecordCAA extends DnsRecord {
 		}
 		currentIndex += tagLenght;
 
-		for (int i = currentIndex; i < startIndex + lenght; i++) {
+		for (int i = currentIndex; i < startIndex + length; i++) {
 			value += (char) rawMessage[i];
 		}
 	}
@@ -56,8 +56,7 @@ public class DnsRecordCAA extends DnsRecord {
 
 	@Override
 	public String[] getValesForTreeItem() {
-		String[] pole = { KEY_CERTIFICATE_FLAG + ": " + flag, KEY_TAG + ": " + tag, KEY_VALUE + ": " + value };
-		return pole;
+        return new String[]{ KEY_CERTIFICATE_FLAG + ": " + flag, KEY_TAG + ": " + tag, KEY_VALUE + ": " + value };
 	}
 
 	@Override

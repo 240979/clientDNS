@@ -14,7 +14,7 @@ public class DnsRecordNSEC3PARAM extends DnsRecord {
 
 	private DIGEST_TYPE hash;
 	private UInt16 iteration;
-	private int saltLenght;
+	private int saltLength;
 	private byte flags;
 	private String salt;
 	private static final String KEY_HASH_TYPE = "HASH_TYPE";
@@ -23,8 +23,8 @@ public class DnsRecordNSEC3PARAM extends DnsRecord {
 	private static final String KEY_SALT = "SALT";
 	private static final String KEY_SALT_LENGHT = "SALT_LENGHT";
 
-	public DnsRecordNSEC3PARAM(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordNSEC3PARAM(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 		salt = "";
 		parseRecord();
 	}
@@ -36,9 +36,9 @@ public class DnsRecordNSEC3PARAM extends DnsRecord {
 
 		iteration = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
 		currentIndex += 2;
-		saltLenght = (int) rawMessage[currentIndex];
+		saltLength = (int) rawMessage[currentIndex];
 		currentIndex += 1;
-		for (int i = currentIndex; i < currentIndex + saltLenght; i++) {
+		for (int i = currentIndex; i < currentIndex + saltLength; i++) {
 			salt += String.format("%02x", rawMessage[i]);
 		}
 	}
@@ -51,7 +51,7 @@ public class DnsRecordNSEC3PARAM extends DnsRecord {
 		object.put(KEY_FLAGS, (int) flags);
 		object.put(KEY_ITERATION, iteration.getValue());
 		object.put(KEY_SALT, salt);
-		object.put(KEY_SALT_LENGHT, saltLenght);
+		object.put(KEY_SALT_LENGHT, saltLength);
 		return object;
 	}
 
@@ -59,7 +59,7 @@ public class DnsRecordNSEC3PARAM extends DnsRecord {
 	public String[] getValesForTreeItem() {
 		String response[] = new String[] { KEY_HASH_TYPE + ": " + hash, KEY_FLAGS + ": " + flags,
 				KEY_ITERATION + ": " + iteration.getValue(), KEY_SALT + ": " + salt,
-				KEY_SALT_LENGHT + ": " + saltLenght, };
+				KEY_SALT_LENGHT + ": " + saltLength, };
 
 		return response;
 	}

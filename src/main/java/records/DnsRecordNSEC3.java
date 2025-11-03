@@ -17,7 +17,7 @@ public class DnsRecordNSEC3 extends DnsRecordNSEC {
 	private UInt16 iteration;
 	private int saltLenght;
 	private String salt;
-	private int hashLenght;
+	private int hashLength;
 	private String name;
 	private static final String KEY_HASH_TYPE = "HASH_TYPE";
 	private static final String KEY_FLAGS = "FLAGS";
@@ -27,8 +27,8 @@ public class DnsRecordNSEC3 extends DnsRecordNSEC {
 	private static final String KEY_HASH_LENGHT = "HASH_LENGHT";
 	private static final String KEY_NEXT_OWNER_HASH = "NEXT_DOMAIN_HASH";
 
-	public DnsRecordNSEC3(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex, true);
+	public DnsRecordNSEC3(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex, true);
 		salt = "";
 		name = "";
 		parseRecord();
@@ -48,12 +48,12 @@ public class DnsRecordNSEC3 extends DnsRecordNSEC {
 		}
 
 		currentIndex += saltLenght;
-		hashLenght = (int) rawMessage[currentIndex];
+		hashLength = (int) rawMessage[currentIndex];
 		currentIndex += 1;
-		for (int i = currentIndex; i < currentIndex + hashLenght; i++) {
+		for (int i = currentIndex; i < currentIndex + hashLength; i++) {
 			name += String.format("%02x", rawMessage[i]);
 		}
-		currentIndex = currentIndex + hashLenght;
+		currentIndex = currentIndex + hashLength;
 		parseTypeBits(currentIndex);
 
 	}
@@ -78,7 +78,7 @@ public class DnsRecordNSEC3 extends DnsRecordNSEC {
 		object.put(KEY_ITERATION, iteration.getValue());
 		object.put(KEY_SALT, salt);
 		object.put(KEY_SALT_LENGHT, saltLenght);
-		object.put(KEY_HASH_LENGHT, hashLenght);
+		object.put(KEY_HASH_LENGHT, hashLength);
 		object.put(KEY_NEXT_OWNER_HASH, name);
 		object.put(KEY_TYPE_BITS, recordsTypes);
 		return object;
@@ -93,7 +93,7 @@ public class DnsRecordNSEC3 extends DnsRecordNSEC {
 		response[2] = KEY_ITERATION + ": " + iteration.getValue();
 		response[3] = KEY_SALT + ": " + salt;
 		response[4] = KEY_SALT_LENGHT + ": " + saltLenght;
-		response[5] = KEY_HASH_LENGHT + ": " + hashLenght;
+		response[5] = KEY_HASH_LENGHT + ": " + hashLength;
 		response[6] = KEY_NEXT_OWNER_HASH + ": " + name;
 		int i = 7;
 		for (Q_COUNT count : recordsTypes) {

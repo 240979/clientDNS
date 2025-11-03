@@ -7,8 +7,8 @@ package records;
 
 public class DnsRecordPTR extends DnsRecordCNAME {
 
-	public DnsRecordPTR(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordPTR(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 	}
 
 }

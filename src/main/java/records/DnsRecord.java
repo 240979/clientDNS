@@ -8,12 +8,12 @@ package records;
 import org.json.simple.JSONObject;
 
 public class DnsRecord {
-	protected int lenght;
+	protected int length;
 	protected int startIndex;
-	protected byte rawMessage[];
+	protected byte[] rawMessage;
 
-	public DnsRecord(byte[] rawMessage, int lenght, int startIndex) {
-		this.lenght = lenght;
+	public DnsRecord(byte[] rawMessage, int length, int startIndex) {
+		this.length = length;
 		this.rawMessage = rawMessage;
 		this.startIndex = startIndex;
 	}
@@ -30,8 +30,8 @@ public class DnsRecord {
 		return null;
 	}
 
-	public int getLenght() {
-		return lenght;
+	public int getLength() {
+		return length;
 	}
 
 	public String getDataForTreeViewName() {
@@ -52,9 +52,8 @@ public class DnsRecord {
 	}
 
 	protected byte[] get4bytes(int currentIndex) {
-		byte[] ttlBytes = { rawMessage[currentIndex], rawMessage[currentIndex + 1], rawMessage[currentIndex + 2],
-				rawMessage[currentIndex + 3] };
-		return ttlBytes;
+        return new byte[]{ rawMessage[currentIndex], rawMessage[currentIndex + 1], rawMessage[currentIndex + 2],
+                rawMessage[currentIndex + 3] };
 	}
 
 }

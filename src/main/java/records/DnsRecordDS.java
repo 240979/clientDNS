@@ -23,8 +23,8 @@ public class DnsRecordDS extends DnsRecord {
 	private static final String KEY_DIGEST_TYPE = "Digest type";
 	private static final String KEY_HASH = "Key hash";
 
-	public DnsRecordDS(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordDS(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 		hash = "";
 		parse();
 	}
@@ -36,7 +36,7 @@ public class DnsRecordDS extends DnsRecord {
 		currentIndex++;
 		digestType = DIGEST_TYPE.getTypeByCode(rawMessage[currentIndex]);
 		currentIndex++;
-		for (int i = currentIndex; i < startIndex + lenght; i++) {
+		for (int i = currentIndex; i < startIndex + length; i++) {
 			hash += String.format("%02x", rawMessage[i]);
 		}
 	}

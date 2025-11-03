@@ -15,15 +15,15 @@ public class DnsRecordA extends DnsRecord {
 	protected String ipAddressAsString;
 	protected String KEY_ADDRESS = "Ipv4";
 
-	public DnsRecordA(byte[] rawMessage, int lenght, int startIndex) throws UnknownHostException {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordA(byte[] rawMessage, int length, int startIndex) throws UnknownHostException {
+		super(rawMessage, length, startIndex);
 		parseRecord();
 	}
 
 	private void parseRecord() throws UnknownHostException {
-		byte data[] = new byte[lenght];
+		byte[] data = new byte[length];
 		int j = 0;
-		for (int i = startIndex; i < startIndex + lenght; i++) {
+		for (int i = startIndex; i < startIndex + length; i++) {
 			data[j] = rawMessage[i];
 			j++;
 		}
@@ -52,8 +52,7 @@ public class DnsRecordA extends DnsRecord {
 
 	@Override
 	public String[] getValesForTreeItem() {
-		String[] pole = { toString() };
-		return pole;
+        return new String[]{ toString() };
 	}
 
 	@Override

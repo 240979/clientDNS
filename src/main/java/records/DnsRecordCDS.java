@@ -6,7 +6,7 @@ package records;
  * */
 public class DnsRecordCDS extends DnsRecordDS {
 
-    public DnsRecordCDS(byte[] rawMessage, int lenght, int startIndex) {
-        super(rawMessage, lenght, startIndex);
+    public DnsRecordCDS(byte[] rawMessage, int length, int startIndex) {
+        super(rawMessage, length, startIndex);
     }
 }

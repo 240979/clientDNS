@@ -18,8 +18,8 @@ public class DnsRecordMX extends DnsRecord {
 	private static final String KEY_MAIL_EXCHANGE = "Mail exchange";
 
 	// private static final String KEY_SERV
-	public DnsRecordMX(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordMX(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 		parse();
 	}
 
@@ -47,8 +47,7 @@ public class DnsRecordMX extends DnsRecord {
 
 	@Override
 	public String[] getValesForTreeItem() {
-		String[] pole = { KEY_PRIORITY + ": " + priority.getValue(), KEY_MAIL_EXCHANGE + ": " + nameServer };
-		return pole;
+        return new String[]{ KEY_PRIORITY + ": " + priority.getValue(), KEY_MAIL_EXCHANGE + ": " + nameServer };
 	}
 
 	@Override

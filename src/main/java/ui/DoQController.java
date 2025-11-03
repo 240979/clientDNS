@@ -95,7 +95,7 @@ public class DoQController extends GeneralController{
             return;
         try{
 
-            String dnsServIp = getDnsServerIp();  // DnsServerIpIsNotValidException | UnknownHostException | NoIpAddrForDomainName | NotValidDomainNameException
+            String dnsServIp = getDnsServerIp();  // Throws: DnsServerIpIsNotValidException | UnknownHostException | NoIpAddrForDomainName | NotValidDomainNameException
             if (dnsServIp == null || dnsServIp.isBlank()) {  // If no DNS server was chosen by radiobutton, then do not bother running
                 Platform.runLater(()->sendButton.setText(getButtonText()));
                 return;
@@ -104,9 +104,9 @@ public class DoQController extends GeneralController{
             this.resolverPort = dnsServPort;
             String dnsServName = getDnsServerDomainName(dnsServIp);
             LOGGER.info(dnsServIp + ":" + dnsServPort);
-            Q_COUNT[] records = getRecordTypes(); // exceptions.MoreRecordsTypesWithPTRException, exceptions.NonRecordSelectedException
+            Q_COUNT[] records = getRecordTypes(); // Throws: exceptions.MoreRecordsTypesWithPTRException, exceptions.NonRecordSelectedException
             TRANSPORT_PROTOCOL transport = TRANSPORT_PROTOCOL.UDP;
-            String domain = getDomain(); //java.io.UnsupportedEncodingException
+            String domain = getDomain(); // Throws: java.io.UnsupportedEncodingException
             boolean caFlag = checkingDisabledCheckBox.isSelected();
             boolean adFlag = authenticateDataCheckBox.isSelected();
             boolean doFlag = DNSSECOkCheckBox.isSelected();
@@ -140,8 +140,6 @@ public class DoQController extends GeneralController{
             Platform.runLater(()->{
                 sendButton.setText(getButtonText());
                 progressBar.setProgress(0);
-                LOGGER.severe(e.getClass().getSimpleName());
-                //showAlert(e.getClass().getSimpleName());
             });
             showAlert(e);
         }

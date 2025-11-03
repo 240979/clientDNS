@@ -8,7 +8,7 @@ GUI for DNS Client
 - IntelliJ IDEA Community Edition 2025.1.3
 
 ## Import
-- import project into IDE
+- Import project into IDE
 - Run configuration  
 - Main: application.App
 

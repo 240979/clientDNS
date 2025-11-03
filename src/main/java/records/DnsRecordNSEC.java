@@ -27,8 +27,8 @@ public class DnsRecordNSEC extends DnsRecord {
 		parseRecord();
 	}
 
-	public DnsRecordNSEC(byte[] rawMessage, int lenght, int startIndex, boolean nsec3) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordNSEC(byte[] rawMessage, int length, int startIndex, boolean nsec3) {
+		super(rawMessage, length, startIndex);
 		recordsTypes = new ArrayList<Q_COUNT>();
 	}
 
@@ -39,7 +39,7 @@ public class DnsRecordNSEC extends DnsRecord {
 	}
 
 	protected void parseTypeBits(int currentIndex) {
-		while (currentIndex < startIndex + lenght - 1) {
+		while (currentIndex < startIndex + length - 1) {
 			if (rawMessage[currentIndex] == (byte) 0x00) {
 				currentIndex = parseBits(currentIndex + 1, 0);
 			} else {
@@ -50,10 +50,10 @@ public class DnsRecordNSEC extends DnsRecord {
 	}
 
 	protected int parseBits(int currentIndex, int startValue) {
-		int lenght = (int) rawMessage[currentIndex];
+		int length = (int) rawMessage[currentIndex];
 		currentIndex++;
 		int value = startValue;
-		for (int i = currentIndex; i < currentIndex + (lenght); i++) {
+		for (int i = currentIndex; i < currentIndex + (length); i++) {
 			boolean bits[] = DataTypesConverter.byteToBoolArr(rawMessage[i], 8);
 			for (int j = bits.length - 1; j >= 0; j--) {
 				if (bits[j]) {
@@ -62,7 +62,7 @@ public class DnsRecordNSEC extends DnsRecord {
 				value++;
 			}
 		}
-		return currentIndex + lenght;
+		return currentIndex + length;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -22,7 +22,7 @@ public class DnsRecordRRSIG extends DnsRecord {
 	private Q_COUNT qcount;
 	private DNSSEC_ALGORITHM_TYPE algorithmType;
 	private int label;
-	private int orriginalTTL;
+	private int originalTTL;
 	private Date signatureExpiration;
 	private Date signatureInception;
 	private UInt16 keyTag;
@@ -39,8 +39,8 @@ public class DnsRecordRRSIG extends DnsRecord {
 	private static final String KEY_SIGNATURE = "Signature";
 	private static final String TIME_FORMAT = "dd-MM-yyyy hh:mm:ss";
 
-	public DnsRecordRRSIG(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordRRSIG(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 		name = "";
 		signature = "";
 		parse();
@@ -58,7 +58,7 @@ public class DnsRecordRRSIG extends DnsRecord {
 		label = (int) currentIndex;
 		currentIndex += 1;
 
-		orriginalTTL = ByteBuffer.wrap(get4bytes(currentIndex)).getInt();
+		originalTTL = ByteBuffer.wrap(get4bytes(currentIndex)).getInt();
 		currentIndex += 4;
 
 		signatureExpiration = new Date((long) ByteBuffer.wrap(get4bytes(currentIndex)).getInt() * 1000);
@@ -73,7 +73,7 @@ public class DnsRecordRRSIG extends DnsRecord {
 		name = DomainConvert.decodeDNS(rawMessage, currentIndex);
 		currentIndex = DomainConvert.getIndexOfLastByteOfName(rawMessage, currentIndex) + 1;
 
-		for (int i = currentIndex; i < startIndex + lenght; i++) {
+		for (int i = currentIndex; i < startIndex + length; i++) {
 			signature += String.format("%02x", rawMessage[i]);
 		}
 
@@ -86,7 +86,7 @@ public class DnsRecordRRSIG extends DnsRecord {
 		object.put(KEY_QCOUNT, qcount);
 		object.put(KEY_ALGORITHM, algorithmType);
 		object.put(KEY_LABEL, label);
-		object.put(KEY_TTL, orriginalTTL);
+		object.put(KEY_TTL, originalTTL);
 		object.put(KEY_EXPIRATION, dateFormat.format(signatureExpiration));
 		object.put(KEY_INCEPTION, dateFormat.format(signatureInception));
 		object.put(KEY_TAG, keyTag.getValue());
@@ -98,11 +98,10 @@ public class DnsRecordRRSIG extends DnsRecord {
 	@Override
 	public String[] getValesForTreeItem() {
 		DateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
-		String[] pole = { KEY_QCOUNT + ": " + qcount, KEY_ALGORITHM + ": " + algorithmType, KEY_LABEL + ": " + label,
-				KEY_TTL + ": " + orriginalTTL, KEY_EXPIRATION + ": " + dateFormat.format(signatureExpiration),
-				KEY_INCEPTION + ": " + dateFormat.format(signatureInception), KEY_TAG + ": " + keyTag.getValue(),
-				KEY_NAME + ": " + name, KEY_SIGNATURE + ": " + signature };
-		return pole;
+        return new String[]{ KEY_QCOUNT + ": " + qcount, KEY_ALGORITHM + ": " + algorithmType, KEY_LABEL + ": " + label,
+                KEY_TTL + ": " + originalTTL, KEY_EXPIRATION + ": " + dateFormat.format(signatureExpiration),
+                KEY_INCEPTION + ": " + dateFormat.format(signatureInception), KEY_TAG + ": " + keyTag.getValue(),
+                KEY_NAME + ": " + name, KEY_SIGNATURE + ": " + signature };
 	}
 
 	@Override

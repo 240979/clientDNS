@@ -21,8 +21,8 @@ public class DnsRecordSRV extends DnsRecord {
 	private static final String KEY_PORT = "Port";
 	private static final String KEY_TARGET = "Target";
 
-	public DnsRecordSRV(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordSRV(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 		parseRecord();
 	}
 
@@ -49,9 +49,8 @@ public class DnsRecordSRV extends DnsRecord {
 
 	@Override
 	public String[] getValesForTreeItem() {
-		String[] pole = { KEY_PRIORITY + ": " + priority.getValue(), KEY_WEIGHT + ": " + weight.getValue(),
-				KEY_PORT + ": " + port.getValue(), KEY_TARGET + ": " + target };
-		return pole;
+        return new String[]{ KEY_PRIORITY + ": " + priority.getValue(), KEY_WEIGHT + ": " + weight.getValue(),
+                KEY_PORT + ": " + port.getValue(), KEY_TARGET + ": " + target };
 	}
 
 	@Override

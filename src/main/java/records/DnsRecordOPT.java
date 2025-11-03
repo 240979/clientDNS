@@ -23,8 +23,8 @@ public class DnsRecordOPT extends DnsRecord {
 	private static final String KEY_DATA = "Data";
 	private static final String KEY_RETURN = "Option data";
 
-	public DnsRecordOPT(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordOPT(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 		optionCode = new ArrayList<UInt16>();
 		optionDataLenght = new ArrayList<UInt16>();
 		optionData = new ArrayList<String>();
@@ -38,8 +38,8 @@ public class DnsRecordOPT extends DnsRecord {
 
 	private void parse() {
 		int currentIndex = startIndex;
-		if (lenght > 4) {
-			while (lenght + startIndex > currentIndex) {
+		if (length > 4) {
+			while (length + startIndex > currentIndex) {
 				optionCode.add(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
 				currentIndex += 2;
 				UInt16 lenghtOption = new UInt16().loadFromBytes(rawMessage[currentIndex],

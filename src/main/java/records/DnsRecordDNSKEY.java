@@ -26,8 +26,8 @@ public class DnsRecordDNSKEY extends DnsRecord {
 	private static final String JSON_KEY_ALGORITHM_TYPE = "Algorithm";
 	private static final String JSON_PUBLIC_KEY = "Public key";
 
-	public DnsRecordDNSKEY(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordDNSKEY(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 		key = "";
 		parse();
 	}
@@ -38,7 +38,7 @@ public class DnsRecordDNSKEY extends DnsRecord {
 		keyProtocol = KEY_PROTOCOL.getTypeByCode(rawMessage[startIndex + 2]);
 		dnssecAlgorithmType = DNSSEC_ALGORITHM_TYPE.getTypeByCode(rawMessage[startIndex + 3]);
 		int currentIndex = startIndex + 4;
-		for (int i = currentIndex; i < lenght; i++) {
+		for (int i = currentIndex; i < length; i++) {
 			key += String.format("%02x", rawMessage[i]);
 		}
 	}
@@ -57,10 +57,9 @@ public class DnsRecordDNSKEY extends DnsRecord {
 
 	@Override
 	public String[] getValesForTreeItem() {
-		String[] pole = { JSON_KEY_TYPE + ": " + keyType, JSON_KEY_USAGE + ": " + keyUsage,
-				JSON_KEY_PROTOCOL + ": " + keyProtocol, JSON_KEY_ALGORITHM_TYPE + ": " + dnssecAlgorithmType,
-				JSON_PUBLIC_KEY + ": " + key };
-		return pole;
+        return new String[]{ JSON_KEY_TYPE + ": " + keyType, JSON_KEY_USAGE + ": " + keyUsage,
+                JSON_KEY_PROTOCOL + ": " + keyProtocol, JSON_KEY_ALGORITHM_TYPE + ": " + dnssecAlgorithmType,
+                JSON_PUBLIC_KEY + ": " + key };
 	}
 
 	@Override

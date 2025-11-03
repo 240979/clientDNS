@@ -5,7 +5,7 @@ package records;
  * Link - https://github.com/xramos00/DNS_client
  * */
 public class DnsRecordCDNSKEY extends DnsRecordDNSKEY {
-    public DnsRecordCDNSKEY(byte[] rawMessage, int lenght, int startIndex) {
-        super(rawMessage, lenght, startIndex);
+    public DnsRecordCDNSKEY(byte[] rawMessage, int length, int startIndex) {
+        super(rawMessage, length, startIndex);
     }
 }

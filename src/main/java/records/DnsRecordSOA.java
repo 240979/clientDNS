@@ -29,8 +29,8 @@ public class DnsRecordSOA extends DnsRecord {
 	private static final String KEY_EXPIRY = "Expiry";
 	private static final String KEY_MINIMUM = "Minimum";
 
-	public DnsRecordSOA(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordSOA(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 		parse();
 	}
 
@@ -79,10 +79,9 @@ public class DnsRecordSOA extends DnsRecord {
 
 	@Override
 	public String[] getValesForTreeItem() {
-		String[] pole = { KEY_MNAME + ": " + mname, KEY_RNAME + ": " + rname, KEY_SERIAL + ": " + serial,
-				KEY_REFRESH + ": " + refresh, KEY_RETRY + ": " + retry, KEY_EXPIRY + ": " + expire,
-				KEY_MINIMUM + ": " + minimun };
-		return pole;
+        return new String[]{ KEY_MNAME + ": " + mname, KEY_RNAME + ": " + rname, KEY_SERIAL + ": " + serial,
+                KEY_REFRESH + ": " + refresh, KEY_RETRY + ": " + retry, KEY_EXPIRY + ": " + expire,
+                KEY_MINIMUM + ": " + minimun };
 	}
 
 	@Override

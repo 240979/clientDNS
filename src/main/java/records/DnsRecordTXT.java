@@ -13,15 +13,15 @@ public class DnsRecordTXT extends DnsRecord {
 	private static final String KEY_TEXT = "Text";
 	private String stringText;
 
-	public DnsRecordTXT(byte[] rawMessage, int lenght, int startIndex) throws UnsupportedEncodingException {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordTXT(byte[] rawMessage, int length, int startIndex) throws UnsupportedEncodingException {
+		super(rawMessage, length, startIndex);
 		parse();
 	}
 
 	public void parse() throws UnsupportedEncodingException {
-		byte[] textByte = new byte[lenght - 1];
+		byte[] textByte = new byte[length - 1];
 		int j = 0;
-		for (int i = startIndex + 1; i < startIndex + lenght; i++) {
+		for (int i = startIndex + 1; i < startIndex + length; i++) {
 			textByte[j] = rawMessage[i];
 			j++;
 		}
@@ -45,8 +45,7 @@ public class DnsRecordTXT extends DnsRecord {
 
 	@Override
 	public String[] getValesForTreeItem() {
-		String[] pole = { KEY_TEXT + ": " + stringText };
-		return pole;
+        return new String[]{ KEY_TEXT + ": " + stringText };
 	}
 
 	@Override

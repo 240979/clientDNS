@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import javax.swing.filechooser.FileSystemView;
 
 import lombok.Data;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -80,7 +81,7 @@ public class Settings {
 				file.createNewFile();
 				setupJsonFile();
 			} catch (Exception e) {
-				LOGGER.severe("Could not write to file: \n" + e.toString());
+				LOGGER.severe("Could not write to file: \n" + ExceptionUtils.getStackTrace(e));
 			}
 		}
 		this.filePath = file.getPath().toString();
@@ -129,7 +130,7 @@ public class Settings {
 			jsonObject = null;
 			jsonParser = null;
 		} catch (Exception e) {
-			LOGGER.severe("Could not parse settings from file: \n" + e.toString());
+			LOGGER.severe("Could not parse settings from file: \n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 

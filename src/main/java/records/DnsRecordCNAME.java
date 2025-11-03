@@ -14,8 +14,8 @@ public class DnsRecordCNAME extends DnsRecord {
 	protected String name;
 	protected static String KEY_CNAME = "Name";
 
-	public DnsRecordCNAME(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordCNAME(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
 		parseRecord();
 	}
 
@@ -39,8 +39,7 @@ public class DnsRecordCNAME extends DnsRecord {
 
 	@Override
 	public String[] getValesForTreeItem() {
-		String[] pole = { KEY_CNAME + ": " + name };
-		return pole;
+        return new String[]{ KEY_CNAME + ": " + name };
 	}
 
 	@Override

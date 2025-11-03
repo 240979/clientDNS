@@ -11,8 +11,8 @@ import org.json.simple.JSONObject;
 
 public class DnsRecordAAAA extends DnsRecordA {
 
-	public DnsRecordAAAA(byte[] rawMessage, int lenght, int startIndex) throws UnknownHostException {
-		super(rawMessage, lenght, startIndex);
+	public DnsRecordAAAA(byte[] rawMessage, int length, int startIndex) throws UnknownHostException {
+		super(rawMessage, length, startIndex);
 		KEY_ADDRESS = "Ipv6";
 	}
 
