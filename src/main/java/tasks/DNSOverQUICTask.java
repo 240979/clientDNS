@@ -58,7 +58,14 @@ public class DNSOverQUICTask  extends DNSTaskBase{
     @Override
     protected void sendData() throws KeyStoreException, NoSuchAlgorithmException, InterruptedException, IllegalArgumentException, CancellationException, ExecutionException, ChannelOutputShutdownException {
         setStartTime(System.nanoTime());
-        OpenSsl.ensureAvailability();
+        try{
+            OpenSsl.ensureAvailability();
+        }
+        catch (UnsatisfiedLinkError error) // Because missing library is type Error, not exception I had to catch it here
+        {
+            LOGGER.severe("Missing BoringSSL native!");
+            throw new ExecutionException(error); // Recast it as exception so it can be caught in ui.GeneralController
+        }
 
         KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -93,8 +100,8 @@ public class DNSOverQUICTask  extends DNSTaskBase{
                 .channel();
         quicChannel = QuicChannel.newBootstrap(channel)
                 .streamHandler(new ChannelInboundHandlerAdapter())
-                //.remoteAddress(new InetSocketAddress(resolver, resolverPort)) //https://gist.github.com/leiless/df17252a17503d3ebf9a04e50f163114
-                .remoteAddress(new InetSocketAddress(resolverName, resolverPort))
+                .remoteAddress(new InetSocketAddress(resolver, resolverPort)) //https://gist.github.com/leiless/df17252a17503d3ebf9a04e50f163114
+                //.remoteAddress(new InetSocketAddress(resolverName, resolverPort))
                 .connect()
                 .get();
         ChannelInitializer<QuicStreamChannel> initializer = new DoQClientInitializer(this);
