@@ -5,8 +5,10 @@
  * */
 package records;
 
+import lombok.Getter;
 import org.json.simple.JSONObject;
 
+@Getter
 public class DnsRecord {
 	protected int length;
 	protected int startIndex;
@@ -30,23 +32,11 @@ public class DnsRecord {
 		return null;
 	}
 
-	public int getLength() {
-		return length;
-	}
-
-	public String getDataForTreeViewName() {
+    public String getDataForTreeViewName() {
 		return "";
 	}
 
-	public int getStartIndex() {
-		return startIndex;
-	}
-
-	public byte[] getRawMessage() {
-		return rawMessage;
-	}
-
-	// Has to be overided in the children
+    // Has to be overided in the children
 	public String getDataAsString() {
 		return null;
 	}

@@ -63,7 +63,7 @@ public class DNSOverUDPTask extends DNSTaskBase{
                     throw new TimeoutException();
                 }
 
-                DatagramPacket responsePacket = new DatagramPacket(getRecieveReply(), getRecieveReply().length);
+                DatagramPacket responsePacket = new DatagramPacket(getReceiveReply(), getReceiveReply().length);
                 DatagramPacket datagramPacket = new DatagramPacket(getMessageAsBytes(), getMessageAsBytes().length, getIp(), DNSTaskBase.DNS_PORT);
                 // DatagramPacket datagramPacket = new Data
                 datagramSocket.setSoTimeout(DNSTaskBase.TIME_OUT_MILLIS);

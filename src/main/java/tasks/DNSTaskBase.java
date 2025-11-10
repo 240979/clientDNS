@@ -57,7 +57,7 @@ public abstract class DNSTaskBase extends Task<Void> {
     protected String resolver;
     int size;
     protected Socket socket;
-    protected byte[] recieveReply;
+    protected byte[] receiveReply;
     protected boolean doFlag;
     protected TreeItem<String> root;
     protected long startTime;
@@ -182,10 +182,10 @@ public abstract class DNSTaskBase extends Task<Void> {
     }
 
     public void setReceiveReply(byte[] receiveReply) {
-        this.recieveReply = receiveReply;
+        this.receiveReply = receiveReply;
         //System.out.println("setReceiveReply " + receiveReply.length);
         LOGGER.info("setReceiveReply " + receiveReply.length);
-        byteSizeResponse = this.recieveReply.length;
+        byteSizeResponse = this.receiveReply.length;
     }
 
     public void stopExecution(){}
@@ -254,7 +254,7 @@ public abstract class DNSTaskBase extends Task<Void> {
             this.ip = InetAddress.getByName(resolverIP);
         }
         this.resolver = resolverIP;
-        this.recieveReply = new byte[1232];
+        this.receiveReply = new byte[1232];
         this.doFlag = doFlag;
         this.adFlag = adFlag;
         this.qcountTypes = types;
@@ -425,7 +425,7 @@ public abstract class DNSTaskBase extends Task<Void> {
             sendData();
             //Thread.sleep(500);
             //System.out.println("Taskbase " + recieveReply.length);
-            LOGGER.info("Taskbase " + recieveReply.length);
+            LOGGER.info("Taskbase " + receiveReply.length);
             setTaskProgress(0.8);
             parser = parseResponse();
             // parse received message
@@ -508,7 +508,7 @@ public abstract class DNSTaskBase extends Task<Void> {
     }
 
     protected MessageParser parseResponse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
-        parser = new MessageParser(getRecieveReply(), getHeader(), getTransport_protocol());
+        parser = new MessageParser(getReceiveReply(), getHeader(), getTransport_protocol());
         parser.parse();
         return parser;
     }

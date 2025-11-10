@@ -55,7 +55,7 @@ public class DNSOverLinkLocal extends DNSTaskBase{
                 startTime = System.nanoTime();
                 setStartTime(startTime);
                 socket.setSoTimeout(TIME_OUT_MILLIS);
-                DatagramPacket receivePacket = new DatagramPacket(getRecieveReply(), getRecieveReply()
+                DatagramPacket receivePacket = new DatagramPacket(getReceiveReply(), getReceiveReply()
                         .length,socket.getLocalAddress(),socket.getLocalPort());
                 socket.send(datagramPacket);
                 // first receive to consume ICMP message
@@ -127,7 +127,7 @@ public class DNSOverLinkLocal extends DNSTaskBase{
      */
     @Override
     protected MessageParser parseResponse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
-        MessageParser parser = new MessageParser(getRecieveReply(),getHeader(),getTransport_protocol());
+        MessageParser parser = new MessageParser(getReceiveReply(),getHeader(),getTransport_protocol());
         parser.parseLLMNR();
         return parser;
     }
