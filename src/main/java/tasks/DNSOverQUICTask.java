@@ -35,15 +35,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class DNSOverQUICTask  extends DNSTaskBase{
-    private QuicSslContext context;
-    private QuicSslContext insecureContext;
-    private EventLoopGroup group;
-    private Bootstrap udpBootstrap;
-    private Channel channel;
-    private QuicChannelBootstrap bootstrap;
-    private ChannelHandler codec;
-    private QuicChannel quicChannel;
-    private QuicStreamChannel stream;
     private int resolverPort;
     private String resolverName;
     @Getter
@@ -70,42 +61,42 @@ public class DNSOverQUICTask  extends DNSTaskBase{
         KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(trustStore);
-
-        context = QuicSslContextBuilder.forClient()
+        QuicSslContext context = QuicSslContextBuilder.forClient()
                 .applicationProtocols("doq")
                 .trustManager(tmf) //tmf from JDK
-                .keylog(true) //enable logging keys
+                .keylog(true) //enable logging keys -- does not work?
                 .build();
-        insecureContext = QuicSslContextBuilder.forClient()
+        // don't check anything
+        QuicSslContext insecureContext = QuicSslContextBuilder.forClient()
                 .applicationProtocols("doq")
                 .trustManager(InsecureTrustManagerFactory.INSTANCE) // don't check anything
                 .keylog(true)
                 .build();
-        group = new NioEventLoopGroup();
+        EventLoopGroup group = new NioEventLoopGroup();
 
-        codec = new QuicClientCodecBuilder()
+        ChannelHandler codec = new QuicClientCodecBuilder()
                 .sslContext(insecureContext)
                 //.sslContext(context)
                 .maxIdleTimeout(5, TimeUnit.SECONDS) // https://github.com/netty/netty-incubator-codec-quic/blob/main/codec-native-quic/src/test/java/io/netty/incubator/codec/quic/example/QuicClientExample.java
                 .initialMaxData(65535)
                 .initialMaxStreamDataBidirectionalLocal(1000000)
                 .build();
-        udpBootstrap = new Bootstrap();
-        channel = udpBootstrap
+        Bootstrap udpBootstrap = new Bootstrap();
+        Channel channel = udpBootstrap
                 .group(group)
                 .channel(NioDatagramChannel.class)
                 .handler(codec)
                 .bind(0)
                 .sync()
                 .channel();
-        quicChannel = QuicChannel.newBootstrap(channel)
+        QuicChannel quicChannel = QuicChannel.newBootstrap(channel)
                 .streamHandler(new ChannelInboundHandlerAdapter())
                 .remoteAddress(new InetSocketAddress(resolver, resolverPort)) //https://gist.github.com/leiless/df17252a17503d3ebf9a04e50f163114
                 //.remoteAddress(new InetSocketAddress(resolverName, resolverPort))
                 .connect()
                 .get();
         ChannelInitializer<QuicStreamChannel> initializer = new DoQClientInitializer(this);
-        stream = quicChannel.createStream(QuicStreamType.BIDIRECTIONAL, initializer)
+        QuicStreamChannel stream = quicChannel.createStream(QuicStreamType.BIDIRECTIONAL, initializer)
                 .sync()
                 .getNow();
 
@@ -119,7 +110,6 @@ public class DNSOverQUICTask  extends DNSTaskBase{
 
         setWasSend(true);
         //Thread.sleep(5000);
-
         while (notFinished) {
             Thread.sleep(10); // A lock would be better, but this works and I do not think, that it makes a difference
         }

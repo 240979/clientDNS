@@ -8,6 +8,7 @@ package models;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.DNSOverQUICTask;
 import tasks.DNSOverTLS;
 import tasks.DNSTaskBase;
@@ -16,10 +17,10 @@ import static tasks.DNSTaskBase.LOGGER;
 
 public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
-    DNSTaskBase dnsTaskBase;
+    private DNSTaskBase task;
 
     public DnsOverSecureProtocolHandler(DNSTaskBase dnsTask){
-        this.dnsTaskBase = dnsTask;
+        this.task = dnsTask;
     }
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) {
@@ -35,8 +36,8 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
         ByteBuf dnsBuf = byteBuf.readBytes(length);
         byte[] pck = new byte[dnsBuf.readableBytes()];
         dnsBuf.readBytes(pck);
-        dnsTaskBase.setReceiveReply(pck);
-        switch (dnsTaskBase) {
+        task.setReceiveReply(pck);
+        switch (task) {
             case DNSOverTLS dnsOverTLS -> dnsOverTLS.setNotFinished(false);
             case DNSOverQUICTask dnsOverQUICTask -> dnsOverQUICTask.setNotFinished(false);
             case null, default -> {
@@ -45,7 +46,8 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
     }
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         //cause.printStackTrace();
-        LOGGER.severe(cause.toString());
+        // LOGGER.severe(cause.toString());
+        LOGGER.severe(ExceptionUtils.getStackTrace(cause));
         ctx.close();
     }
     @Override

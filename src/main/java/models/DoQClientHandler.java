@@ -12,7 +12,7 @@ import tasks.DNSTaskBase;
 import static tasks.DNSTaskBase.LOGGER;
 
 public class DoQClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
-    DNSTaskBase dnsTaskBase;
+    private DNSTaskBase dnsTaskBase;
 
     public DoQClientHandler(DNSTaskBase dnsTask){
         this.dnsTaskBase = dnsTask;
