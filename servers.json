@@ -4,8 +4,7 @@
         "domainName":"dns.google.com",
         "ipv4":["8.8.8.8","8.8.4.4"],
         "ipv6":["2001:4860:4860::8888","2001:4860:4860::8844"],
-        "dot": true,
-        "doq": true
+        "dot": true
     },
     {
         "name":"Cloudflare",
