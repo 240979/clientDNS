@@ -1,0 +1,50 @@
+name: Build & Release Windows App
+
+on:
+  push:
+    tags:
+      - "v*"      # triggers when pushing a version tag like v1.2.0
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 24
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "24"
+
+      - name: Build with Maven (Windows)
+        run: mvn -B clean package
+
+      - name: Upload build artifacts (JAR, EXE, config files)
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: |
+            target/*.jar
+            target/clientDNS/**
+  
+  release:
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-build
+          path: release-files
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-files/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
