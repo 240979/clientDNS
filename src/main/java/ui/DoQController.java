@@ -102,7 +102,6 @@ public class DoQController extends GeneralController{
             }
             int dnsServPort = getDnsServerPort(dnsServIp);
             this.resolverPort = dnsServPort;
-            String dnsServName = getDnsServerDomainName(dnsServIp);
             LOGGER.info(dnsServIp + ":" + dnsServPort);
             Q_COUNT[] records = getRecordTypes(); // Throws: exceptions.MoreRecordsTypesWithPTRException, exceptions.NonRecordSelectedException
             TRANSPORT_PROTOCOL transport = TRANSPORT_PROTOCOL.UDP;
@@ -115,7 +114,7 @@ public class DoQController extends GeneralController{
                     + "\n" + "\n" + "DNSSEC: " + adFlag + "\n" + "DNSSEC sig records"
                     + doFlag + "\n" + "Transport protocol: " + transport + "\n"
                     + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS + "\n" + "Checking disabled: " + caFlag);
-            task = new DNSOverQUICTask(recursive,adFlag,caFlag,doFlag,domain,records, TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DOT,dnsServIp,dnsServName,dnsServPort, getInterface()); // NotValidIPException
+            task = new DNSOverQUICTask(recursive,adFlag,caFlag,doFlag,domain,records, TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DOT,dnsServIp, dnsServPort, getInterface()); // NotValidIPException
             task.setController(this);
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
             responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());

@@ -11,6 +11,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.ChannelOutputShutdownException;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.handler.ssl.OpenSsl;
@@ -35,16 +36,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class DNSOverQUICTask  extends DNSTaskBase{
-    private int resolverPort;
-    private String resolverName;
+    private final int resolverPort;
     @Getter
     @Setter
     private boolean notFinished = true;
 
-    public DNSOverQUICTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, String resolverName,  int resolverPort, NetworkInterface netInterface) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
+    public DNSOverQUICTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP,  int resolverPort, NetworkInterface netInterface) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
         this.resolverPort = resolverPort;
-        this.resolverName = resolverName;
     }
     @Override
     protected void sendData() throws KeyStoreException, NoSuchAlgorithmException, InterruptedException, IllegalArgumentException, CancellationException, ExecutionException, ChannelOutputShutdownException {
@@ -66,8 +65,9 @@ public class DNSOverQUICTask  extends DNSTaskBase{
                 .trustManager(tmf) //tmf from JDK
                 .keylog(true) //enable logging keys -- does not work?
                 .build();
-        // don't check anything
-        EventLoopGroup group = new NioEventLoopGroup();
+
+        // EventLoopGroup group = new NioEventLoopGroup(); // deprecated
+        EventLoopGroup group = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
 
         ChannelHandler codec = new QuicClientCodecBuilder()
                 //.sslContext(insecureContext)
