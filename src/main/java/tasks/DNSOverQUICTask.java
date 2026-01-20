@@ -58,25 +58,20 @@ public class DNSOverQUICTask  extends DNSTaskBase{
             throw new ExecutionException(error); // Recast it as exception so it can be caught in ui.GeneralController
         }
 
-        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        tmf.init(trustStore);
+        tmf.init((KeyStore) null); // null uses the default system trust store
+
         QuicSslContext context = QuicSslContextBuilder.forClient()
                 .applicationProtocols("doq")
                 .trustManager(tmf) //tmf from JDK
                 .keylog(true) //enable logging keys -- does not work?
                 .build();
         // don't check anything
-        QuicSslContext insecureContext = QuicSslContextBuilder.forClient()
-                .applicationProtocols("doq")
-                .trustManager(InsecureTrustManagerFactory.INSTANCE) // don't check anything
-                .keylog(true)
-                .build();
         EventLoopGroup group = new NioEventLoopGroup();
 
         ChannelHandler codec = new QuicClientCodecBuilder()
-                .sslContext(insecureContext)
-                //.sslContext(context)
+                //.sslContext(insecureContext)
+                .sslContext(context)
                 .maxIdleTimeout(5, TimeUnit.SECONDS) // https://github.com/netty/netty-incubator-codec-quic/blob/main/codec-native-quic/src/test/java/io/netty/incubator/codec/quic/example/QuicClientExample.java
                 .initialMaxData(65535)
                 .initialMaxStreamDataBidirectionalLocal(1000000)
