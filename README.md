@@ -2,8 +2,8 @@
 GUI for DNS Client
 
 ## Setup
-- JAVA version 24
-- JAVAFX SDK version 24.0.2
+- JAVA version 25
+- JAVAFX SDK version 25
 - GLUON Scene Builder
 - IntelliJ IDEA Community Edition 2025.1.3
 
