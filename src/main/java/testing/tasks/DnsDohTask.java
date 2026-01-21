@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -85,11 +86,17 @@ public class DnsDohTask extends DNSOverHTTPSTask {
                     Platform.runLater(() -> ((TesterController) controller).getResultsTableView().refresh());
                     // waiting between requests
                     Thread.sleep(cooldown);
-                } catch (IOException | NotValidIPException |
-                        NotValidDomainNameException | MessageTooBigForUDPException |
-                        QueryIdNotMatchException | InterfaceDoesNotHaveIPAddressException |
-                        OtherHttpException | ParseException | HttpCodeException |
-                        TimeoutException e) {
+                } catch (IOException
+                         | NotValidIPException
+                         | NotValidDomainNameException
+                         | MessageTooBigForUDPException
+                         | QueryIdNotMatchException
+                         | InterfaceDoesNotHaveIPAddressException
+                         | OtherHttpException
+                         | ParseException
+                         | HttpCodeException
+                         | TimeoutException
+                         | NoSuchAlgorithmException e) {
                     result.getExceptions().add(e);
                     result.getSuccess().add(false);
                 }
