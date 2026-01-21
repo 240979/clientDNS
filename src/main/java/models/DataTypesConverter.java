@@ -8,7 +8,7 @@ package models;
 public class DataTypesConverter {
 
 	public static boolean[] byteToBoolArr(byte j, int size) {
-		boolean boolArr[] = new boolean[8];
+		boolean[] boolArr = new boolean[8];
 		for (int i = 0; i < 8; i++)
 			boolArr[i] = (j & (byte) (128 / Math.pow(2, i))) != 0;
 		for (int i = 0; i < boolArr.length / 2; i++) {
@@ -33,7 +33,7 @@ public class DataTypesConverter {
 		return slice;
 	}
 
-	public static byte booleanArrayAsbyte(boolean[] boolArray) {
+	public static byte booleanArrayAsByte(boolean[] boolArray) {
 		int res = 0;
 		for (int i = boolArray.length - 1; i >= 0; i--) {
 			if (boolArray[i]) {

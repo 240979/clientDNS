@@ -2,9 +2,7 @@ package ui;
 
 import application.Config;
 import enums.APPLICATION_PROTOCOL;
-import enums.DOH_FORMAT;
 import enums.Q_COUNT;
-import enums.WIRESHARK_FILTER;
 import exceptions.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -12,22 +10,15 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import models.DomainConvert;
 import models.Ip;
 import models.NameServer;
 import models.WiresharkFilter;
-import org.w3c.dom.Text;
-import tasks.DNSOverHTTPS2Task;
 import tasks.DNSOverHTTPSTask;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.net.UnknownHostException;
-import java.util.List;
 
 public class DoHController extends GeneralController {
 
@@ -85,10 +76,6 @@ public class DoHController extends GeneralController {
 
         setLanguageRadioButton();
         // TODO add option for custom DNS server
-    }
-
-    public void setLabels() {
-
     }
 
     private void setWiresharkUserData() {
@@ -219,8 +206,8 @@ public class DoHController extends GeneralController {
             serverIp = (String) userDataObject;
         } else if (userDataObject instanceof NameServer) {
             serverIp = IPv4RadioButton.isSelected() ?
-                    ((NameServer) userDataObject).getIpv4().get(0) :
-                    ((NameServer) userDataObject).getIpv6().get(0);
+                    ((NameServer) userDataObject).getIpv4().getFirst() :
+                    ((NameServer) userDataObject).getIpv6().getFirst();
         } else if (userDataObject instanceof ToggleGroup) {
             ToggleGroup group = (ToggleGroup) userDataObject;
             Toggle selectedAddress = group.getSelectedToggle();
@@ -264,9 +251,9 @@ public class DoHController extends GeneralController {
      * Body of method taken from Martin Biolek thesis and modified
      * */
     private void logRequest(boolean dnssec, boolean signatures, String domain, Q_COUNT[] qcount, String resolverURL) {
-        String records = "";
+        StringBuilder records = new StringBuilder();
         for (Q_COUNT q_COUNT : qcount) {
-            records += q_COUNT + ",";
+            records.append(q_COUNT).append(",");
         }
         //LOGGER.info("DoH:\n " + "dnssec: " + dnssec + "\n" + "signatures: " + signatures + "\n" + "domain: " + domain
        //         + "\n" + "records: " + records + "\n" + "resovlerURL: " + resolverURL);

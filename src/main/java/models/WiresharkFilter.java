@@ -32,7 +32,7 @@ public class WiresharkFilter
         return sub.replace(template);
     }
 
-    public class Parameters
+    public static class Parameters
     {
         public static final String TCPPORT = "tcpPort";
         public static final String UDPPORT = "udpPort";

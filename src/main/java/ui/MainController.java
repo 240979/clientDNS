@@ -171,7 +171,7 @@ public class MainController extends GeneralController
             defaultFilePaths.put(Config.GENERALCONFIG,"/backup/GeneralConfig.json");
             defaultFilePaths.put(Config.LOADTESTCONFIG,"/backup/LoadTestConfig.json");
         }
-        String files[] = {Config.ROOTSERVERSDOMAINNAMES, Config.SERVERSDOMAINNAMES, Config.GENERALCONFIG, Config.LOADTESTCONFIG};
+        String[] files = {Config.ROOTSERVERSDOMAINNAMES, Config.SERVERSDOMAINNAMES, Config.GENERALCONFIG, Config.LOADTESTCONFIG};
 
 
         for (String file : files)

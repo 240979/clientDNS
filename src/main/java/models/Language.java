@@ -34,11 +34,4 @@ public class Language {
 		LOGGER.info("Changing language: " + currentLanguage);
 	}
 
-	public ResourceBundle getLanguageBundle() {
-		return languageBundle;
-	}
-
-	public String getCurrentLanguage() {
-		return currentLanguage;
-	}
 }

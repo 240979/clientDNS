@@ -34,7 +34,7 @@ public class TCPConnection {
 		responseMessage = null;
 	}
 
-	public byte[] send(byte messagesAsBytes[], InetAddress ip, boolean closeConnection, NetworkInterface netInterface)
+	public byte[] send(byte[] messagesAsBytes, InetAddress ip, boolean closeConnection, NetworkInterface netInterface)
 			throws TimeoutException, IndexOutOfBoundsException, IOException, CouldNotUseHoldConnectionException,
 			InterfaceDoesNotHaveIPAddressException {
 		this.netIntreface = netInterface;

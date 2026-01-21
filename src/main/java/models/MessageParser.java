@@ -146,9 +146,9 @@ public class MessageParser {
 
 		main.getChildren().add(header.getAsTreeItem());
 		addRequestToTreeItem();
-		addResponsToTreeItem(ancountResponses, KEY_ANSWERS);
-		addResponsToTreeItem(nscountResponses, KEY_AUTHORITY);
-		addResponsToTreeItem(arcountResponses, KEY_ADDITIONAL_RECORDS);
+		addResponseToTreeItem(ancountResponses, KEY_ANSWERS);
+		addResponseToTreeItem(nscountResponses, KEY_AUTHORITY);
+		addResponseToTreeItem(arcountResponses, KEY_ADDITIONAL_RECORDS);
 		if (protocol == TRANSPORT_PROTOCOL.TCP) {
 			TreeItem<String> tcpTreeItem = new TreeItem<String>("");
 			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + (byteSizeResponse - 2)));
@@ -175,12 +175,12 @@ public class MessageParser {
 		for (String key : keys) {
 			if (key.equals(name)) {
 				JSONArray answers = (JSONArray) httpResponse.get(name);
-				for (int i = 0; i < answers.size(); i++) {
-					JSONObject record = (JSONObject) answers.get(i);
-					int value = ((Long) record.get("type")).intValue();
-					Q_COUNT recordType = Q_COUNT.getTypeByCode(new UInt16(value));
-					record.put("type", "" + recordType.code.getValue() + " //" + recordType.toString());
-				}
+                for (Object answer : answers) {
+                    JSONObject record = (JSONObject) answer;
+                    int value = ((Long) record.get("type")).intValue();
+                    Q_COUNT recordType = Q_COUNT.getTypeByCode(new UInt16(value));
+                    record.put("type", recordType.code.getValue() + " //" + recordType);
+                }
 			}
 		}
 
@@ -193,7 +193,7 @@ public class MessageParser {
 			if (flagsShortList.contains(key)) {
 				boolean value = (boolean) httpResponse.get(key);
 				int index = flagsShortList.indexOf(key);
-				httpResponse.put(key, "" + value + " //note - " + flagsLong[index]);
+				httpResponse.put(key, value + " //note - " + flagsLong[index]);
 			}
 		}
 	}
@@ -209,9 +209,9 @@ public class MessageParser {
 
 	}
 
-	private void addResponsToTreeItem(ArrayList<Response> responses, String treeItemName) {
+	private void addResponseToTreeItem(ArrayList<Response> responses, String treeItemName) {
 		TreeItem<String> item = new TreeItem<String>(treeItemName);
-		if (responses.size() != 0) {
+		if (!responses.isEmpty()) {
 			for (Response response : responses) {
 				item.getChildren().add(response.getAsTreeItem());
 			}
@@ -271,11 +271,7 @@ public class MessageParser {
 		return new GsonBuilder().setPrettyPrinting().create().toJson(getAsJson());
 	}
 
-	public int getByteSizeResponse() {
-		return byteSizeResponse;
-	}
-
-	// TODO add this method call to parsing of MDNS
+    // TODO add this method call to parsing of MDNS
 	public void checkDomainNamesWithRequest(String domainFromRequest)
 			throws ResponseDoesNotContainRequestDomainNameException {
 		String requestDomain = domainFromRequest.toLowerCase();
@@ -306,11 +302,7 @@ public class MessageParser {
 	}
 
 	private void checkCaseSensitive(String requestDomain, String responseDomain) {
-		if (requestDomain.equals(responseDomain)) {
-			mdnsDomainNameCaseSensitive = true;
-		} else {
-			mdnsDomainNameCaseSensitive = false;
-		}
+        mdnsDomainNameCaseSensitive = requestDomain.equals(responseDomain);
 	}
 
 	public boolean isCaseSensitive() {

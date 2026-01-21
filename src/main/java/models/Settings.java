@@ -65,7 +65,7 @@ public class Settings {
 	}
 
 	private void checkIfFileExistsOrCreate() {
-		String userDocumentsFolder = FileSystemView.getFileSystemView().getDefaultDirectory().getPath().toString();
+		String userDocumentsFolder = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
 
 		Path folderPath = Paths.get(userDocumentsFolder, SETTINGS_FOLDER_NAME);
 		Path filePath = Paths.get(folderPath.toString(), SETTINGS_FILE_NAME);
@@ -84,7 +84,7 @@ public class Settings {
 				LOGGER.severe("Could not write to file: \n" + ExceptionUtils.getStackTrace(e));
 			}
 		}
-		this.filePath = file.getPath().toString();
+		this.filePath = file.getPath();
 	}
 
 	@SuppressWarnings("unchecked")

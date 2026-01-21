@@ -95,7 +95,7 @@
                               <VBox prefHeight="200.0" prefWidth="100.0">
                                  <children>
                                     <TextField fx:id="domainNameTextField" maxWidth="1.7976931348623157E308" minWidth="170.0" onAction="#onDomainNameAction" promptText="Zadaj domenu" text="DESKTOP-DRUU2O9" VBox.vgrow="ALWAYS" />
-                                    <ComboBox fx:id="savedDomainNamesChoiseBox" maxWidth="1.7976931348623157E308" minWidth="170.0" onAction="#onDomainNameChoiseBoxAction" VBox.vgrow="ALWAYS" />
+                                    <ComboBox fx:id="savedDomainNamesChoiseBox" maxWidth="1.7976931348623157E308" minWidth="170.0" onAction="#onDomainNameChoiceBoxAction" VBox.vgrow="ALWAYS" />
                                  </children>
                               </VBox>
                            </content>

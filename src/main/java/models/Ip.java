@@ -22,6 +22,7 @@ import exceptions.NotValidIPException;
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
 import lombok.Data;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 @Data
 public class Ip {
@@ -36,6 +37,7 @@ public class Ip {
 			setupArrays();
 			parseDnsServersIp();
 		} catch (Exception e) {
+			LOGGER.severe(ExceptionUtils.getStackTrace(e));
 		}
 	}
 
@@ -63,7 +65,7 @@ public class Ip {
 
 	public static String getIpV6OfDomainName(String domainName) throws UnknownHostException
 	{
-		InetAddress addresses[] = InetAddress.getAllByName(domainName);
+		InetAddress[] addresses = InetAddress.getAllByName(domainName);
 		if (returnFirstInet6Address(addresses) == null)
 		{
 			return null;
@@ -85,7 +87,7 @@ public class Ip {
 
 	public static String getIpV4OfDomainName(String domainName) throws UnknownHostException
 	{
-		InetAddress addresses[] = InetAddress.getAllByName(domainName);
+		InetAddress[] addresses = InetAddress.getAllByName(domainName);
 		if (returnFirstInet4Address(addresses) == null)
 		{
 			return null;
@@ -106,18 +108,18 @@ public class Ip {
 	}
 
 	public String getIpv4DnsServer() {
-		if (ipv4DnsServers.size() == 0) {
+		if (ipv4DnsServers.isEmpty()) {
 			return "";
 		} else {
-			return ipv4DnsServers.get(0);
+			return ipv4DnsServers.getFirst();
 		}
 	}
 
 	public String getIpv6DnsServer() {
-		if (ipv6DnsServers.size() == 0) {
+		if (ipv6DnsServers.isEmpty()) {
 			return "";
 		} else {
-			return ipv6DnsServers.get(0);
+			return ipv6DnsServers.getFirst();
 		}
 	}
 

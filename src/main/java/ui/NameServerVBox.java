@@ -59,13 +59,13 @@ public class NameServerVBox extends VBox {
         IPv4radioButton.setOnMouseClicked(mouseEvent -> {
             controller.setNameServer(nameServer);
             if (IPv4ToggleButtonsHBox != null && !IPv4ToggleButtonsHBox.getChildren().isEmpty() && IPv4ToggleButtonsHBox.getChildren().stream().noneMatch(node -> ((IPToggleButton) node).isSelected())){
-                ((IPToggleButton)IPv4ToggleButtonsHBox.getChildren().get(0)).setSelected(true);
+                ((IPToggleButton)IPv4ToggleButtonsHBox.getChildren().getFirst()).setSelected(true);
             }
         });
         IPv6radioButton.setOnMouseClicked(mouseEvent -> {
             controller.setNameServer(nameServer);
             if (IPv6ToggleButtonsHBox != null && !IPv6ToggleButtonsHBox.getChildren().isEmpty() && IPv6ToggleButtonsHBox.getChildren().stream().noneMatch(node -> ((IPToggleButton) node).isSelected())){
-                ((IPToggleButton)IPv6ToggleButtonsHBox.getChildren().get(0)).setSelected(true);
+                ((IPToggleButton)IPv6ToggleButtonsHBox.getChildren().getFirst()).setSelected(true);
             }
         });
         addressGroup = new ToggleGroup();
@@ -107,7 +107,6 @@ public class NameServerVBox extends VBox {
 
         // create buttons and toggle groups for every IP
         if (nameServer.getIpv4().size() > 1) {
-            i = 0;
             IPv4AddressesGroup = new ToggleGroup();
             IPv4ToggleButtonsHBox = new HBox();
             IPv4ToggleButtonsHBox.setAlignment(Pos.CENTER_LEFT);
@@ -140,7 +139,7 @@ public class NameServerVBox extends VBox {
             IPv4ToggleButtonsHBox = null;
             IPv4ToggleButtons = null;
             // get the only IPv4 address of a DNS server
-            String ip = nameServer.getIpv4().get(0);
+            String ip = nameServer.getIpv4().getFirst();
             // store IP as user data of radio button
             IPv4radioButton.setUserData(ip);
             // show IP in Tooltip
@@ -181,7 +180,7 @@ public class NameServerVBox extends VBox {
         } else if (nameServer.getIpv6().size() == 1) {
             IPv6ToggleButtonsHBox = null;
             IPv6ToggleButtons = null;
-            String ip = nameServer.getIpv6().get(0);
+            String ip = nameServer.getIpv6().getFirst();
             IPv6radioButton.setUserData(ip);
             IPv6radioButton.setTooltip(new Tooltip("IPv6: " + ip));
         } else {
@@ -202,7 +201,7 @@ public class NameServerVBox extends VBox {
             IPv4radioButton.setSelected(true);
             // if name server has more than one IPv4 address then first from list of its addresses is selected
             if (IPv4ToggleButtonsHBox != null) {
-                ((IPToggleButton) IPv4ToggleButtonsHBox.getChildrenUnmodifiable().get(0)).setSelected(true);
+                ((IPToggleButton) IPv4ToggleButtonsHBox.getChildrenUnmodifiable().getFirst()).setSelected(true);
             }
         }
         Separator separator = new Separator();
@@ -225,7 +224,7 @@ public class NameServerVBox extends VBox {
             IPv6radioButton.setSelected(true);
             // if name server has more than one IPv4 address then first from list of its addresses is selected6
             if (IPv6ToggleButtonsHBox != null) {
-                ((IPToggleButton) IPv6ToggleButtonsHBox.getChildrenUnmodifiable().get(0)).setSelected(true);
+                ((IPToggleButton) IPv6ToggleButtonsHBox.getChildrenUnmodifiable().getFirst()).setSelected(true);
             }
         }
         Separator separator = new Separator();
@@ -267,10 +266,10 @@ public class NameServerVBox extends VBox {
     public void selectFirst(){
         IPv4radioButton.setSelected(true);
         if (IPv4ToggleButtonsHBox != null) {
-                ((IPToggleButton)IPv4ToggleButtonsHBox.getChildren().get(0)).setSelected(true);
+                ((IPToggleButton)IPv4ToggleButtonsHBox.getChildren().getFirst()).setSelected(true);
         }
         if (IPv6ToggleButtonsHBox != null) {
-            ((IPToggleButton)IPv6ToggleButtonsHBox.getChildren().get(0)).setSelected(true);
+            ((IPToggleButton)IPv6ToggleButtonsHBox.getChildren().getFirst()).setSelected(true);
         }
     }
 }

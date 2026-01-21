@@ -7,6 +7,7 @@ package models;
 
 
 import lombok.Data;
+import lombok.Getter;
 import org.json.simple.JSONObject;
 
 import enums.AUTHENTICATE_DATA;
@@ -37,7 +38,8 @@ public class Header {
 	UInt16 NsCount;
 	UInt16 ArCount;
 	private TreeItem<String> root;
-	private static final int size = 12;
+	@Getter
+    private static final int size = 12;
 
 	private static final String ID_KEY = "Id";
 	static final String QR_KEY = "Message type";
@@ -85,8 +87,8 @@ public class Header {
 		ad = AUTHENTICATE_DATA.getTypeByCode(authenticateData);
 	}
 
-	public Header(int numberOfQueris) {
-		this(false, false, numberOfQueris, true);
+	public Header(int numberOfQueries) {
+		this(false, false, numberOfQueries, true);
 		this.id = new UInt16(0);
 	}
 
@@ -94,16 +96,16 @@ public class Header {
 		root = new TreeItem<String>("Head");
 	}
 
-	public byte[] getHaderAsBytes() {
-		boolean opcodeBoolean[] = DataTypesConverter.byteToBoolArr(opCode.code, 4);
-		boolean sub1[] = { rd.code, tc.code, aa.code, opcodeBoolean[0], opcodeBoolean[1], opcodeBoolean[2],
+	public byte[] getHeaderAsBytes() {
+		boolean[] opcodeBoolean = DataTypesConverter.byteToBoolArr(opCode.code, 4);
+		boolean[] sub1 = { rd.code, tc.code, aa.code, opcodeBoolean[0], opcodeBoolean[1], opcodeBoolean[2],
 				opcodeBoolean[3], qr.code };
-		boolean rcodeBoolean[] = DataTypesConverter.byteToBoolArr(rCode.code, 4);
-		boolean sub2[] = { rcodeBoolean[0], rcodeBoolean[1], rcodeBoolean[2], rcodeBoolean[3], cd.code, ad.code, false,
+		boolean[] rcodeBoolean = DataTypesConverter.byteToBoolArr(rCode.code, 4);
+		boolean[] sub2 = { rcodeBoolean[0], rcodeBoolean[1], rcodeBoolean[2], rcodeBoolean[3], cd.code, ad.code, false,
 				ra.code };
 
-		byte result[] = { id.getAsBytes()[1], id.getAsBytes()[0], DataTypesConverter.booleanArrayAsbyte(sub1),
-				DataTypesConverter.booleanArrayAsbyte(sub2), QdCount.getAsBytes()[1], QdCount.getAsBytes()[0],
+		byte[] result = { id.getAsBytes()[1], id.getAsBytes()[0], DataTypesConverter.booleanArrayAsByte(sub1),
+				DataTypesConverter.booleanArrayAsByte(sub2), QdCount.getAsBytes()[1], QdCount.getAsBytes()[0],
 				AnCount.getAsBytes()[1], AnCount.getAsBytes()[0], NsCount.getAsBytes()[1], NsCount.getAsBytes()[0],
 				ArCount.getAsBytes()[1], ArCount.getAsBytes()[0] };
 
@@ -156,9 +158,9 @@ public class Header {
 	}
 
 	protected TreeItem<String> getFlagsAsTreeView() {
-		String flagsKeys[] = { QR_KEY, OPCODE_KEY, AA_KEY, TC_KEY, RD_KEY, CHECKING_DISABLED_KEY,
+		String[] flagsKeys = { QR_KEY, OPCODE_KEY, AA_KEY, TC_KEY, RD_KEY, CHECKING_DISABLED_KEY,
 				AUTHENTICATE_DATA__KEY, RCODE_KEY };
-		String flagsValue[] = { qr.toString(), opCode.toString(), aa.toString(), tc.toString(), rd.toString(),
+		String[] flagsValue = { qr.toString(), opCode.toString(), aa.toString(), tc.toString(), rd.toString(),
 				cd.toString(), ad.toString(), rCode.toString() };
 		TreeItem<String> main = new TreeItem<String>("Flags");
 		for (int i = 0; i < flagsValue.length; i++) {
@@ -177,13 +179,13 @@ public class Header {
 		this.tc = TC.getTypeByCode(pom1[1]);
 		this.aa = AA.getTypeByCode(pom1[2]);
 		boolean[] opcode = { pom1[3], pom1[4], pom1[5], pom1[6] };
-		this.opCode = OP_CODE.getTypeByCode(DataTypesConverter.booleanArrayAsbyte(opcode));
+		this.opCode = OP_CODE.getTypeByCode(DataTypesConverter.booleanArrayAsByte(opcode));
 		this.qr = QR.getTypeByCode(pom1[7]);
 
 		// second byte in flags
 		boolean[] pom2 = DataTypesConverter.byteToBoolArr(byteHead[3], 8);
 		boolean[] rcodeBoolean = { pom2[0], pom2[1], pom2[2], pom2[3] };
-		this.rCode = R_CODE.getTypeByCode(DataTypesConverter.booleanArrayAsbyte(rcodeBoolean));
+		this.rCode = R_CODE.getTypeByCode(DataTypesConverter.booleanArrayAsByte(rcodeBoolean));
 		this.cd = CHECKING_DISABLED.getTypeByCode(pom2[4]);
 		this.ad = AUTHENTICATE_DATA.getTypeByCode(pom2[5]);
 		this.ra = RA.getTypeByCode(pom2[7]);
@@ -193,30 +195,6 @@ public class Header {
 		this.NsCount = new UInt16().loadFromBytes(byteHead[8], byteHead[9]);
 		this.ArCount = new UInt16().loadFromBytes(byteHead[10], byteHead[11]);
 		return this;
-	}
-
-	public static int getSize() {
-		return size;
-	}
-
-	public UInt16 getId() {
-		return id;
-	}
-
-	public UInt16 getQdCount() {
-		return QdCount;
-	}
-
-	public UInt16 getAnCount() {
-		return AnCount;
-	}
-
-	public UInt16 getNsCount() {
-		return NsCount;
-	}
-
-	public UInt16 getArCount() {
-		return ArCount;
 	}
 
 }

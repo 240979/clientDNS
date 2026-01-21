@@ -182,10 +182,10 @@ public class MDNSController extends GeneralController {
         if (list.contains(Q_COUNT.PTR) && list.size() > 1) {
             throw new MoreRecordsTypesWithPTRException();
         }
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             throw new NonRecordSelectedException();
         }
-        Q_COUNT returnList[] = new Q_COUNT[list.size()];
+        Q_COUNT[] returnList = new Q_COUNT[list.size()];
         for (int i = 0; i < returnList.length; i++) {
             returnList[i] = list.get(i);
         }
@@ -236,7 +236,7 @@ public class MDNSController extends GeneralController {
     private void onDomainNameMDNSChoiseBoxAction(Event event) {
         try {
             if (!savedDomainNamesChoiseBox.getValue().equals(null)
-                    && !savedDomainNamesChoiseBox.getValue().equals("")) {
+                    && !savedDomainNamesChoiseBox.getValue().isEmpty()) {
                 domainNameTextField.setText(savedDomainNamesChoiseBox.getValue());
             }
         } catch (Exception e) {
@@ -295,7 +295,7 @@ public class MDNSController extends GeneralController {
             return;
         }
         try {
-            Q_COUNT records[] = getRecordTypes();
+            Q_COUNT[] records = getRecordTypes();
             String domain = getDomain();
             boolean multicast = unicastResponseRadioButton.isSelected();
             boolean caFlag = checkingDisabledCheckBox.isSelected();
@@ -382,7 +382,7 @@ public class MDNSController extends GeneralController {
 
     protected void autobinging(String textFromField, List<String> fullArray, ComboBox<String> box) {
         List<String> result = autobindingsStringsArray(textFromField, fullArray);
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             box.hide();
             box.getItems().removeAll(box.getItems());
             box.getItems().addAll(settings.getDomainNamesDNS());
@@ -422,9 +422,9 @@ public class MDNSController extends GeneralController {
 
     protected void controlKeys(KeyEvent e, TextField text) {
         byte b = e.getCharacter().getBytes()[0];
-        if (b == (byte) 0x08 && text.getText().length() >= 1 && isRightToLeft(text.getText())) {
+        if (b == (byte) 0x08 && !text.getText().isEmpty() && isRightToLeft(text.getText())) {
             System.out.println(text.getText());
-            text.setText(text.getText().substring(1, text.getText().length()));
+            text.setText(text.getText().substring(1));
         }
     }
 
@@ -441,12 +441,8 @@ public class MDNSController extends GeneralController {
     protected void expandAll(TreeView<String> t) {
         try {
             int i = 0;
-            while (true) {
-                if (t.getTreeItem(i).getValue() == null) {
-                    break;
-                } else {
-                    t.getTreeItem(i).setExpanded(true);
-                }
+            while (t.getTreeItem(i).getValue() != null) {
+                t.getTreeItem(i).setExpanded(true);
                 i++;
             }
         } catch (Exception e) {

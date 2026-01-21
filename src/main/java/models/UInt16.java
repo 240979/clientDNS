@@ -5,10 +5,13 @@
  * */
 package models;
 
+import lombok.Getter;
+
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
+@Getter
 public class UInt16 {
 	public static final int MAX_VALUE = 65535;
 	public static final int MIN_VALUE = 0;
@@ -25,11 +28,7 @@ public class UInt16 {
 		this.value = value;
 	}
 
-	public int getValue() {
-		return value;
-	}
-
-	public int compareTo(UInt16 other) {
+    public int compareTo(UInt16 other) {
 		return (value - other.value);
 	}
 
@@ -54,16 +53,16 @@ public class UInt16 {
 	}
 
 	public byte[] getAsBytes() {
-		byte reverse[] = ByteBuffer.allocate(2).putShort((short) value).array();
+		byte[] reverse = ByteBuffer.allocate(2).putShort((short) value).array();
 		return new byte[] { reverse[1], reverse[0] };
 	}
 
 	public String getAsHex() {
-		String res = "";
+		StringBuilder res = new StringBuilder();
 		for (byte b : getAsBytes()) {
-			res = String.format("%02x", b) + res;
+			res.insert(0, String.format("%02x", b));
 		}
-		return res;
+		return res.toString();
 	}
 
 	public UInt16 loadFromBytes(byte[] bytes) {

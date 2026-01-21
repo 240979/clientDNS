@@ -58,7 +58,8 @@ public class LLMNRController extends GeneralController {
         if (isTerminatingThread()){
             return;
         }
-        try{Q_COUNT records[] = getRecordTypes();
+        try{
+            Q_COUNT[] records = getRecordTypes();
         String domain = getDomain();
         boolean caFlag = checkingDisabledCheckBox.isSelected();
         boolean adFlag = authenticateDataCheckBox.isSelected();

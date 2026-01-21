@@ -26,6 +26,7 @@ import models.WiresharkFilter;
 import tasks.DNSOverTLS;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -248,7 +249,7 @@ public class DoTController extends GeneralController {
      * */
     private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec,
                             TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection) {
-        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + records.toString()
+        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + Arrays.toString(records)
                 + "\n" + "Recursive:" + recursive + "\n" + "DNSSEC: " + dnssec + "\n" + "DNSSEC sig records"
                 + dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n" + "Hold connection: " + holdConnection
                 + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
@@ -260,7 +261,7 @@ public class DoTController extends GeneralController {
     private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec,
                             TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection,
                             boolean checkingdisabled) {
-        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + records.toString()
+        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + Arrays.toString(records)
                 + "\n" + "Recursive:" + recursive + "\n" + "DNSSEC: " + dnssec + "\n" + "DNSSEC sig records"
                 + dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n" + "Hold connection: " + holdConnection
                 + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS + "\n" + "Checking disabled " + checkingdisabled);

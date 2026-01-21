@@ -326,10 +326,10 @@ public abstract class GeneralController {
         }
         darkModeMenuItem.setOnAction((mouseEvent) -> {
             if (GeneralController.darkMode) {
-                GeneralController.darkMode = !GeneralController.darkMode;
+                GeneralController.darkMode = false;
                 clearDarkMode();
             } else {
-                GeneralController.darkMode = !GeneralController.darkMode;
+                GeneralController.darkMode = true;
                 setDarkMode();
             }
         });
@@ -712,7 +712,7 @@ public abstract class GeneralController {
     public void showAlertMultipleExceptions(List<Exception> exceptions){
         StringBuilder stringBuilder = new StringBuilder();
         exceptions.forEach(e -> stringBuilder.append(GeneralController.getLanguage().getLanguageBundle().getString(e.getClass().getSimpleName())).append("\n"));
-        if(stringBuilder.length() == 0){
+        if(stringBuilder.isEmpty()){
             return;
         }
         Alert alert = new Alert(Alert.AlertType.ERROR, stringBuilder.toString());
@@ -760,7 +760,7 @@ public abstract class GeneralController {
     }
 
     protected void setChoiceBoxValue() {
-        if (domainNameTextField.getText() != null && !domainNameTextField.getText().equals("")) {
+        if (domainNameTextField.getText() != null && !domainNameTextField.getText().isEmpty()) {
             savedDomainNamesChoiseBox.setValue(domainNameTextField.getText());
         }
     }
@@ -807,8 +807,8 @@ public abstract class GeneralController {
     }
 
     @FXML
-    protected void onDomainNameChoiseBoxAction(ActionEvent e) {
-        if (savedDomainNamesChoiseBox.getValue() != null && !savedDomainNamesChoiseBox.getValue().equals("")) {
+    protected void onDomainNameChoiceBoxAction(ActionEvent e) {
+        if (savedDomainNamesChoiseBox.getValue() != null && !savedDomainNamesChoiseBox.getValue().isEmpty()) {
             domainNameTextField.setText(savedDomainNamesChoiseBox.getValue());
         }
     }
@@ -914,17 +914,9 @@ public abstract class GeneralController {
             NameServerVBox nsVBox = (NameServerVBox) node;
             if (ipv4) {
                 nsVBox.loadIPv4();
-                if (nsVBox.getNameServer().getIpv4().size() == 0){
-                    nsVBox.setDisable(true);
-                } else {
-                    nsVBox.setDisable(false);
-                }
+                nsVBox.setDisable(nsVBox.getNameServer().getIpv4().isEmpty());
             } else {
-                if (nsVBox.getNameServer().getIpv6().size() == 0){
-                    nsVBox.setDisable(true);
-                } else {
-                    nsVBox.setDisable(false);
-                }
+                nsVBox.setDisable(nsVBox.getNameServer().getIpv6().isEmpty());
                 nsVBox.loadIPv6();
             }
             if (DNSTaskBase.getTcp() != null) {
@@ -969,8 +961,8 @@ public abstract class GeneralController {
             serverIp = (String) userDataObject;
         } else if (userDataObject instanceof NameServer) {
             serverIp = IPv4RadioButton.isSelected() ?
-                    ((NameServer) userDataObject).getIpv4().get(0) :
-                    ((NameServer) userDataObject).getIpv6().get(0);
+                    ((NameServer) userDataObject).getIpv4().getFirst() :
+                    ((NameServer) userDataObject).getIpv6().getFirst();
         } else if (userDataObject instanceof ToggleGroup) {
             ToggleGroup group = (ToggleGroup) userDataObject;
             Toggle selectedAddress = group.getSelectedToggle();
@@ -1056,11 +1048,10 @@ public abstract class GeneralController {
         if (list.contains(Q_COUNT.PTR) && list.size() > 1) {
             throw new MoreRecordsTypesWithPTRException();
         }
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             throw new NonRecordSelectedException();
         }
-        Q_COUNT returnList[] = list.stream().toArray(Q_COUNT[]::new);
-        return returnList;
+        return list.toArray(Q_COUNT[]::new);
     }
 
     /*
@@ -1073,7 +1064,7 @@ public abstract class GeneralController {
             if (domain.equals(".")) {
                 return domain;
             }
-            if (domain == "") {
+            if (domain.isEmpty()) {
                 throw new NotValidDomainNameException();
             }
 

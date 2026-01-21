@@ -25,7 +25,7 @@ public class DomainConvert {
 	}
 
 	public static byte[] encodeDNS(String domain) throws UnsupportedEncodingException, NotValidDomainNameException {
-		if (domain.equals(null) || domain.equals("")) {
+		if (domain.equals(null) || domain.isEmpty()) {
 			return ROOT;
 		}
 		// String original = domain;
@@ -71,12 +71,12 @@ public class DomainConvert {
 
 	public static String decodeMDNS(byte[] encodedDomain, int startIndex) {
 		int passed = startIndex;
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		while (true) {
 			int size = (int) encodedDomain[passed];
 			if (size == 0) {
-				if (result.length() == 0)
-					return result;
+				if (result.isEmpty())
+					return result.toString();
 				return result.substring(0, result.length() - 1);
 			} else {
 				if (size != 1) {
@@ -86,9 +86,9 @@ public class DomainConvert {
 				}
 
 				byte[] pom = Arrays.copyOfRange(encodedDomain, passed + 1, passed + size + 1);
-				result += new String(pom, StandardCharsets.UTF_8);
+				result.append(new String(pom, StandardCharsets.UTF_8));
 				passed += size + 1;
-				result += ".";
+				result.append(".");
 			}
 		}
 	}
@@ -103,29 +103,29 @@ public class DomainConvert {
 
 	public static String decodeDNS(byte[] encodedDomain) {
 		int passed = 0;
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		while (true) {
 			int size = (int) encodedDomain[passed];
 			if (size == 0) {
 				return result.substring(0, result.length() - 1);
 			} else {
 				for (int i = passed + 1; i < passed + size + 1; i++) {
-					result += (char) encodedDomain[i];
+					result.append((char) encodedDomain[i]);
 				}
 				passed += size + 1;
-				result += ".";
+				result.append(".");
 			}
 		}
 	}
 
 	public static String decodeDNS(byte[] encodedDomain, int startIndex) {
 		int passed = startIndex;
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		while (true) {
 			int size = (int) encodedDomain[passed];
 			if (size == 0) {
-				if (result.length() == 0)
-					return result;
+				if (result.isEmpty())
+					return result.toString();
 				return result.substring(0, result.length() - 1);
 			} else {
 				if (size != 1) {
@@ -135,10 +135,10 @@ public class DomainConvert {
 				}
 
 				for (int i = passed + 1; i < passed + size + 1; i++) {
-					result += (char) encodedDomain[i];
+					result.append((char) encodedDomain[i]);
 				}
 				passed += size + 1;
-				result += ".";
+				result.append(".");
 			}
 		}
 	}

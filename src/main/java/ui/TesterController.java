@@ -192,13 +192,13 @@ public class TesterController extends GeneralController {
                         new JSONObject():(JSONObject) jsonResult.get(result.getNs().getName());
                 result.getResponses().forEach(responsesList -> {
                     JSONArray jsonResponsesArray = new JSONArray();
-                    if (responsesList.get(0).getDohData() != null){
-                        jsonObjectServer.put(result.getDomain(),responsesList.get(0).getDohData());
+                    if (responsesList.getFirst().getDohData() != null){
+                        jsonObjectServer.put(result.getDomain(),responsesList.getFirst().getDohData());
                     } else{
                         responsesList.forEach(r->{
                             jsonResponsesArray.add(r.getAsJson(APPLICATION_PROTOCOL.DNS));
                         });
-                        jsonObjectServer.put(responsesList.get(0).getDomain(),jsonResponsesArray);
+                        jsonObjectServer.put(responsesList.getFirst().getDomain(),jsonResponsesArray);
                     }
                 });
                 jsonResult.put(result.getNs().getName(),jsonObjectServer);
@@ -301,14 +301,10 @@ public class TesterController extends GeneralController {
             }
         }
         domainNameTextField.setText(loadTestConfig.getDomain());
-        List<String> rrCodes = Arrays.stream(loadTestConfig.getRecord().split(",")).collect(Collectors.toList());
+        List<String> rrCodes = Arrays.stream(loadTestConfig.getRecord().split(",")).toList();
         checkBoxArray.forEach(box -> {
             Q_COUNT q_count = (Q_COUNT) box.getUserData();
-            if (rrCodes.contains(q_count.name())) {
-                box.setSelected(true);
-            } else {
-                box.setSelected(false);
-            }
+            box.setSelected(rrCodes.contains(q_count.name()));
         });
         recursiveQueryRadioButton.setSelected(loadTestConfig.isRecursive());
         iterativeQueryRadioButton.setSelected(!loadTestConfig.isRecursive());
@@ -561,7 +557,7 @@ public class TesterController extends GeneralController {
                 nameServerVBox.getIPv4radioButton().setSelected(true);
                 if (nameServerVBox.getSelectedIP(IPv4RadioButton.isSelected()) == null) {
                     if (nameServerVBox.getIPv4ToggleButtonsHBox() != null) {
-                        ((IPToggleButton) nameServerVBox.getIPv4ToggleButtonsHBox().getChildren().get(0)).setSelected(true);
+                        ((IPToggleButton) nameServerVBox.getIPv4ToggleButtonsHBox().getChildren().getFirst()).setSelected(true);
                     } else {
                         nameServerVBox.getIPv4radioButton().setSelected(true);
                     }
@@ -570,7 +566,7 @@ public class TesterController extends GeneralController {
                 nameServerVBox.getIPv6radioButton().setSelected(true);
                 if (nameServerVBox.getSelectedIP(IPv4RadioButton.isSelected()) == null) {
                     if (nameServerVBox.getIPv6ToggleButtonsHBox() != null) {
-                        ((IPToggleButton) nameServerVBox.getIPv6ToggleButtonsHBox().getChildren().get(0)).setSelected(true);
+                        ((IPToggleButton) nameServerVBox.getIPv6ToggleButtonsHBox().getChildren().getFirst()).setSelected(true);
                     } else {
                         nameServerVBox.getIPv6radioButton().setSelected(true);
                     }
@@ -610,7 +606,7 @@ public class TesterController extends GeneralController {
             if (domain.equals(".")) {
                 return domain;
             }
-            if (domain == "") {
+            if (domain.isEmpty()) {
                 throw new NotValidDomainNameException();
             }
 

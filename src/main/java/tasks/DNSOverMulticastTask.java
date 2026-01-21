@@ -52,19 +52,19 @@ public class DNSOverMulticastTask extends DNSTaskBase {
         int curentIndex = 0;
         size += Response.getDnssecAsBytesMDNS(isDoFlag()).length;
         this.messageAsBytes = new byte[size];
-        byte head[] = header.getHaderAsBytes();
+        byte head[] = header.getHeaderAsBytes();
         for (int i = 0; i < head.length; i++) {
             this.messageAsBytes[curentIndex] = head[i];
             curentIndex++;
         }
         for (Request r : requests) {
-            byte requestBytes[] = r.getRequestAsBytes();
+            byte[] requestBytes = r.getRequestAsBytes();
             for (int i = 0; i < requestBytes.length; i++) {
                 this.messageAsBytes[curentIndex] = requestBytes[i];
                 curentIndex++;
             }
         }
-        byte opt[] = new Response().getDnssecAsBytesMDNS(doFlag);
+        byte[] opt = new Response().getDnssecAsBytesMDNS(doFlag);
         int j = 0;
         for (int i = curentIndex; i < size; i++) {
             this.messageAsBytes[i] = opt[j];

@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 public class DoTClientInitializer extends ChannelInitializer<SocketChannel> {
 
     private final SslContext sslCtx;
-    private String resolverIP;
-    private DNSTaskBase dnsTaskBase;
+    private final String resolverIP;
+    private final DNSTaskBase dnsTaskBase;
     protected static Logger LOGGER = Logger.getLogger(DoTClientInitializer.class.getName());
 
     public DoTClientInitializer(SslContext sslCtx, String resolverIP, DNSTaskBase dnsTaskBase) {

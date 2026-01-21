@@ -17,7 +17,7 @@ import static tasks.DNSTaskBase.LOGGER;
 
 public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
-    private DNSTaskBase task;
+    private final DNSTaskBase task;
 
     public DnsOverSecureProtocolHandler(DNSTaskBase dnsTask){
         this.task = dnsTask;

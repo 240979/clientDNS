@@ -34,13 +34,13 @@ public class LLMNRHeader extends Header{
         this.tc = TC.getTypeByCode(pom1[1]);
         this.c = C.getTypeByCode(pom1[2]); // modified
         boolean[] opcode = { pom1[3], pom1[4], pom1[5], pom1[6] };
-        this.opCode = OP_CODE.getTypeByCode(DataTypesConverter.booleanArrayAsbyte(opcode));
+        this.opCode = OP_CODE.getTypeByCode(DataTypesConverter.booleanArrayAsByte(opcode));
         this.qr = QR.getTypeByCode(pom1[7]);
 
         // second byte in flags
         boolean[] pom2 = DataTypesConverter.byteToBoolArr(byteHead[3], 8);
         boolean[] rcodeBoolean = { pom2[0], pom2[1], pom2[2], pom2[3] };
-        this.rCode = R_CODE.getTypeByCode(DataTypesConverter.booleanArrayAsbyte(rcodeBoolean));
+        this.rCode = R_CODE.getTypeByCode(DataTypesConverter.booleanArrayAsByte(rcodeBoolean));
 
         this.QdCount = new UInt16().loadFromBytes(byteHead[4], byteHead[5]);
         this.AnCount = new UInt16().loadFromBytes(byteHead[6], byteHead[7]);
@@ -55,8 +55,8 @@ public class LLMNRHeader extends Header{
     @Override
     protected TreeItem<String> getFlagsAsTreeView() {
         // added T and TC key
-        String flagsKeys[] = { QR_KEY, OPCODE_KEY, CONFLICT_KEY, TC_KEY, T_KEY, RCODE_KEY };
-        String flagsValue[] = { qr.toString(), opCode.toString(), c.toString(), tc.toString(), t.toString(), rCode.toString() };
+        String[] flagsKeys = { QR_KEY, OPCODE_KEY, CONFLICT_KEY, TC_KEY, T_KEY, RCODE_KEY };
+        String[] flagsValue = { qr.toString(), opCode.toString(), c.toString(), tc.toString(), t.toString(), rCode.toString() };
         TreeItem<String> main = new TreeItem<String>("Flags");
         for (int i = 0; i < flagsValue.length; i++) {
             main.getChildren().add(new TreeItem<String>(flagsKeys[i] + ": " + flagsValue[i]));

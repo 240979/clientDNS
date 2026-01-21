@@ -81,7 +81,8 @@ public class Response {
 		this.qcount = Q_COUNT
 				.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
 		currentIndex += 2;
-		if (qcount.equals(Q_COUNT.OPT)) {
+        assert qcount != null;
+        if (qcount.equals(Q_COUNT.OPT)) {
 			parseAsOPT(currentIndex);
 			return this;
 		}
@@ -108,7 +109,8 @@ public class Response {
 		this.qcount = Q_COUNT
 				.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
 		currentIndex += 2;
-		if (qcount.equals(Q_COUNT.OPT)) {
+        assert qcount != null;
+        if (qcount.equals(Q_COUNT.OPT)) {
 			parseAsOPT(currentIndex);
 			return this;
 		}
@@ -134,15 +136,20 @@ public class Response {
 	private void checkAndParseSRV() {
 		if (this.qcount == Q_COUNT.SRV) {
 			srvName = "";
-			String srvArray[] = this.nameAsString.split("\\.");
+			StringBuilder sb = new StringBuilder();
+			String[] srvArray = this.nameAsString.split("\\.");
 			srvService = srvArray[0];
 			srvProtocol = srvArray[1];
 			for (int i = 2; i < srvArray.length; i++) {
 				if (i + 1 == srvArray.length)
-					srvName += srvArray[i];
+					//srvName += srvArray[i];
+					sb.append(srvArray[i]);
 				else
-					srvName += srvArray[i] + ".";
+					//srvName += srvArray[i] + ".";
+					sb.append(srvArray[i])
+						.append(".");
 			}
+			srvName = sb.toString();
 		}
 	}
 
@@ -336,7 +343,7 @@ public class Response {
 		json.put(KEY_OPT_RCODE, (int) rCode);
 		json.put(KEY_OPT_VERSION, (int) version);
 
-		json.put(KEY_OPT_DO_BIT, doBit.getValue() >= DO_BIT_VALUE ? true : false);
+		json.put(KEY_OPT_DO_BIT, doBit.getValue() >= DO_BIT_VALUE);
 
 		DnsRecordOPT r = (DnsRecordOPT) rdata;
 		if (!r.getIsNull()) {

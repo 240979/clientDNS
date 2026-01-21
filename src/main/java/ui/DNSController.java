@@ -40,8 +40,7 @@ import tasks.DNSOverTCPTask;
 import tasks.DNSOverUDPTask;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -173,7 +172,7 @@ public class DNSController extends GeneralController {
                 ip.getIpv6DnsServers()));
         Config.getNameServers().stream().filter(nameServer1 -> !nameServer1.isDohOnly() && !nameServer1.isDotOnly())
                 .forEach(ns -> otherDNSVbox.getChildren().add(new NameServerVBox(ns, dnsserverToggleGroup, this)));
-        NameServerVBox nsVBox = ((NameServerVBox)otherDNSVbox.getChildren().get(otherDNSVbox.getChildren().size()-1));
+        NameServerVBox nsVBox = ((NameServerVBox)otherDNSVbox.getChildren().getLast());
         nsVBox.selectFirst();
         HBox customDNS = new HBox();
         RadioButton customToggle = new RadioButton();
@@ -181,9 +180,7 @@ public class DNSController extends GeneralController {
         TextField input = new TextField();
         //input.setPromptText(language.getLanguageBundle().getString("dnsServerDropDownLabel"));
         customToggle.setUserData(input);
-        input.setOnMouseClicked(actionEvent -> {
-            customToggle.setSelected(true);
-        });
+        input.setOnMouseClicked(actionEvent -> customToggle.setSelected(true));
         customDNS.getChildren().addAll(customToggle, input);
         Separator separator = new Separator();
         separator.setPadding(new Insets(10, 0, 5, 0));
@@ -197,13 +194,7 @@ public class DNSController extends GeneralController {
         // disable checkbox for holding TCP connection, because default selected transport protocol is UDP
         holdConnectionCheckbox.setDisable(true);
         tcpRadioButton.selectedProperty().addListener((observable, oldValue, newValue) ->
-        {
-            if (newValue) {
-                holdConnectionCheckbox.setDisable(false);
-            } else {
-                holdConnectionCheckbox.setDisable(true);
-            }
-        });
+                holdConnectionCheckbox.setDisable(!newValue));
         setLanguageRadioButton();
     }
 
@@ -315,7 +306,7 @@ public class DNSController extends GeneralController {
      * */
     private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec,
                             TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection) {
-        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + records.toString()
+        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + Arrays.toString(records)
                 + "\n" + "Recursive:" + recursive + "\n" + "DNSSEC: " + dnssec + "\n" + "DNSSEC sig records"
                 + dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n" + "Hold connection: " + holdConnection
                 + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
@@ -327,7 +318,7 @@ public class DNSController extends GeneralController {
     private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec,
                             TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection,
                             boolean checkingdisabled) {
-        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + records.toString()
+        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + Arrays.toString(records)
                 + "\n" + "Recursive:" + recursive + "\n" + "DNSSEC: " + dnssec + "\n" + "DNSSEC sig records"
                 + dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n" + "Hold connection: " + holdConnection
                 + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS + "\n" + "Checking disabled " + checkingdisabled);

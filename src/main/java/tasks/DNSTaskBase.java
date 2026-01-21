@@ -318,19 +318,19 @@ public abstract class DNSTaskBase extends Task<Void> {
             this.messageAsBytes = new byte[size];
         }
 
-        byte head[] = header.getHaderAsBytes();
+        byte[] head = header.getHeaderAsBytes();
         for (int i = 0; i < head.length; i++) {
             this.messageAsBytes[curentIndex] = head[i];
             curentIndex++;
         }
         for (Request r : requests) {
-            byte requestBytes[] = r.getRequestAsBytes();
+            byte[] requestBytes = r.getRequestAsBytes();
             for (int i = 0; i < requestBytes.length; i++) {
                 this.messageAsBytes[curentIndex] = requestBytes[i];
                 curentIndex++;
             }
         }
-        byte opt[] = new Response().getDnssecAsBytes();
+        byte[] opt = new Response().getDnssecAsBytes();
         int j = 0;
         for (int i = curentIndex; i < size; i++) {
             this.messageAsBytes[i] = opt[j];
@@ -380,7 +380,7 @@ public abstract class DNSTaskBase extends Task<Void> {
      * */
     private void addRequestToTreeItem() {
         TreeItem<String> subRequest = new TreeItem<String>(KEY_QUERY);
-        if (requests.size() > 0) {
+        if (!requests.isEmpty()) {
             for (Request request : requests) {
                 subRequest.getChildren().add(request.getAsTreeItem());
             }

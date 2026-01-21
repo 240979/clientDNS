@@ -4,12 +4,10 @@ package models;
  * Link - https://github.com/xramos00/DNS_client
  * */
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javafx.scene.input.KeyCode;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
 
 import java.util.LinkedList;
 import java.util.List;

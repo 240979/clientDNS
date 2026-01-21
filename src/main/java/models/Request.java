@@ -69,24 +69,22 @@ public class Request {
 
 	public byte[] getRequestAsBytes() {
 
-		int lenghtOfName = nameInBytes.length;
+		int lengthOfName = nameInBytes.length;
 
-		byte result[] = new byte[lenghtOfName + 4];
-		for (int i = 0; i < lenghtOfName; i++) {
-			result[i] = nameInBytes[i];
-		}
-		result[lenghtOfName] = qCount.code.getAsBytes()[1];
-		result[lenghtOfName + 1] = qCount.code.getAsBytes()[0];
+		byte[] result = new byte[lengthOfName + 4];
+        System.arraycopy(nameInBytes, 0, result, 0, lengthOfName);
+		result[lengthOfName] = qCount.code.getAsBytes()[1];
+		result[lengthOfName + 1] = qCount.code.getAsBytes()[0];
 
 		if (mdnsType != null) {
 			UInt16 newQtype = new UInt16(mdnsType.value + qtype.code.getValue());
-			result[lenghtOfName + 2] = newQtype.getAsBytes()[1];
-			result[lenghtOfName + 3] = newQtype.getAsBytes()[0];
+			result[lengthOfName + 2] = newQtype.getAsBytes()[1];
+			result[lengthOfName + 3] = newQtype.getAsBytes()[0];
 			return result;
 		}
 
-		result[lenghtOfName + 2] = qtype.code.getAsBytes()[1];
-		result[lenghtOfName + 3] = qtype.code.getAsBytes()[0];
+		result[lengthOfName + 2] = qtype.code.getAsBytes()[1];
+		result[lengthOfName + 3] = qtype.code.getAsBytes()[0];
 		return result;
 	}
 
@@ -115,14 +113,10 @@ public class Request {
 				+ ", root=" + root + "]";
 	}
 
-	public int getSize() {
-		return size;
-	}
-
-	public void printEncodedQnameInHex() {
-		String res = "";
+    public void printEncodedQnameInHex() {
+		StringBuilder res = new StringBuilder();
 		for (byte b : nameInBytes) {
-			res += String.format("%02x", b);
+			res.append(String.format("%02x", b));
 		}
 		System.out.println(res);
 	}
