@@ -10,7 +10,8 @@ import exceptions.*;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioIoHandler;
+//import io.netty.channel.nio.NioIoHandler;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.ChannelOutputShutdownException;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.handler.ssl.OpenSsl;
@@ -64,8 +65,8 @@ public class DNSOverQUICTask  extends DNSTaskBase{
                 .keylog(true) //enable logging keys -- does not work?
                 .build();
 
-        // EventLoopGroup group = new NioEventLoopGroup(); // deprecated
-        EventLoopGroup group = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
+         EventLoopGroup group = new NioEventLoopGroup(); // deprecated
+        //EventLoopGroup group = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
 
         ChannelHandler codec = new QuicClientCodecBuilder()
                 //.sslContext(insecureContext)

@@ -12,9 +12,11 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
+// import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
+// import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.OpenSsl;
 import io.netty.handler.ssl.SslContext;
@@ -67,12 +69,12 @@ public class DNSOverTLS extends DNSTaskBase{
                             "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
                             "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
                             "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"))
-                    .sslProvider(SslProvider.OPENSSL)
+                    .sslProvider(SslProvider.JDK)
                     .sessionTimeout(3000)
                     .build();
 
+            //group = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
             group = new NioEventLoopGroup();
-
             bootstrap = new Bootstrap()
                     .group(group)
                     .channelFactory(() -> {
