@@ -69,7 +69,7 @@ public class MDNSController extends GeneralController {
     @FXML
     protected TreeView<String> responseTreeView;
     protected MessageParser parser;
-    protected MessageSender sender;
+    //protected MessageSender sender;
     @FXML
     CheckBox DNSSECOkCheckBox;
     @FXML
@@ -343,7 +343,7 @@ public class MDNSController extends GeneralController {
             showAlert(e);
         }
     }
-
+    /*
     protected void setRequestAfterNotRieciveResponse() {
         requestTreeView.setRoot(sender.getAsTreeItem());
         queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
@@ -355,7 +355,7 @@ public class MDNSController extends GeneralController {
         copyResponseJsonButton.setDisable(true);
         responseTimeValueLabel.setText("0");
     }
-
+    */
     protected void copyDataToClipBoard(String data) {
         final Clipboard clipboard = Clipboard.getSystemClipboard();
         final ClipboardContent content = new ClipboardContent();

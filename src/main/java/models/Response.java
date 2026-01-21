@@ -63,6 +63,8 @@ public class Response {
 	private static final String KEY_OPT_OPTIONS = "Options";
 	public static final String ROOT_DOMAIN = ". (ROOT)";
 
+
+
 	public Response() {
 
 	}
@@ -348,8 +350,8 @@ public class Response {
 		bytes.add((byte) 0x00);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[1]);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[0]);
-		bytes.add((byte) new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[1]);
-		bytes.add((byte) new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[0]);
+		bytes.add((byte) new UInt16(MAX_UDP_SIZE).getAsBytes()[1]);
+		bytes.add((byte) new UInt16(MAX_UDP_SIZE).getAsBytes()[0]);
 		bytes.add((byte) 0x00);
 		bytes.add((byte) 0x00);
 		bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[1]);
@@ -370,8 +372,8 @@ public class Response {
 		bytes.add((byte) 0x00);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[1]);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[0]);
-		bytes.add(new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[1]);
-		bytes.add(new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[0]);
+		bytes.add(new UInt16(MAX_UDP_SIZE).getAsBytes()[1]);
+		bytes.add(new UInt16(MAX_UDP_SIZE).getAsBytes()[0]);
 		bytes.add((byte) 0x00);
 		bytes.add((byte) 0x00);
 		if (dnssecSignatures) {
