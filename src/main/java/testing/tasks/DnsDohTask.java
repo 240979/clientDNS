@@ -27,10 +27,12 @@ import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Class sends multiple requests to given server via specific protocol using method sendData()
@@ -41,8 +43,9 @@ public class DnsDohTask extends DNSOverHTTPSTask {
     private int numberOfRequests;
     private long cooldown;
 
-    public DnsDohTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface, Result result, int numberOfRequests, long cooldown) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
-        super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP+"/"+result.getNs().getPath(), netInterface, result.getNs().isGet());
+    public DnsDohTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, String resolverUri, NetworkInterface netInterface, Result result, int numberOfRequests, long cooldown) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
+        //super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP+"/"+result.getNs().getPath(), netInterface, result.getNs().isGet());
+        super(recursion,adFlag,cdFlag,doFlag, domain, types, transport_protocol, application_protocol, resolverIP+"/"+result.getNs().getPath(), netInterface, result.getNs().isGet(),resolverUri);
         this.result = result;
         this.numberOfRequests = numberOfRequests;
         this.cooldown = cooldown;
@@ -89,14 +92,15 @@ public class DnsDohTask extends DNSOverHTTPSTask {
                 } catch (IOException
                          | NotValidIPException
                          | NotValidDomainNameException
-                         | MessageTooBigForUDPException
+                          | MessageTooBigForUDPException
                          | QueryIdNotMatchException
                          | InterfaceDoesNotHaveIPAddressException
-                         | OtherHttpException
+                          | OtherHttpException
                          | ParseException
-                         | HttpCodeException
-                         | TimeoutException
-                         | NoSuchAlgorithmException e) {
+                          | HttpCodeException
+                          | TimeoutException
+                          | ExecutionException e) {
+                         // | URISyntaxException e) {
                     result.getExceptions().add(e);
                     result.getSuccess().add(false);
                 }

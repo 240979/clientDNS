@@ -135,7 +135,7 @@ public class DoHController extends GeneralController {
             task = new DNSOverHTTPSTask(recursiveQueryRadioButton.isSelected(), authenticateDataCheckBox.isSelected(),
                     checkingDisabledCheckBox.isSelected(), DNSSECOkCheckBox.isSelected(),getDomain(),
                     getRecordTypes(), null, APPLICATION_PROTOCOL.DOH, domain+"/"+path,
-                    getInterface(), isGet, getDnsServerDomainName(getDnsServerIp()));
+                    getInterface(), isGet, getDnsServerDomainName(getDnsServerIp())+"/"+path);
 
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
             responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());

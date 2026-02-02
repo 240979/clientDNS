@@ -67,7 +67,7 @@ public class DoHTester extends Task<Void> {
             LOGGER.info("Starting DoHTester for "+result.getName());
             DNSTaskBase task = new DnsDohTask(recursion,adFlag,cdFlag,doFlag,result.getDomain(),types,
                     TRANSPORT_PROTOCOL.TCP,APPLICATION_PROTOCOL.DOH,
-                    result.getIp(),netInterface,result,duration,cooldown);
+                    result.getIp(),result.getNs().getDomainName() +"/"+ result.getNs().getPath(), netInterface,result,duration,cooldown);
             task.setMassTesting(true);
             task.setController(controller);
             Thread thread = new Thread(task);
