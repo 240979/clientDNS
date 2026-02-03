@@ -18,6 +18,7 @@ import models.WiresharkFilter;
 import tasks.DNSOverHTTPSTask;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 
 public class DoHController extends GeneralController {
@@ -32,6 +33,9 @@ public class DoHController extends GeneralController {
     protected TitledPane requestFormatTiltedPane;
 
     protected ToggleGroup requestFormatToggleGroup;
+    @FXML
+    @Translation
+    protected RadioButton useDomainName;
 
     public static final String FXML_FILE_NAME = "/fxml/DoH_small.fxml";
 
@@ -61,6 +65,7 @@ public class DoHController extends GeneralController {
         IPprotToggleGroup = new ToggleGroup();
         IPv4RadioButton.setToggleGroup(IPprotToggleGroup);
         IPv6RadioButton.setToggleGroup(IPprotToggleGroup);
+        useDomainName.setToggleGroup(IPprotToggleGroup);
         iterativeToggleGroup = new ToggleGroup();
         recursiveQueryRadioButton.setToggleGroup(iterativeToggleGroup);
         iterativeQueryRadioButton.setToggleGroup(iterativeToggleGroup);
@@ -136,7 +141,7 @@ public class DoHController extends GeneralController {
             return;
         }
         try {
-            String domain = getDnsServerIp();
+            String domain =  getDnsServerIp();
             if (domain == null){
                 Platform.runLater(()->sendButton.setText(getButtonText()));
                 return;
@@ -150,7 +155,7 @@ public class DoHController extends GeneralController {
             task = new DNSOverHTTPSTask(recursiveQueryRadioButton.isSelected(), authenticateDataCheckBox.isSelected(),
                     checkingDisabledCheckBox.isSelected(), DNSSECOkCheckBox.isSelected(),getDomain(),
                     getRecordTypes(), null, APPLICATION_PROTOCOL.DOH, domain+"/"+path,
-                    getInterface(), isGet, getDnsServerDomainName(getDnsServerIp())+"/"+path, isRequestJson());
+                    getInterface(), isGet, getDnsServerDomainName(getDnsServerIp())+"/"+path, isRequestJson(), isDomainNameUsed());
 
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
             responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());
@@ -200,7 +205,7 @@ public class DoHController extends GeneralController {
     }
 
     @Override
-    protected String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException, NoIpAddrForDomainName, NotValidDomainNameException {
+    protected String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException, NoIpAddrForDomainName, NotValidDomainNameException, UnsupportedEncodingException {
         Toggle selected = dnsserverToggleGroup.getSelectedToggle();
 
         if (selected == null) {
@@ -295,7 +300,17 @@ public class DoHController extends GeneralController {
     protected void setWiresharkMenuItems() {
         super.setWiresharkMenuItems();
     }
+
     protected boolean isRequestJson(){
         return this.jsonFormat.isSelected();
+    }
+    protected boolean isDomainNameUsed(){
+        return this.useDomainName.isSelected();
+    }
+
+    @FXML
+    protected void useDomainNameAction()
+    {
+
     }
 }

@@ -51,16 +51,18 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
     private CloseableHttpAsyncClient httpClient;
     private InetAddress localAddress;
     private boolean isReqJsonFormat;
+    private boolean isDomainNameUsed;
     public DNSOverHTTPSTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain,
                             Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol,
                             APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface,
-                            boolean isGet, String resolverUri, boolean isReqJsonFormat)
+                            boolean isGet, String resolverUri, boolean isReqJsonFormat, boolean isDomainNameUsed)
             throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
         this.cdFlag = cdFlag;
         this.isGet = isGet;
         this.serverDomainName = resolverUri;
         this.isReqJsonFormat = isReqJsonFormat;
+        this.isDomainNameUsed = isDomainNameUsed;
     }
 
     public DNSOverHTTPSTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain,
@@ -82,11 +84,12 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         String[] values = new String[]{domainAsString, qcountAsString(), "" + doFlag, "" + cdFlag};
 
         setMessagesSent(1);
+        String hostname = isDomainNameUsed ? serverDomainName : resolver;
         String uri;
         if(isReqJsonFormat) {
-            uri = addParamsToUriAsJson(resolver, httpRequestParamsName, values);
+            uri = addParamsToUriAsJson(hostname, httpRequestParamsName, values);
         } else {
-            uri = addParamsToUriAsBase64Url(resolver, values);
+            uri = addParamsToUriAsBase64Url(hostname, values);
         }
         updateProgressUI();
 

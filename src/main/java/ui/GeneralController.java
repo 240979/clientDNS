@@ -821,7 +821,7 @@ public abstract class GeneralController {
             if (ip == null) {
                 return;
             }
-        } catch (DnsServerIpIsNotValidException | NotValidDomainNameException | UnknownHostException | NoIpAddrForDomainName e) {
+        } catch (DnsServerIpIsNotValidException | NotValidDomainNameException | UnknownHostException | NoIpAddrForDomainName | UnsupportedEncodingException e) {
             //showAlert(e.getClass().getSimpleName());
             showAlert(e);
             return;
@@ -939,7 +939,7 @@ public abstract class GeneralController {
      * @throws DnsServerIpIsNotValidException
      * @throws UnknownHostException
      */
-    protected String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException, NoIpAddrForDomainName, NotValidDomainNameException {
+    protected String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException, NoIpAddrForDomainName, NotValidDomainNameException, UnsupportedEncodingException {
 
         Toggle selected = dnsserverToggleGroup.getSelectedToggle();
 

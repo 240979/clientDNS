@@ -156,6 +156,7 @@
                                        <children>
                                           <RadioButton fx:id="IPv4RadioButton" mnemonicParsing="false" onAction="#IPv4RadioButtonAction" selected="true" text="IPv4" />
                                           <RadioButton fx:id="IPv6RadioButton" mnemonicParsing="false" onAction="#IPv6RadioButtonAction" text="IPv6" />
+                                          <RadioButton fx:id="useDomainName" mnemonicParsing="false" onAction="#useDomainNameAction" text="%useDomainName" />
                                        </children>
                                     </VBox>
                                  </content>
