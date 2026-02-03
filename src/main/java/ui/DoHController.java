@@ -21,10 +21,22 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 public class DoHController extends GeneralController {
+    @FXML
+    @Translation
+    protected RadioButton jsonFormat;
+    @FXML
+    @Translation
+    protected RadioButton wireFormat;
+    @FXML
+    @Translation
+    protected TitledPane requestFormatTiltedPane;
+
+    protected ToggleGroup requestFormatToggleGroup;
 
     public static final String FXML_FILE_NAME = "/fxml/DoH_small.fxml";
 
     private RadioButton isGetRadioButton;
+
 
     public DoHController() {
         super();
@@ -52,6 +64,9 @@ public class DoHController extends GeneralController {
         iterativeToggleGroup = new ToggleGroup();
         recursiveQueryRadioButton.setToggleGroup(iterativeToggleGroup);
         iterativeQueryRadioButton.setToggleGroup(iterativeToggleGroup);
+        requestFormatToggleGroup = new ToggleGroup();
+        jsonFormat.setToggleGroup(requestFormatToggleGroup);
+        wireFormat.setToggleGroup(requestFormatToggleGroup);
 
 
         Config.getNameServers().stream().filter(NameServer::isDoh).forEach(nameServer -> otherDNSVbox.getChildren()
@@ -135,7 +150,7 @@ public class DoHController extends GeneralController {
             task = new DNSOverHTTPSTask(recursiveQueryRadioButton.isSelected(), authenticateDataCheckBox.isSelected(),
                     checkingDisabledCheckBox.isSelected(), DNSSECOkCheckBox.isSelected(),getDomain(),
                     getRecordTypes(), null, APPLICATION_PROTOCOL.DOH, domain+"/"+path,
-                    getInterface(), isGet, getDnsServerDomainName(getDnsServerIp())+"/"+path);
+                    getInterface(), isGet, getDnsServerDomainName(getDnsServerIp())+"/"+path, isRequestJson());
 
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
             responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());
@@ -279,5 +294,8 @@ public class DoHController extends GeneralController {
     @Override
     protected void setWiresharkMenuItems() {
         super.setWiresharkMenuItems();
+    }
+    protected boolean isRequestJson(){
+        return this.jsonFormat.isSelected();
     }
 }

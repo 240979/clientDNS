@@ -250,6 +250,7 @@ public abstract class GeneralController {
     @Translation
     protected RadioButton iterativeQueryRadioButton;
 
+
     @FXML
     protected TitledPane ipTitledPane;
 

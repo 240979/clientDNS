@@ -140,6 +140,16 @@
                                     </VBox>
                                  </content>
                               </TitledPane>
+                              <TitledPane fx:id="requestFormatTiltedPane" expanded="false" maxWidth="1.7976931348623157E308" text="%requestFormatTiltedPane">
+                                 <content>
+                                    <VBox>
+                                       <children>
+                                          <RadioButton fx:id="jsonFormat" mnemonicParsing="false" selected="true" text="%jsonFormat" />
+                                          <RadioButton fx:id="wireFormat" mnemonicParsing="false" text="%wireFormat" />
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
                               <TitledPane fx:id="networkTitledPane" expanded="false" text="%networkTitledPane">
                                  <content>
                                     <VBox alignment="CENTER_LEFT">
