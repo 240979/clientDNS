@@ -45,7 +45,7 @@ public class DnsDohTask extends DNSOverHTTPSTask {
 
     public DnsDohTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, String resolverUri, NetworkInterface netInterface, Result result, int numberOfRequests, long cooldown) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         //super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP+"/"+result.getNs().getPath(), netInterface, result.getNs().isGet());
-        super(recursion,adFlag,cdFlag,doFlag, domain, types, transport_protocol, application_protocol, resolverIP+"/"+result.getNs().getPath(), netInterface, result.getNs().isGet(),resolverUri);
+        super(recursion,adFlag,cdFlag,doFlag, domain, types, transport_protocol, application_protocol, resolverIP+"/"+result.getNs().getPath(), netInterface, result.getNs().isGet(),resolverUri, true);
         this.result = result;
         this.numberOfRequests = numberOfRequests;
         this.cooldown = cooldown;

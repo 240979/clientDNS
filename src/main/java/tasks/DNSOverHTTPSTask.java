@@ -5,6 +5,7 @@ import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import models.Ip;
+import models.LocalAddressRoutePlanner;
 import models.MessageParser;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.hc.client5.http.async.methods.*;
@@ -49,16 +50,17 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
     private String serverDomainName;
     private CloseableHttpAsyncClient httpClient;
     private InetAddress localAddress;
-
+    private boolean isReqJsonFormat;
     public DNSOverHTTPSTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain,
                             Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol,
                             APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface,
-                            boolean isGet, String resolverUri)
+                            boolean isGet, String resolverUri, boolean isReqJsonFormat)
             throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
         this.cdFlag = cdFlag;
         this.isGet = isGet;
         this.serverDomainName = resolverUri;
+        this.isReqJsonFormat = isReqJsonFormat;
     }
 
     public DNSOverHTTPSTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain,
@@ -80,29 +82,28 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         String[] values = new String[]{domainAsString, qcountAsString(), "" + doFlag, "" + cdFlag};
 
         setMessagesSent(1);
-
-        String uri = addParamsToUriAsJson(resolver, httpRequestParamsName, values);
+        String uri;
+        if(isReqJsonFormat) {
+            uri = addParamsToUriAsJson(resolver, httpRequestParamsName, values);
+        } else {
+            uri = addParamsToUriAsBase64Url(resolver, values);
+        }
         updateProgressUI();
 
-        SimpleHttpResponse response = sendAndReceiveDoH(uri, httpsDomain, isGet, true);
+        SimpleHttpResponse response = sendAndReceiveDoH(uri, httpsDomain, isGet, isReqJsonFormat);
         setDuration(calculateDuration());
 
-        if (response.getCode() == 200) {
+        if (response.getCode() == 200 && isReqJsonFormat) {
             String content = response.getBodyText();
             JSONParser parser = new JSONParser();
             this.httpResponse = (JSONObject) parser.parse(content);
             byteSizeResponseDoHDecompresed = getAllHeadersSize(response.getHeaders());
             byteSizeResponseDoHDecompresed += content.getBytes(StandardCharsets.UTF_8).length;
             parseResponseDoh(content);
-        } else if (response.getCode() == 400) {
+        } else if (response.getCode() == 200 && !isReqJsonFormat) {
             // Server is probably waiting for Wire format
-            closeHttpConnection();
-            uri = addParamsToUriAsBase64Url(resolver, values);
-            response = sendAndReceiveDoH(uri, httpsDomain, isGet, false);
-            setDuration(calculateDuration());
             setReceiveReply(response.getBodyBytes());
             byteSizeResponseDoHDecompresed = response.getBodyBytes().length;
-
         } else {
             throw new HttpCodeException(response.getCode());
         }
@@ -276,9 +277,11 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
                 .setIOReactorConfig(ioReactorConfig)
                 .setDefaultRequestConfig(getRequestConfig())
                 .setH2Config(h2Config)
+                .setRoutePlanner(new LocalAddressRoutePlanner(localAddress))
                 .build();
 
         httpClient.start();
+
 
         CompletableFuture<SimpleHttpResponse> future = new CompletableFuture<>();
 
