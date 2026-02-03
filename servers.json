@@ -67,7 +67,7 @@
         "dohOnly": true
     },
     {
-        "name":"CZ.NIC (nefunguje)",
+        "name":"CZ.NIC",
         "domainName":"odvr.nic.cz",
         "ipv4":["193.17.47.1","185.43.135.1"],
         "ipv6":["2001:148f:ffff::1","2001:148f:fffe::1"],
