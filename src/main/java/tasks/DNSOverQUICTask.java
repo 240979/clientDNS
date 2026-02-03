@@ -20,6 +20,7 @@ import javafx.application.Platform;
 import lombok.Getter;
 import lombok.Setter;
 import models.DoQClientInitializer;
+import models.Ip;
 import tasks.runnables.RequestResultsUpdateRunnable;
 
 import javax.net.ssl.TrustManagerFactory;
@@ -45,7 +46,7 @@ public class DNSOverQUICTask  extends DNSTaskBase{
         this.resolverPort = resolverPort;
     }
     @Override
-    protected void sendData() throws KeyStoreException, NoSuchAlgorithmException, InterruptedException, IllegalArgumentException, CancellationException, ExecutionException, ChannelOutputShutdownException {
+    protected void sendData() throws KeyStoreException, NoSuchAlgorithmException, InterruptedException, IllegalArgumentException, CancellationException, ExecutionException, ChannelOutputShutdownException, InterfaceDoesNotHaveIPAddressException {
         setStartTime(System.nanoTime());
         try{
             OpenSsl.ensureAvailability();
@@ -67,7 +68,7 @@ public class DNSOverQUICTask  extends DNSTaskBase{
 
          EventLoopGroup group = new NioEventLoopGroup(); // deprecated
         //EventLoopGroup group = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
-
+        InetSocketAddress localAddr = new InetSocketAddress(Ip.getIpAddressFromInterface(interfaceToSend, resolver), 0);
         ChannelHandler codec = new QuicClientCodecBuilder()
                 //.sslContext(insecureContext)
                 .sslContext(context)
@@ -80,7 +81,7 @@ public class DNSOverQUICTask  extends DNSTaskBase{
                 .group(group)
                 .channel(NioDatagramChannel.class)
                 .handler(codec)
-                .bind(0)
+                .bind(localAddr)
                 .sync()
                 .channel();
         QuicChannel quicChannel = QuicChannel.newBootstrap(channel)
