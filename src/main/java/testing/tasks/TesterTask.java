@@ -148,9 +148,9 @@ public class TesterTask extends Task<Void> {
                         // calculate average duration for every result
                         // TODO maybe use runnable and Platform.runLater(...)
                         //LOGGER.info("Calculating average duration of requests in TcpTester task for " + result.getName());
-                        result.setAverage(Math.floor(result.getDurations().stream().mapToDouble(value -> value).average().orElse(0.0)*100)/100);
-                        result.setMax(Math.floor(result.getDurations().stream().mapToDouble(value -> value).max().orElse(0.0)*100)/100);
-                        result.setMin(Math.floor(result.getDurations().stream().mapToDouble(value -> value).min().orElse(0.0)*100)/100);
+                        result.setAverage(Math.floor(result.getDurations().stream().mapToDouble(d -> d).average().orElse(0.0)*100)/100);
+                        result.setMax(Math.floor(result.getDurations().stream().mapToDouble(d -> d).max().orElse(0.0)*100)/100);
+                        result.setMin(Math.floor(result.getDurations().stream().mapToDouble(d -> d).min().orElse(0.0)*100)/100);
                         result.setSuccessful(result.getSuccess().stream().filter(aBoolean -> aBoolean).count());
                         result.setFailed(result.getSuccess().stream().filter(aBoolean -> !aBoolean).count());
                     }
