@@ -6,5 +6,5 @@
 package enums;
 
 public enum APPLICATION_PROTOCOL {
-	DNS, MDNS, LLMNR, DOH, DOT;
+	DNS, MDNS, LLMNR, DOH, DOT, DOQ;
 }
