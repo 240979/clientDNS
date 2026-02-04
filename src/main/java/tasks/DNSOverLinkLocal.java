@@ -4,9 +4,6 @@ package tasks;
  * Link - https://github.com/xramos00/DNS_client
  * Methods used from Martin Biolek thesis are marked with comment
  * */
-import enums.APPLICATION_PROTOCOL;
-import enums.Q_COUNT;
-import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import models.ConnectionSettings;
@@ -30,11 +27,7 @@ public class DNSOverLinkLocal extends DNSTaskBase{
     private int messagesSent;
     private boolean run=true;
     MulticastSocket socket;
-/*
-    public DNSOverLinkLocal(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
-        super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
-        header = new LLMNRHeader(types.length,false,false);
-    }*/
+
 public DNSOverLinkLocal(RequestSettings requestSettings, ConnectionSettings connectionSettings) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
     super(requestSettings, connectionSettings, null);
     header = new LLMNRHeader(requestSettings.getTypes().length, false, false);
@@ -85,7 +78,6 @@ public DNSOverLinkLocal(RequestSettings requestSettings, ConnectionSettings conn
                 throw new BindException();
             }
             catch (Exception e) {
-                //e.printStackTrace();
                 LOGGER.severe(ExceptionUtils.getStackTrace(e));
                 if (!run){
                     throw new InterruptedException();

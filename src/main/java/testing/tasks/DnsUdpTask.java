@@ -3,10 +3,7 @@ package testing.tasks;
  * Author - Patricia Ramosova
  * Link - https://github.com/xramos00/DNS_client
  * */
-import enums.APPLICATION_PROTOCOL;
-import enums.Q_COUNT;
 import enums.R_CODE;
-import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import models.ConnectionSettings;
@@ -19,9 +16,7 @@ import testing.Result;
 import ui.TesterController;
 
 import java.io.UnsupportedEncodingException;
-import java.net.NetworkInterface;
 import java.net.UnknownHostException;
-import java.util.List;
 
 /**
  * Class sends multiple requests to given server via specific protocol using method sendData()
@@ -32,21 +27,8 @@ public class DnsUdpTask extends DNSOverUDPTask {
     Result result;
     int i;
     int duration;
-    private long cooldown;
-    /*
-    public DnsUdpTask(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag,
-                      String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol,
-                      APPLICATION_PROTOCOL application_protocol, String resolverIP,
-                      NetworkInterface netInterface, Result result, int duration, long cooldown)
-            throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException,
-            NotValidIPException {
-        super(recursion,adFlag,caFlag,doFlag,domain,types,transport_protocol,application_protocol,
-                resolverIP,netInterface);
-        this.result = result;
-        this.duration = duration;
-        this.cooldown = cooldown;
-        LOGGER.info("Created DnsUdpTask for "+resolverIP);
-    }*/
+    private final long cooldown;
+
     public DnsUdpTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int duration, long cooldown)
             throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
         super(requestSettings, connectionSettings);

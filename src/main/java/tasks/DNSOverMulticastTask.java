@@ -4,10 +4,8 @@ package tasks;
  * Link - https://github.com/xramos00/DNS_client
  * Methods used from Martin Biolek thesis are marked with comment
  * */
-import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.RESPONSE_MDNS_TYPE;
-import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import models.*;
@@ -28,19 +26,7 @@ public class DNSOverMulticastTask extends DNSTaskBase {
     private boolean isIPv4;
     private boolean run=true;
     MulticastSocket socket;
-    /*
-    public DNSOverMulticastTask(boolean multicast, boolean adFlag, boolean caFlag, boolean doFlag, String domain,
-                                Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol,
-                                APPLICATION_PROTOCOL application_protocol, String resolverIP,
-                                NetworkInterface netInterface, boolean
-                                       isIPv4, RESPONSE_MDNS_TYPE mdnsType) throws UnsupportedEncodingException, NotValidIPException,
-            NotValidDomainNameException,
-            UnknownHostException {
-        super(false, adFlag, caFlag, doFlag, domain, types, transport_protocol, application_protocol,
-                resolverIP, netInterface, mdnsType);
-        this.multicast = multicast;
-        this.isIPv4 = isIPv4;
-    }*/
+
     public DNSOverMulticastTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, boolean multicast, boolean isIPv4, RESPONSE_MDNS_TYPE mdnsType) throws UnsupportedEncodingException, NotValidIPException,
             NotValidDomainNameException,
             UnknownHostException {
@@ -173,9 +159,6 @@ public class DNSOverMulticastTask extends DNSTaskBase {
                     if (!run){
                         throw new InterruptedException();
                     }
-                    //e.printStackTrace();
-                    //LOGGER.info("Caught exception");
-                    //e.printStackTrace();
                     LOGGER.severe(ExceptionUtils.getStackTrace(e));
                     //updateProgress(messagesSent, 3);
                     if (getMessagesSent() < 3) {

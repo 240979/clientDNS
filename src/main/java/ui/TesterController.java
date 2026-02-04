@@ -156,11 +156,7 @@ public class TesterController extends GeneralController {
                     Result clickedRow = row.getItem();
                     //System.out.println(clickedRow.getName()+" "+clickedRow.getDomain());
                     LOGGER.info(clickedRow.getName()+" "+clickedRow.getDomain());
-                    /*String out = clickedRow.getResponses().stream().map(responses ->
-                            responses.stream().map(response -> response.getRdata().getDataAsString()).collect(Collectors.joining("\n"))).collect(Collectors.joining("\n========\n"));*/
-                    //Platform.runLater(()->showCustomAlert(out, Alert.AlertType.INFORMATION));
                     Platform.runLater(()->showAlertMultipleExceptions(clickedRow.getExceptions()));
-                    //Platform.runLater(()->showAlertMultipleExceptions(clickedRow.getExceptions()));
                 }
             });
             return row;
@@ -538,25 +534,19 @@ public class TesterController extends GeneralController {
             LOGGER.info("Starting main mass testing task");
             thread.start();
             buttonText = sendButton.getText();
-            // turn send button to stop buttor
+            // turn send button to stop button
             Platform.runLater(() -> sendButton.setText("Stop"));
         } catch (NonRecordSelectedException | UnsupportedEncodingException | MoreRecordsTypesWithPTRException | NotValidDomainNameException e) {
             Platform.runLater(()->{
                 sendButton.setText(getButtonText());
                 progressBar.setProgress(0);
             });
-            //String fullClassName = e.getClass().getSimpleName();
-            //LOGGER.info(fullClassName);
-            //e.printStackTrace();
-            //showAlert(fullClassName);
             showAlert(e);
         } catch (Exception e) {
             Platform.runLater(()->{
                 sendButton.setText(getButtonText());
                 progressBar.setProgress(0);
             });
-            //LOGGER.warning(e.toString());
-            //showAlert("Exception");
             showAlert(e);
         }
     }

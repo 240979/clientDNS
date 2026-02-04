@@ -289,11 +289,6 @@ public abstract class GeneralController {
         // this is set of DNS resource records that are common to all implemented protocols
         // specific RR should be added in constructors of certain protocols
         checkBoxArray = new LinkedList<>();
-        /*System.setProperty("java.net.preferIPv4Addresses","true");
-        System.setProperty("java.net.preferIPv4Stack","true");*/
-        /*System.setProperty("java.net.preferIPv4Stack","false");
-        System.setProperty("java.net.preferIPv6Addresses","true");
-        System.setProperty("java.net.preferIPv6Stack","true");*/
     }
 
     public void initialize() {
@@ -644,8 +639,6 @@ public abstract class GeneralController {
             //<- 240979
             interfaceMenu.getItems().addAll(listMenuItems);
         } catch (SocketException e) {
-            //e.printStackTrace();
-            //LOGGER.severe(e.getClass().getSimpleName() + e.getMessage());
             LOGGER.severe(ExceptionUtils.getStackTrace(e));
         }
     }
@@ -861,14 +854,6 @@ public abstract class GeneralController {
     @FXML
     protected void IPv4RadioButtonAction(ActionEvent event) {
         if (IPv4RadioButton.isSelected()) {
-            /*System.setProperty("java.net.preferIPv4Addresses","true");
-            System.setProperty("java.net.preferIPv4Stack","true");
-            System.clearProperty("java.net.preferIPv6Addresses");
-            System.clearProperty("java.net.preferIPv6Stack");*/
-            /*System.setProperty("java.net.preferIPv4Addresses","true");
-            System.setProperty("java.net.preferIPv4Stack","true");
-            System.setProperty("java.net.preferIPv6Addresses","false");
-            System.setProperty("java.net.preferIPv6Stack","false");*/
             reloadDNSServers(true);
         }
     }
@@ -876,14 +861,6 @@ public abstract class GeneralController {
     @FXML
     protected void IPv6RadioButtonAction(ActionEvent event) {
         if (IPv6RadioButton.isSelected()) {
-            /*System.clearProperty("java.net.preferIPv4Addresses");
-            System.clearProperty("java.net.preferIPv4Stack");
-            System.setProperty("java.net.preferIPv6Addresses","true");
-            System.setProperty("java.net.preferIPv6Stack","true");*/
-            /*System.setProperty("java.net.preferIPv4Addresses","false");
-            System.setProperty("java.net.preferIPv4Stack","false");
-            System.setProperty("java.net.preferIPv6Addresses","true");
-            System.setProperty("java.net.preferIPv6Stack","true");*/
             reloadDNSServers(false);
         }
     }
@@ -953,42 +930,42 @@ public abstract class GeneralController {
 
         String serverIp = null;
 
-        if (userDataObject == null) {
-            showAlert("unsupportedIPversion");
-            return null;
-        }
-
-        if (userDataObject instanceof String) {
-            serverIp = (String) userDataObject;
-        } else if (userDataObject instanceof NameServer) {
-            serverIp = IPv4RadioButton.isSelected() ?
-                    ((NameServer) userDataObject).getIpv4().getFirst() :
-                    ((NameServer) userDataObject).getIpv6().getFirst();
-        } else if (userDataObject instanceof ToggleGroup) {
-            ToggleGroup group = (ToggleGroup) userDataObject;
-            Toggle selectedAddress = group.getSelectedToggle();
-            if (selectedAddress == null) {
-                sendButton.setText(getButtonText());
-                showAlert("ChooseDNSServer");
+        switch (userDataObject) {
+            case null -> {
+                showAlert("unsupportedIPversion");
                 return null;
             }
-            serverIp = (String) selectedAddress.getUserData();
-        } else if (userDataObject instanceof TextField) {
-            TextField input = (TextField) userDataObject;
-            String inputString = input.getText();
-            if(DomainConvert.isValidDomainName(inputString)){
-                if (IPv4RadioButton.isSelected()){
-                    serverIp = Ip.getIpV4OfDomainName(inputString);
+            case String s -> serverIp = s;
+            case NameServer server -> serverIp = IPv4RadioButton.isSelected() ?
+                    server.getIpv4().getFirst() :
+                    server.getIpv6().getFirst();
+            case ToggleGroup group -> {
+                Toggle selectedAddress = group.getSelectedToggle();
+                if (selectedAddress == null) {
+                    sendButton.setText(getButtonText());
+                    showAlert("ChooseDNSServer");
+                    return null;
+                }
+                serverIp = (String) selectedAddress.getUserData();
+            }
+            case TextField input -> {
+                String inputString = input.getText();
+                if (DomainConvert.isValidDomainName(inputString)) {
+                    if (IPv4RadioButton.isSelected()) {
+                        serverIp = Ip.getIpV4OfDomainName(inputString);
+                    } else {
+                        serverIp = Ip.getIpV6OfDomainName(inputString);
+                    }
+                    if (serverIp == null) {
+                        throw new NoIpAddrForDomainName();
+                    }
+                } else if (!Ip.isIpValid(inputString)) {
+                    throw new DnsServerIpIsNotValidException();
                 } else {
-                    serverIp = Ip.getIpV6OfDomainName(inputString);
+                    serverIp = inputString;
                 }
-                if (serverIp == null){
-                    throw new NoIpAddrForDomainName();
-                }
-            } else if (!Ip.isIpValid(inputString)){
-                throw new DnsServerIpIsNotValidException();
-            } else{
-                serverIp = inputString;
+            }
+            default -> {
             }
         }
 
@@ -1124,7 +1101,6 @@ public abstract class GeneralController {
     //240979
     public String getDnsServerDomainName(String address)
     {
-        //List<NameServer> nsList = Config.getNameServers().stream().filter(NameServer::isDoq).toList();
         List<NameServer> nsList = Config.getNameServers();
         for(NameServer ns: nsList)
         {

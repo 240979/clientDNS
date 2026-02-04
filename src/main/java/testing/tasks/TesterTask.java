@@ -4,7 +4,6 @@ package testing.tasks;
  * Link - https://github.com/xramos00/DNS_client
  * */
 import enums.APPLICATION_PROTOCOL;
-import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -17,7 +16,6 @@ import testing.*;
 import ui.GeneralController;
 import ui.TesterController;
 
-import java.net.NetworkInterface;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -30,17 +28,6 @@ import java.util.logging.Logger;
 public class TesterTask extends Task<Void> {
 
     List<Task> tasks = new LinkedList<>();
-    /*
-    private boolean recursion;
-    private boolean adFlag;
-    private boolean cdFlag;
-    private boolean doFlag;
-    private boolean holdConnection;
-    private String domain;
-    private Q_COUNT[] types;
-    private TRANSPORT_PROTOCOL transport_protocol;
-    private APPLICATION_PROTOCOL application_protocol;
-    private NetworkInterface netInterface;*/
     private int duration;
     private List<List<Result>> observableList;
     private long cooldown;
@@ -48,39 +35,7 @@ public class TesterTask extends Task<Void> {
     private static Logger LOGGER = Logger.getLogger(TesterTask.class.getName());
     private RequestSettings requestSettings;
     private ConnectionSettings connectionSettings;
-    /*
-    public TesterTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, boolean holdConnection, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, NetworkInterface netInterface, int duration, List<List<Result>> observableList, long cooldown, GeneralController controller) {
-
-        this.recursion = recursion;
-        this.adFlag = adFlag;
-        this.cdFlag = cdFlag;
-        this.doFlag = doFlag;
-        this.holdConnection = holdConnection;
-        this.domain = domain;
-        this.types = types;
-        this.transport_protocol = transport_protocol;
-        this.application_protocol = application_protocol;
-        this.netInterface = netInterface;
-        this.duration = duration;
-        this.observableList = observableList;
-        this.cooldown = cooldown;
-        this.controller = controller;
-        LOGGER.info("Created main thread for mass testing");
-    }*/
     public TesterTask(RequestSettings rs, ConnectionSettings cs, int duration, List<List<Result>> observableList, long cooldown, GeneralController controller) {
-    /*
-        this.recursion = rs.isRecursion();
-        this.adFlag = rs.isAdFlag();
-        this.cdFlag = rs.isCdFlag();
-        this.doFlag = rs.isDoFlag();
-        this.holdConnection = cs.isHoldConnection();
-        this.domain = rs.getDomain();
-        this.types = rs.getTypes();
-        this.transport_protocol = cs.getTransport_protocol();
-        this.application_protocol = cs.getApplication_protocol();
-        this.netInterface = cs.getNetInterface();
-
-     */
         this.duration = duration;
         this.observableList = observableList;
         this.cooldown = cooldown;
@@ -102,26 +57,15 @@ public class TesterTask extends Task<Void> {
             for (List<Result> result : observableList) {
                 Task task;
                 if (connectionSettings.getApplication_protocol() == APPLICATION_PROTOCOL.DOH) {
-                    /*
-                    task = new DoHTester(recursion, adFlag, cdFlag, doFlag, types,
-                            TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DOH, netInterface, duration, result, cooldown);*/
                     task = new DoHTester(requestSettings, connectionSettings, duration, result, cooldown);
                     ((DoHTester) task).setController(controller);
                 } else if (connectionSettings.getApplication_protocol() == APPLICATION_PROTOCOL.DOT) {
-                    /*
-                    task = new DoTTester(recursion, adFlag, cdFlag, doFlag, types,
-                            TRANSPORT_PROTOCOL.TCP, application_protocol, netInterface, result, duration, cooldown);*/
                     task = new DoTTester(requestSettings, connectionSettings, duration, result, cooldown);
                     ((DoTTester) task).setController(controller);
                 } else if (connectionSettings.getTransport_protocol() == TRANSPORT_PROTOCOL.UDP) {
-                    /*task = new UdpTester(recursion, adFlag, cdFlag, doFlag, types,
-                            TRANSPORT_PROTOCOL.UDP, APPLICATION_PROTOCOL.DNS, netInterface, duration, result, cooldown);*/
                     task = new UdpTester(requestSettings, connectionSettings, duration, result, cooldown);
                     ((UdpTester) task).setController(controller);
                 } else {
-                    /*task = new TcpTester(recursion, adFlag, cdFlag, doFlag, holdConnection, types,
-                            TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DNS, netInterface, duration, result, cooldown);
-                     */
                     task = new TcpTester(requestSettings,connectionSettings,duration,result,cooldown);
                     ((TcpTester) task).setController(controller);
                 }
@@ -136,7 +80,6 @@ public class TesterTask extends Task<Void> {
             boolean notFinished = true;
             // threads watchdog
             while (notFinished) {
-                //LOGGER.info("Checking if TcpTester tasks completed");
                 notFinished = false;
                 for (List<Result> results : observableList) {
                     for (Result result : results) {
@@ -146,8 +89,6 @@ public class TesterTask extends Task<Void> {
                         }
                         // propagate results to UI
                         // calculate average duration for every result
-                        // TODO maybe use runnable and Platform.runLater(...)
-                        //LOGGER.info("Calculating average duration of requests in TcpTester task for " + result.getName());
                         result.setAverage(Math.floor(result.getDurations().stream().mapToDouble(d -> d).average().orElse(0.0)*100)/100);
                         result.setMax(Math.floor(result.getDurations().stream().mapToDouble(d -> d).max().orElse(0.0)*100)/100);
                         result.setMin(Math.floor(result.getDurations().stream().mapToDouble(d -> d).min().orElse(0.0)*100)/100);
@@ -163,7 +104,6 @@ public class TesterTask extends Task<Void> {
                 try {
                     t.join();
                 } catch (InterruptedException e) {
-                    //e.printStackTrace();
                     LOGGER.severe(ExceptionUtils.getStackTrace(e));
                 }
             }

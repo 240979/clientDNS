@@ -28,8 +28,6 @@ public class DoTClientHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
-        // cause.printStackTrace();
-
         ctx.close().sync();
     }
 
@@ -45,11 +43,7 @@ public class DoTClientHandler extends SimpleChannelInboundHandler<Object> {
         byte[] pck = new byte[dnsBuf.readableBytes()];
         dnsBuf.readBytes(pck);
         dnsTaskBase.setReceiveReply(pck);
-        //System.out.println(pck.length);
         LOGGER.info("Packet length: " + pck.length);
-        /*System.out.println("--------------------------RESPONSE--------------------------");
-        System.out.println(new Message(pck));
-        System.out.println("------------------------------------------------------------");*/
         ((DNSOverTLS)dnsTaskBase).setNotFinished(false);
     }
 }

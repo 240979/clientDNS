@@ -132,7 +132,6 @@ public class DoQController extends GeneralController{
                     .netInterface(getInterface())
                     .build();
             task = new DNSOverQUICTask(rs, cs);
-            //task = new DNSOverQUICTask(recursive,adFlag,caFlag,doFlag,domain,records, TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DOT,dnsServIp, dnsServPort, getInterface()); // NotValidIPException
             task.setController(this);
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
             responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());

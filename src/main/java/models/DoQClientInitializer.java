@@ -18,7 +18,6 @@ public class DoQClientInitializer extends ChannelInitializer<QuicStreamChannel> 
     protected void initChannel(QuicStreamChannel quicStreamChannel){
         ChannelPipeline pipeline = quicStreamChannel.pipeline();
         pipeline.addLast(new LoggingHandler(LogLevel.INFO));
-        //pipeline.addLast(new DoQClientHandler(dnsTask));
         pipeline.addLast(new DnsOverSecureProtocolHandler(dnsTask));
         pipeline.addLast(new ReadTimeoutHandler(3));
     }

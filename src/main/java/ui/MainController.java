@@ -145,10 +145,7 @@ public class MainController extends GeneralController
             newStage.show();
             oldStage.close();
 
-        } catch (Exception e)
-        {
-            //e.printStackTrace();
-            //LOGGER.severe("Could not open new window:" + e.toString());
+        } catch (Exception e) {
             LOGGER.severe(ExceptionUtils.getStackTrace(e));
             Alert alert = new Alert(AlertType.ERROR, GeneralController.language.getLanguageBundle().getString("windowError"));
             alert.showAndWait();
@@ -185,18 +182,14 @@ public class MainController extends GeneralController
             Config.loadConfiguration();
         } catch (ConfigurationException e)
         {
-            //showAlert(e.getClass().getSimpleName());
-            //e.printStackTrace();
             showAlert(e);
         } catch (IOException e)
         {
             showAlert("ConfigurationException");
-            //e.printStackTrace();
             LOGGER.severe(ExceptionUtils.getStackTrace(e));
         } catch (ParseException e)
         {
             showAlert("parseExceptionConfig");
-            //e.printStackTrace();
             LOGGER.severe(ExceptionUtils.getStackTrace(e));
         }
     }
@@ -268,15 +261,12 @@ public class MainController extends GeneralController
             FileUtils.copyURLToFile(inputUrl, dest);
         } catch (IOException e) {
             showAlert("fileCopyError");
-            // e.printStackTrace();
             LOGGER.severe(ExceptionUtils.getStackTrace(e));
         }
         try {
             Config.getConfProperties().setProperty(prop,"./"+defaultPropertyValues.get(prop));
             Config.getConfProperties().save();
         } catch (ConfigurationException e) {
-            //showAlert(e.getClass().getSimpleName());
-            //e.printStackTrace();
             showAlert(e);
         }
     }

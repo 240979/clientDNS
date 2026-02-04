@@ -8,7 +8,6 @@ import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import javafx.concurrent.Task;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -16,9 +15,7 @@ import tasks.DNSTaskBase;
 import testing.tasks.DnsTcpTask;
 import ui.GeneralController;
 
-import java.io.IOException;
 import java.net.NetworkInterface;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -84,9 +81,6 @@ public class TcpTester extends Task<Void> {
             // create new thread, which will start given task, which runs DNS over TCP and returns duration of request
             // to given Double object which was passed inside
             LOGGER.info("StartingTcpTester for " + result.getName());
-            /*DNSTaskBase task = new DnsTcpTask(recursion, adFlag, caFlag, doFlag, holdConnection,
-                    result.getDomain(), types, TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DNS, result.getIp(),
-                    netInterface, result, duration, cooldown);*/
             this.connectionSettings.setResolverIP(result.getIp());
             this.requestSettings.setDomain(result.getDomain());
             LOGGER.info("Setting resolver IP: " + result.getIp());

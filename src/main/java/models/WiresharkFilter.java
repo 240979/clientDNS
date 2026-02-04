@@ -9,7 +9,7 @@ import org.apache.commons.text.StringSubstitutor;
 import java.util.Map;
 
 /**
- * Class representing Wireshark filters available in app using string templating and place holders
+ * Class representing Wireshark filters available in app using string templating and placeholders
  */
 @Data
 public class WiresharkFilter

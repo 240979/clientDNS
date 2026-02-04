@@ -225,40 +225,6 @@ public abstract class DNSTaskBase extends Task<Void> {
             });
         }
     }
-/*
-    public DNSTaskBase(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types,
-                       TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface, RESPONSE_MDNS_TYPE mdnsType) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
-        super();
-        this.mdnsType = mdnsType;
-        requests = new ArrayList<Request>();
-        header = new Header(recursion, adFlag, types.length, doFlag, cdFlag);
-        size = Header.getSize();
-        // TODO addRequests(types, checkAndStripFullyQualifyName(domain));
-        addRequests(types, checkAndStripFullyQualifyName(domain));
-
-        messagesSentProperty = new SimpleIntegerProperty();
-        durationProperty = new SimpleDoubleProperty();
-
-        requestProperty = new SimpleObjectProperty<TreeItem<String>>();
-        responseProperty = new SimpleObjectProperty<TreeItem<String>>();
-
-        // this.resolverIP = resolverIP;
-        this.transport_protocol = transport_protocol;
-        this.application_protocol = application_protocol;
-        if (application_protocol != APPLICATION_PROTOCOL.DOH) {
-            this.ip = InetAddress.getByName(resolverIP);
-        }
-        this.resolver = resolverIP;
-        this.receiveReply = new byte[1232];
-        this.doFlag = doFlag;
-        this.adFlag = adFlag;
-        this.qcountTypes = types;
-        this.domainAsString = domain;
-        setMessagesSentProperty(0);
-
-        this.wasSend = false;
-        interfaceToSend = netInterface;
-    }*/
     public DNSTaskBase(RequestSettings requestSettings, ConnectionSettings connectionSettings, RESPONSE_MDNS_TYPE mdnsType) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super();
 
@@ -266,7 +232,6 @@ public abstract class DNSTaskBase extends Task<Void> {
         requests = new ArrayList<Request>();
         header = requestSettings.getHeader();
         size = Header.getSize();
-        // TODO addRequests(types, checkAndStripFullyQualifyName(domain));
         addRequests(requestSettings.getTypes(), checkAndStripFullyQualifyName(requestSettings.getDomain()));
 
         messagesSentProperty = new SimpleIntegerProperty();
@@ -275,7 +240,6 @@ public abstract class DNSTaskBase extends Task<Void> {
         requestProperty = new SimpleObjectProperty<TreeItem<String>>();
         responseProperty = new SimpleObjectProperty<TreeItem<String>>();
 
-        // this.resolverIP = resolverIP;
         this.transport_protocol = connectionSettings.getTransport_protocol();
         this.application_protocol = connectionSettings.getApplication_protocol();
         if (application_protocol != APPLICATION_PROTOCOL.DOH) {
@@ -452,8 +416,7 @@ public abstract class DNSTaskBase extends Task<Void> {
             // send data over network
             // method will be specified in the implementation of method
             sendData();
-            //Thread.sleep(500);
-            //System.out.println("Taskbase " + recieveReply.length);
+
             LOGGER.info("Taskbase " + receiveReply.length);
             setTaskProgress(0.8);
             parser = parseResponse();
@@ -477,7 +440,6 @@ public abstract class DNSTaskBase extends Task<Void> {
                 Platform.runLater(() -> {
                     controller.getSendButton().setText(controller.getButtonText());
                     controller.getProgressBar().setProgress(0);
-                    //controller.showAlert(e.getClass().getSimpleName());
                     controller.showAlert(e);
                 });
             }
@@ -503,21 +465,8 @@ public abstract class DNSTaskBase extends Task<Void> {
                 controller.getSendButton().setText(controller.getButtonText());
                 controller.getProgressBar().setProgress(0);
                 controller.showAlert(e);
-                //controller.showAlert(e.getClass().getSimpleName()); // Exception
-                //LOGGER.severe(e.getClass().getSimpleName());
-                //LOGGER.severe(e.getCause().getClass().getSimpleName());
+
             });
-            //e.printStackTrace();
-        /*
-        }catch (ExecutionException e){
-            // 240979: Had to split Execution exception, because this can be caused by many things, so I opted for raising error from the cause
-            Platform.runLater(()-> {
-                controller.getSendButton().setText(controller.getButtonText());
-                controller.getProgressBar().setProgress(0);
-                controller.showAlert(e.getCause().getClass().getSimpleName()); // Cause
-                LOGGER.severe(e.getClass().getSimpleName());
-                LOGGER.severe(e.getCause().getClass().getSimpleName());
-            });*/
         }
         return null;
 

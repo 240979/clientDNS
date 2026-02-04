@@ -4,9 +4,6 @@ package testing.tasks;
  * Author - Patricia Ramosova
  * Link - https://github.com/xramos00/DNS_client
  * */
-import enums.APPLICATION_PROTOCOL;
-import enums.Q_COUNT;
-import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import models.*;
@@ -18,7 +15,6 @@ import ui.TesterController;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,17 +25,10 @@ import java.util.concurrent.ExecutionException;
  * from super class
  */
 public class DnsDohTask extends DNSOverHTTPSTask {
-    private Result result;
-    private int numberOfRequests;
-    private long cooldown;
-/*
-    public DnsDohTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, String resolverUri, NetworkInterface netInterface, Result result, int numberOfRequests, long cooldown) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
-        //super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP+"/"+result.getNs().getPath(), netInterface, result.getNs().isGet());
-        super(recursion,adFlag,cdFlag,doFlag, domain, types, transport_protocol, application_protocol, resolverIP+"/"+result.getNs().getPath(), netInterface, result.getNs().isGet(),resolverUri, true, false);
-        this.result = result;
-        this.numberOfRequests = numberOfRequests;
-        this.cooldown = cooldown;
-    }*/
+    private final Result result;
+    private final int numberOfRequests;
+    private final long cooldown;
+
     public DnsDohTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int numberOfRequests, long cooldown) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(requestSettings, connectionSettings);
         this.result = result;
@@ -67,7 +56,7 @@ public class DnsDohTask extends DNSOverHTTPSTask {
                     parser = new MessageParser(httpResponse);
                     long status = (long) httpResponse.get("Status");
                     JSONArray answers = (JSONArray) httpResponse.get("Answer");
-                    if (answers == null || answers.size() == 0 || status != 0) {
+                    if (answers == null || answers.isEmpty() || status != 0) {
                         exc = new Exception();
                     }
                     LOGGER.info("Calculated duration to be stored " + calculateDuration());
@@ -106,10 +95,6 @@ public class DnsDohTask extends DNSOverHTTPSTask {
             cleanup();
             LOGGER.info("DnsDohTask interrupted");
         }
-    }
-
-    @Override
-    protected void updateProgressUI() {
     }
 
     @Override

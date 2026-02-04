@@ -20,10 +20,6 @@ public class DoQClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
         LOGGER.info("chanelRead0");
-        /*byte[] responseBytes = new byte[byteBuf.readableBytes()];
-        byteBuf.readBytes(responseBytes);
-        System.out.println("Received response: " + Arrays.toString(responseBytes));
-        */
         ByteBuf dataLengthBuf = byteBuf.readBytes(2);
         byte[] dataLengthByte = new byte[dataLengthBuf.readableBytes()];
         dataLengthBuf.readBytes(dataLengthByte);
@@ -34,7 +30,6 @@ public class DoQClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
         dnsTaskBase.setReceiveReply(pck);
     }
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        //cause.printStackTrace();
         LOGGER.severe(ExceptionUtils.getStackTrace(cause));
         ctx.close();
     }
@@ -46,20 +41,17 @@ public class DoQClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("Stream channel active");
-        //System.out.println("Stream channel active");
         super.channelActive(ctx);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("Stream channel inactive");
-        //System.out.println("Stream channel inactive");
         super.channelInactive(ctx);
     }
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("channelReadComplete() called");
-        //System.out.println("channelReadComplete() called");
         super.channelReadComplete(ctx);
     }
 }

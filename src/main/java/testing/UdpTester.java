@@ -43,23 +43,6 @@ public class UdpTester extends Task<Void> {
     private RequestSettings requestSettings;
     private ConnectionSettings connectionSettings;
 
-    /*
-    public UdpTester(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag, Q_COUNT[] types,
-                     TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,
-                     NetworkInterface netInterface, int duration, List<Result> results, long cooldown) {
-        this.recursion = recursion;
-        this.adFlag = adFlag;
-        this.caFlag = caFlag;
-        this.doFlag = doFlag;
-        this.types = types;
-        this.transport_protocol = transport_protocol;
-        this.application_protocol = application_protocol;
-        this.netInterface = netInterface;
-        this.duration = duration;
-        this.results = results;
-        this.cooldown = cooldown;
-        LOGGER.info("Created UdpTester task");
-    }*/
     public UdpTester(RequestSettings requestSettings, ConnectionSettings connectionSettings, int duration, List<Result> results, long cooldown) {
         this.requestSettings = requestSettings;
         this.connectionSettings = connectionSettings;
@@ -76,16 +59,9 @@ public class UdpTester extends Task<Void> {
             // create new thread, which will start given task, which runs DNS over TCP and returns duration of request
             // to given Double object which was passed inside
             LOGGER.info("Starting UdpTester for "+result.getName());
-            /*
-            DNSTaskBase task = new DnsUdpTask(recursion,adFlag,caFlag,doFlag,result.getDomain(),types,
-                    TRANSPORT_PROTOCOL.UDP, APPLICATION_PROTOCOL.DNS,result.getIp(),netInterface,
-                    result,duration, cooldown);
-
-             */
             this.connectionSettings.setResolverIP(result.getIp());
             this.requestSettings.setDomain(result.getDomain());
-            LOGGER.info("Setting resolver IP: " + result.getIp());
-            LOGGER.info("Set resolver IP: " + this.connectionSettings.getResolverIP());
+
             DNSTaskBase task = new DnsUdpTask(this.requestSettings, this.connectionSettings, result, duration, cooldown);
             Thread thread = new Thread(task);
             task.setMassTesting(true);

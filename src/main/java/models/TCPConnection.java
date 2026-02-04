@@ -25,7 +25,6 @@ public class TCPConnection {
 	private NetworkInterface netIntreface;
 	private InputStream inputStream;
 	private static final int DNS_PORT = 53;
-	// private static final int SOCKET_TIME_OUT_SEC = 3;
 	private byte[] responseMessage;
 	protected static Logger LOGGER = Logger.getLogger(TCPConnection.class.getName());
 

@@ -25,10 +25,6 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) {
         LOGGER.info("chanelRead0");
-        /*byte[] responseBytes = new byte[byteBuf.readableBytes()];
-        byteBuf.readBytes(responseBytes);
-        System.out.println("Received response: " + Arrays.toString(responseBytes));
-        */
         ByteBuf dataLengthBuf = byteBuf.readBytes(2);
         byte[] dataLengthByte = new byte[dataLengthBuf.readableBytes()];
         dataLengthBuf.readBytes(dataLengthByte);
@@ -45,22 +41,17 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
         }
     }
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        //cause.printStackTrace();
-        // LOGGER.severe(cause.toString());
         LOGGER.severe(ExceptionUtils.getStackTrace(cause));
         ctx.close();
     }
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         LOGGER.info("chanelRead");
-        //System.out.println("channelRead() - received: " + msg.getClass().getName() + ", " + msg);
         this.channelRead0(ctx, (ByteBuf) msg);
-        //super.channelRead(ctx, msg);
     }
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("Stream channel active");
-        //System.out.println("Stream channel active");
         super.channelActive(ctx);
 
     }
@@ -68,13 +59,11 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("Stream channel inactive");
-        //System.out.println("Stream channel inactive");
         super.channelInactive(ctx);
     }
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("channelReadComplete() called");
-        //System.out.println("channelReadComplete() called");
         super.channelReadComplete(ctx);
     }
 }

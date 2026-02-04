@@ -80,7 +80,7 @@ public class DoHController extends GeneralController {
         isGetRadioButton.setTooltip(new Tooltip("GET"));
         customToggle.setToggleGroup(dnsserverToggleGroup);
         TextField input = new TextField();
-        //input.setPromptText(language.getLanguageBundle().getString("dnsServerDropDownLabel"));
+
         customToggle.setUserData(input);
         input.setOnMouseClicked(actionEvent -> {
             customToggle.setSelected(true);
@@ -92,11 +92,6 @@ public class DoHController extends GeneralController {
         otherDNSVbox.getChildren().add(customDNS);
 
         setLanguageRadioButton();
-        // TODO add option for custom DNS server
-    }
-
-    private void setWiresharkUserData() {
-
     }
 
     /*
@@ -160,21 +155,15 @@ public class DoHController extends GeneralController {
 
             ConnectionSettings connectionSettings = new ConnectionSettings.ConnectionSettingsBuilder()
                     .application_protocol(APPLICATION_PROTOCOL.DOH)
-                    .resolverIP(domain/*+"/"+path*/)
+                    .resolverIP(domain)
                     .netInterface(getInterface())
                     .isGet(isGet)
-                    .resolverUri(getDnsServerDomainName(getDnsServerIp())/*+"/"+path*/)
+                    .resolverUri(getDnsServerDomainName(getDnsServerIp()))
                     .isReqJsonFormat(isRequestJson())
                     .isDomainNameUsed(isDomainNameUsed())
                     .path(path)
                     .build();
             task = new DNSOverHTTPSTask(requestSettings, connectionSettings);
-        /*
-            task = new DNSOverHTTPSTask(recursiveQueryRadioButton.isSelected(), authenticateDataCheckBox.isSelected(),
-                    checkingDisabledCheckBox.isSelected(), DNSSECOkCheckBox.isSelected(),getDomain(),
-                    getRecordTypes(), null, APPLICATION_PROTOCOL.DOH, domain+"/"+path,
-                 getInterface(), isGet, getDnsServerDomainName(getDnsServerIp())+"/"+path, isRequestJson(), isDomainNameUsed());
-*/
 
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
             responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());
@@ -188,29 +177,23 @@ public class DoHController extends GeneralController {
             progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
             task.setProgressBar(progressBar);
             thread.start();
-        } catch (NotValidDomainNameException | NotValidIPException | MoreRecordsTypesWithPTRException | NonRecordSelectedException | IOException | DnsServerIpIsNotValidException e) {
+        } catch (NotValidDomainNameException
+                 | NotValidIPException
+                 | MoreRecordsTypesWithPTRException
+                 | NonRecordSelectedException
+                 | IOException
+                 | DnsServerIpIsNotValidException
+                 | NoIpAddrForDomainName e) {
             Platform.runLater(()->{
                 sendButton.setText(getButtonText());
                 progressBar.setProgress(0);
             });
-            //e.printStackTrace();
-            //String fullClassName = e.getClass().getSimpleName();
-            //showAlert(fullClassName);
-            showAlert(e);
-        } catch (Exception e) {
-            Platform.runLater(()->{
-                sendButton.setText(getButtonText());
-                progressBar.setProgress(0);
-            });
-            // LOGGER.warning(e.toString());
-            // showAlert("Exception");
             showAlert(e);
         }
     }
 
     private String getPath() {
-        if (dnsserverToggleGroup.getSelectedToggle().getUserData() instanceof TextField){
-            TextField textField = (TextField) dnsserverToggleGroup.getSelectedToggle().getUserData();
+        if (dnsserverToggleGroup.getSelectedToggle().getUserData() instanceof TextField textField){
             return textField.getText().split("/")[1];
         }
         return nameServer.getPath();
@@ -237,44 +220,44 @@ public class DoHController extends GeneralController {
 
         String serverIp = null;
 
-        if (userDataObject == null) {
-            return null;
-        }
-
-        if (userDataObject instanceof String) {
-            serverIp = (String) userDataObject;
-        } else if (userDataObject instanceof NameServer) {
-            serverIp = IPv4RadioButton.isSelected() ?
-                    ((NameServer) userDataObject).getIpv4().getFirst() :
-                    ((NameServer) userDataObject).getIpv6().getFirst();
-        } else if (userDataObject instanceof ToggleGroup) {
-            ToggleGroup group = (ToggleGroup) userDataObject;
-            Toggle selectedAddress = group.getSelectedToggle();
-            if (selectedAddress == null) {
-                sendButton.setText(getButtonText());
-                showAlert("ChooseDNSServer");
+        switch (userDataObject) {
+            case null -> {
                 return null;
             }
-            serverIp = (String) selectedAddress.getUserData();
-        } else if (userDataObject instanceof TextField) {
-            TextField input = (TextField) userDataObject;
-            String inputString = input.getText();
-            if (inputString.split("/").length < 2){
-                throw new NotValidDomainNameException();
+            case String s -> serverIp = s;
+            case NameServer server -> serverIp = IPv4RadioButton.isSelected() ?
+                    server.getIpv4().getFirst() :
+                    server.getIpv6().getFirst();
+            case ToggleGroup group -> {
+                Toggle selectedAddress = group.getSelectedToggle();
+                if (selectedAddress == null) {
+                    sendButton.setText(getButtonText());
+                    showAlert("ChooseDNSServer");
+                    return null;
+                }
+                serverIp = (String) selectedAddress.getUserData();
             }
-            if(DomainConvert.isValidDomainName(inputString.split("/")[0])){
-                if (IPv4RadioButton.isSelected()){
-                    serverIp = Ip.getIpV4OfDomainName(inputString.split("/")[0]);
+            case TextField input -> {
+                String inputString = input.getText();
+                if (inputString.split("/").length < 2) {
+                    throw new NotValidDomainNameException();
+                }
+                if (DomainConvert.isValidDomainName(inputString.split("/")[0])) {
+                    if (IPv4RadioButton.isSelected()) {
+                        serverIp = Ip.getIpV4OfDomainName(inputString.split("/")[0]);
+                    } else {
+                        serverIp = Ip.getIpV6OfDomainName(inputString.split("/")[0]);
+                    }
+                    if (serverIp == null) {
+                        throw new NoIpAddrForDomainName();
+                    }
+                } else if (!Ip.isIpValid(inputString.split("/")[0])) {
+                    throw new DnsServerIpIsNotValidException();
                 } else {
-                    serverIp = Ip.getIpV6OfDomainName(inputString.split("/")[0]);
+                    serverIp = inputString.split("/")[0];
                 }
-                if (serverIp == null){
-                    throw new NoIpAddrForDomainName();
-                }
-            } else if (!Ip.isIpValid(inputString.split("/")[0])){
-                throw new DnsServerIpIsNotValidException();
-            } else{
-                serverIp = inputString.split("/")[0];
+            }
+            default -> {
             }
         }
 
@@ -294,8 +277,8 @@ public class DoHController extends GeneralController {
         for (Q_COUNT q_COUNT : qcount) {
             records.append(q_COUNT).append(",");
         }
-        //LOGGER.info("DoH:\n " + "dnssec: " + dnssec + "\n" + "signatures: " + signatures + "\n" + "domain: " + domain
-       //         + "\n" + "records: " + records + "\n" + "resovlerURL: " + resolverURL);
+        LOGGER.info("DoH:\n " + "dnssec: " + dnssec + "\n" + "signatures: " + signatures + "\n" + "domain: " + domain
+                + "\n" + "records: " + records + "\n" + "resolverURL: " + resolverURL);
 
     }
 

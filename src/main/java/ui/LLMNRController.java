@@ -57,11 +57,6 @@ public class LLMNRController extends GeneralController {
             return;
         }
         try{
-            Q_COUNT[] records = getRecordTypes();
-            String domain = getDomain();
-            boolean caFlag = checkingDisabledCheckBox.isSelected();
-            boolean adFlag = authenticateDataCheckBox.isSelected();
-            boolean doFlag = DNSSECOkCheckBox.isSelected();
             RequestSettings rs = new RequestSettings.RequestSettingsBuilder()
                 .recursion(false)
                 .cdFlag(checkingDisabledCheckBox.isSelected())
@@ -78,28 +73,24 @@ public class LLMNRController extends GeneralController {
                     .build();
 
             task = new DNSOverLinkLocal(rs, cs);
-
-        //logAction(records, domain, doFlag, networkProtocol, mdnsType);
-        /*
-        task = new DNSOverLinkLocal(false, adFlag, caFlag, doFlag, domain,
-                records, TRANSPORT_PROTOCOL.UDP, APPLICATION_PROTOCOL.MDNS, getDnsServerIp(), getInterface());
-         */
-
-        task.setController(this);
-        thread = new Thread(task);
-        // pass new progress bar to Task
-        numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
-        responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());
-        requestTreeView.rootProperty().bind(task.requestPropertyProperty());
-        responseTreeView.rootProperty().bind(task.responsePropertyProperty());
-        querySizeLabel.textProperty().bind(task.querySizeProperty().asString());
-        responseSizeLabel.textProperty().bind(task.responseSizeProperty().asString());
-        progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
-        task.setProgressBar(progressBar);
-        thread.start();
-        } catch (NotValidDomainNameException |MoreRecordsTypesWithPTRException  | UnsupportedEncodingException | NotValidIPException | UnknownHostException | NonRecordSelectedException ex){
-            //ex.printStackTrace();
-            //showAlert(ex.getClass().getSimpleName());
+            task.setController(this);
+            thread = new Thread(task);
+            // pass new progress bar to Task
+            numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
+            responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());
+            requestTreeView.rootProperty().bind(task.requestPropertyProperty());
+            responseTreeView.rootProperty().bind(task.responsePropertyProperty());
+            querySizeLabel.textProperty().bind(task.querySizeProperty().asString());
+            responseSizeLabel.textProperty().bind(task.responseSizeProperty().asString());
+            progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+            task.setProgressBar(progressBar);
+            thread.start();
+        } catch (NotValidDomainNameException
+                 | MoreRecordsTypesWithPTRException
+                 | UnsupportedEncodingException
+                 | NotValidIPException
+                 | UnknownHostException
+                 | NonRecordSelectedException ex){
             showAlert(ex);
             Platform.runLater(()->{
                 sendButton.setText(getButtonText());
@@ -110,8 +101,6 @@ public class LLMNRController extends GeneralController {
                 sendButton.setText(getButtonText());
                 progressBar.setProgress(0);
             });
-            // LOGGER.warning(exx.toString());
-            // showAlert("Exception");
             showAlert(exx);
         }
     }

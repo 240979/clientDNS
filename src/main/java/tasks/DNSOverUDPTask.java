@@ -5,9 +5,6 @@ package tasks;
  * Methods used from Martin Biolek thesis are marked with comment
  * */
 import application.Config;
-import enums.APPLICATION_PROTOCOL;
-import enums.Q_COUNT;
-import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import lombok.Getter;

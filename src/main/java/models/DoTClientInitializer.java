@@ -40,7 +40,6 @@ public class DoTClientInitializer extends ChannelInitializer<SocketChannel> {
             @Override
             public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
                 if (cause instanceof ReadTimeoutException){
-                    //cause.printStackTrace();
                     LOGGER.severe(ExceptionUtils.getStackTrace(cause));
                     ctx.close();
                     ((DNSOverTLS)dnsTaskBase).setExc(new TimeoutException());
@@ -59,7 +58,6 @@ public class DoTClientInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(sslHandler);
 
         // and then business logic.
-        //pipeline.addLast(new DoTClientHandler(dnsTaskBase));
         pipeline.addLast(new DnsOverSecureProtocolHandler(dnsTaskBase));
     }
 }

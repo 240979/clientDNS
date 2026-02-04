@@ -34,7 +34,7 @@ public class Request {
 	private static final String KEY_QCOUNT = "Type";
 	private static final String KEY_QTYPE = "Class";
 	private static final String KEY_RESPONSE_TYPE = "Response type";
-	private static final Logger LOGGER = Logger.getLogger(Language.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(Request.class.getName());
 
 	public Request(String qName, Q_COUNT qCount)
 			throws NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException {
@@ -65,7 +65,7 @@ public class Request {
 	}
 
 	public Request() {
-	};
+	}
 
 	public byte[] getRequestAsBytes() {
 

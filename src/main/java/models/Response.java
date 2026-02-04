@@ -27,10 +27,10 @@ public class Response {
 
 	private byte[] rawMessage;
 	private String nameAsString;
-	private Q_COUNT qcount;;
+	private Q_COUNT qcount;
 	private Q_TYPE qtype;
 	private int ttl;
-	private UInt16 rdLenght;
+	private UInt16 rdLength;
 	private int byteSize;
 	private int endIndex;
 	private DnsRecord rdata;
@@ -43,7 +43,7 @@ public class Response {
 	private String srvName;
 	private CACHE cache;
 	private JSONArray dohData = null;
-	private static final int COMPRESS_CONTANT_NUMBER = 49152;
+	private static final int COMPRESS_CONSTANT_NUMBER = 49152;
 	private static final int DO_BIT_VALUE = 32768;
 	private static final int MAX_UDP_SIZE = 1232;
 	private static final String DATA_KEY = "Data";
@@ -93,9 +93,9 @@ public class Response {
 				rawMessage[currentIndex + 3] };
 		this.ttl = ByteBuffer.wrap(ttlBytes).getInt();
 		currentIndex += 4;
-		this.rdLenght = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
+		this.rdLength = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
 		currentIndex += 2;
-		this.endIndex = currentIndex + this.rdLenght.getValue() - 1;
+		this.endIndex = currentIndex + this.rdLength.getValue() - 1;
 		this.rdata = parseRecord(currentIndex);
 		cache = null;
 		return this;
@@ -126,9 +126,9 @@ public class Response {
 				rawMessage[currentIndex + 3] };
 		this.ttl = ByteBuffer.wrap(ttlBytes).getInt();
 		currentIndex += 4;
-		this.rdLenght = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
+		this.rdLength = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
 		currentIndex += 2;
-		this.endIndex = currentIndex + this.rdLenght.getValue() - 1;
+		this.endIndex = currentIndex + this.rdLength.getValue() - 1;
 		this.rdata = parseRecord(currentIndex);
 		return this;
 	}
@@ -162,7 +162,7 @@ public class Response {
 		currentIndex += 1;
 		doBit = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
 		currentIndex += 2;
-		rdLenght = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
+		rdLength = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
 		currentIndex += 2;
 		this.rdata = parseRecord(currentIndex);
 		nameAsString = ". (ROOT)";
@@ -172,9 +172,9 @@ public class Response {
 	private int parseName(int startIndex, boolean mdns) {
 		int positionOfNameIndex = startIndex;
 		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[startIndex], rawMessage[startIndex + 1]);
-		if (firstTwoBytes.getValue() >= COMPRESS_CONTANT_NUMBER) {
+		if (firstTwoBytes.getValue() >= COMPRESS_CONSTANT_NUMBER) {
 			// compress Form
-			UInt16 nameStartByte = new UInt16(firstTwoBytes.getValue() - COMPRESS_CONTANT_NUMBER);
+			UInt16 nameStartByte = new UInt16(firstTwoBytes.getValue() - COMPRESS_CONSTANT_NUMBER);
 			positionOfNameIndex = nameStartByte.getValue();
 			startIndex += 2;
 		} else {
@@ -194,43 +194,43 @@ public class Response {
 	private DnsRecord parseRecord(int currentIndex) throws UnknownHostException, UnsupportedEncodingException {
 		switch (qcount) {
 			case A:
-				return new DnsRecordA(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordA(rawMessage, rdLength.getValue(), currentIndex);
 			case AAAA:
-				return new DnsRecordAAAA(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordAAAA(rawMessage, rdLength.getValue(), currentIndex);
 			case CNAME:
-				return new DnsRecordCNAME(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordCNAME(rawMessage, rdLength.getValue(), currentIndex);
 			case NS:
-				return new DnsRecordNS(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordNS(rawMessage, rdLength.getValue(), currentIndex);
 			case TXT:
-				return new DnsRecordTXT(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordTXT(rawMessage, rdLength.getValue(), currentIndex);
 			case MX:
-				return new DnsRecordMX(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordMX(rawMessage, rdLength.getValue(), currentIndex);
 			case SOA:
-				return new DnsRecordSOA(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordSOA(rawMessage, rdLength.getValue(), currentIndex);
 			case DNSKEY:
-				return new DnsRecordDNSKEY(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordDNSKEY(rawMessage, rdLength.getValue(), currentIndex);
 			case CAA:
-				return new DnsRecordCAA(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordCAA(rawMessage, rdLength.getValue(), currentIndex);
 			case RRSIG:
-				return new DnsRecordRRSIG(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordRRSIG(rawMessage, rdLength.getValue(), currentIndex);
 			case OPT:
-				return new DnsRecordOPT(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordOPT(rawMessage, rdLength.getValue(), currentIndex);
 			case PTR:
-				return new DnsRecordPTR(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordPTR(rawMessage, rdLength.getValue(), currentIndex);
 			case DS:
-				return new DnsRecordDS(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordDS(rawMessage, rdLength.getValue(), currentIndex);
 			case NSEC:
-				return new DnsRecordNSEC(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordNSEC(rawMessage, rdLength.getValue(), currentIndex);
 			case NSEC3:
-				return new DnsRecordNSEC3(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordNSEC3(rawMessage, rdLength.getValue(), currentIndex);
 			case NSEC3PARAM:
-				return new DnsRecordNSEC3PARAM(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordNSEC3PARAM(rawMessage, rdLength.getValue(), currentIndex);
 			case SRV:
-				return new DnsRecordSRV(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordSRV(rawMessage, rdLength.getValue(), currentIndex);
 			case CDS:
-				return new DnsRecordCDS(rawMessage, rdLenght.getValue(), currentIndex);
+				return new DnsRecordCDS(rawMessage, rdLength.getValue(), currentIndex);
 			case CDNSKEY:
-				return new DnsRecordCDNSKEY(rawMessage,rdLenght.getValue(),currentIndex);
+				return new DnsRecordCDNSKEY(rawMessage, rdLength.getValue(),currentIndex);
 		default:
 			return null;
 		}

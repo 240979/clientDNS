@@ -10,7 +10,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-//import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import exceptions.NotValidDomainNameException;
@@ -31,8 +30,8 @@ public class DomainConvert {
 		// String original = domain;
 		domain = encodeIDN(domain);
 		ArrayList<Byte> resultByte = new ArrayList<Byte>();
-		String splited[] = domain.split("\\.");
-		for (String string : splited) {
+		String[] split = domain.split("\\.");
+		for (String string : split) {
 			resultByte.add((byte) string.length());
 			byte[] toAdd = string.getBytes("Us-ASCII");
 			for (int i = 0; i < toAdd.length; i++) {

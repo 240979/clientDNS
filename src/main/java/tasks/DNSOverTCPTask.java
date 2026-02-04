@@ -6,12 +6,8 @@ package tasks;
  * */
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 
-import enums.APPLICATION_PROTOCOL;
-import enums.Q_COUNT;
-import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import models.ConnectionSettings;
@@ -24,22 +20,6 @@ import tasks.runnables.RequestResultsUpdateRunnable;
 public class DNSOverTCPTask extends DNSTaskBase {
 
 	protected boolean holdConnection;
-/*
-	public DNSOverTCPTask(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag, boolean holdConnection, String domain, Q_COUNT[] types,
-						  TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,
-						  String resolverIP, NetworkInterface netInterface)
-			throws IOException, NotValidIPException, NotValidDomainNameException
-	{
-		super(recursion,adFlag,caFlag,doFlag,domain,types,transport_protocol,application_protocol, resolverIP, netInterface,null);
-		this.holdConnection = holdConnection;
-		if (!holdConnection)
-		{
-			if (DNSTaskBase.getTcpConnectionForServer(resolverIP) != null)
-			{
-				DNSTaskBase.getTcpConnectionForServer(resolverIP).closeAll();
-			}
-		}
-	}*/
 
 	public DNSOverTCPTask(RequestSettings requestSettings, ConnectionSettings connectionSettings) throws IOException, NotValidDomainNameException, NotValidIPException {
 		super(requestSettings, connectionSettings, null);
@@ -75,8 +55,10 @@ public class DNSOverTCPTask extends DNSTaskBase {
 			// calculate duration of whole DNS request including setup of TCP connection
 			setDuration(calculateDuration());
 			setMessagesSent(1);
-		} catch (IOException | TimeoutException | CouldNotUseHoldConnectionException |
-				InterfaceDoesNotHaveIPAddressException e) {
+		} catch (IOException
+				 | TimeoutException
+				 | CouldNotUseHoldConnectionException
+				 | InterfaceDoesNotHaveIPAddressException e) {
 			if (!massTesting){
 				Platform.runLater(()->{
 				controller.getSendButton().setText(controller.getButtonText());

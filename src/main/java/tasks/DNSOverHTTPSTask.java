@@ -1,8 +1,5 @@
 package tasks;
 
-import enums.APPLICATION_PROTOCOL;
-import enums.Q_COUNT;
-import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import models.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -13,7 +10,6 @@ import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.concurrent.FutureCallback;
-import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.protocol.BasicHttpContext;
 import org.apache.hc.core5.http.protocol.HttpContext;
@@ -33,7 +29,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -90,7 +85,6 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         // String httpsDomain = resolver.split("/")[0];
         String httpsDomain = resolver;
         String[] values = new String[]{domainAsString, qcountAsString(), "" + doFlag, "" + cdFlag};
-
         setMessagesSent(1);
         String hostname = isDomainNameUsed ? serverDomainName + "/" + path : resolver + "/" + path;
         String uri;

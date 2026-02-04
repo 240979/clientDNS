@@ -303,11 +303,6 @@ public class DoTController extends GeneralController {
                     .netInterface(getInterface())
                     .build();
             task = new DNSOverTLS(rs,cs);
-            /*
-            task = new DNSOverTLS(recursive,adFlag,cdFlag,doFlag,domain,records,
-                    TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DOT,dnsServer,getInterface());
-
-             */
             task.setController(this);
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
             responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());
@@ -327,18 +322,8 @@ public class DoTController extends GeneralController {
                 sendButton.setText(getButtonText());
                 progressBar.setProgress(0);
             });
-            //String fullClassName = e.getClass().getSimpleName();
-            //LOGGER.info(fullClassName);
-            // showAlert(fullClassName);
             showAlert(e);
-        } /*catch (Exception e) {
-            Platform.runLater(()->{
-                sendButton.setText(getButtonText());
-                progressBar.setProgress(0);
-            });
-            LOGGER.warning(e.toString());
-            showAller("Exception");
-        }*/
+        }
     }
 
     /*

@@ -3,10 +3,7 @@ package testing.tasks;
  * Author - Patricia Ramosova
  * Link - https://github.com/xramos00/DNS_client
  * */
-import enums.APPLICATION_PROTOCOL;
-import enums.Q_COUNT;
 import enums.R_CODE;
-import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import lombok.Getter;
@@ -23,9 +20,7 @@ import ui.TesterController;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.NetworkInterface;
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -40,19 +35,7 @@ public class DnsTcpTask extends DNSOverTCPTask {
     private long cooldown;
     private int i;
     public static Logger LOGGER = Logger.getLogger(DnsTcpTask.class.getName());
-/*
-    public DnsTcpTask(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag, boolean holdConnection,
-                      String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol,
-                      APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface,
-                      Result result, int numberOfRequests, long cooldown) throws IOException, NotValidIPException, NotValidDomainNameException {
-        super(recursion, adFlag, caFlag, doFlag, holdConnection, domain, types, transport_protocol,
-                application_protocol, resolverIP, netInterface);
-        this.result = result;
-        this.numberOfRequests = numberOfRequests;
-        this.cooldown = cooldown;
 
-        LOGGER.info("Created DnsTcpTask for " + resolverIP);
-    } */
     public DnsTcpTask(RequestSettings requestSettings, ConnectionSettings connectionSettings,
                       Result result, int numberOfRequests, long cooldown) throws IOException, NotValidIPException, NotValidDomainNameException {
         super(requestSettings, connectionSettings);

@@ -15,7 +15,6 @@ public class LoggerInitializer {
     public static void init(){
         try{
             Logger rootLogger = Logger.getLogger("");
-            //FileHandler fileHandler = new FileHandler("warning.log", true);
             FileHandler fileHandler = new FileHandler("warning.log", 5000000, 2, true); // Logging rotation to prevent overgrowing logfiles: 2x 5MB maximum
             fileHandler.setFormatter(new SimpleFormatter());
             fileHandler.setLevel(Level.WARNING);

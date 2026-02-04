@@ -364,17 +364,8 @@ public class DNSController extends GeneralController {
                     .netInterface(getInterface())
                     .build();
             if (transport == TRANSPORT_PROTOCOL.TCP) {
-                /*
-                task = new DNSOverTCPTask(recursive, adFlag, cdFlag, doFlag, holdConnection, domain, records,
-                        transport, APPLICATION_PROTOCOL.DNS, dnsServer, getInterface());
-                        */
                 task = new DNSOverTCPTask(requestSettings, connectionSettings);
             } else {
-                /*
-                task = new DNSOverUDPTask(recursive, adFlag, cdFlag, doFlag, domain, records, transport,
-                        APPLICATION_PROTOCOL.DNS,
-                        dnsServer, getInterface());
-                        */
                 task = new DNSOverUDPTask(requestSettings, connectionSettings);
             }
             task.setController(this);
@@ -395,46 +386,10 @@ public class DNSController extends GeneralController {
                 sendButton.setText(getButtonText());
                 progressBar.setProgress(0);
             });
-            //String fullClassName = e.getClass().getSimpleName();
-            //LOGGER.info(fullClassName);
-            //showAlert(fullClassName);
-            showAlert(e);
-        } catch (Exception e) {
-            Platform.runLater(()->{
-                sendButton.setText(getButtonText());
-                progressBar.setProgress(0);
-            });
-            //LOGGER.warning(e.toString());
-            //showAlert("Exception");
             showAlert(e);
         }
-
     }
 
-
-    /*
-     * Body of method taken from Martin Biolek thesis and modified
-     * */
-    @FXML
-    private void onDnsServerNameChoiseBoxAction(ActionEvent event) {
-		/*try {
-			if (!savedDNSChoiceBox.getValue().equals(null) && !savedDNSChoiceBox.getValue().equals("")) {
-				dnsServerTextField.setText(savedDNSChoiceBox.getValue());
-				copyDataToClipBoard(dnsServerTextField.getText());
-			}
-		} catch (Exception e) {
-			LOGGER.warning(e.toString());
-		}*/
-    }
-
-    /*
-     * Body of method taken from Martin Biolek thesis and modified
-     * */
-    @FXML
-    protected void domainNameKeyPressed(KeyEvent event) {
-		/*controlKeys(event, domainNameTextField);
-		autobinging(domainNameTextField.getText(), settings.getDomainNamesDNS(), savedDomainNamesChoiseBox);*/
-    }
 
     /*
      * Body of method taken from Martin Biolek thesis and modified
@@ -487,8 +442,6 @@ public class DNSController extends GeneralController {
             oldStage.close();
             layoutLarge = !layoutLarge;
         } catch (Exception e) {
-            //e.printStackTrace();
-            //LOGGER.severe("Could not open new window:" + e.toString());
             LOGGER.severe("Could not open new window. Caused by: " + ExceptionUtils.getStackTrace(e));
             Alert alert = new Alert(AlertType.ERROR, GeneralController.language.getLanguageBundle().getString("windowError"));
             alert.showAndWait();
