@@ -31,10 +31,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
-import models.Ip;
-import models.NameServer;
-import models.TCPConnection;
-import models.WiresharkFilter;
+import models.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.DNSOverTCPTask;
 import tasks.DNSOverUDPTask;
@@ -347,18 +344,38 @@ public class DNSController extends GeneralController {
             String domain = getDomain();
             boolean recursive = isRecursiveSet();
             boolean holdConnection = holdConnectionCheckbox.isSelected();
-            boolean caFlag = checkingDisabledCheckBox.isSelected();
+            boolean cdFlag = checkingDisabledCheckBox.isSelected();
             boolean adFlag = authenticateDataCheckBox.isSelected();
             boolean doFlag = DNSSECOkCheckBox.isSelected();
-            logMessage(dnsServer, domain, records, recursive, adFlag, transport, doFlag, holdConnection, caFlag);
-
+            logMessage(dnsServer, domain, records, recursive, adFlag, transport, doFlag, holdConnection, cdFlag);
+            RequestSettings requestSettings = new RequestSettings.RequestSettingsBuilder()
+                    .recursion(isRecursiveSet())
+                    .cdFlag(checkingDisabledCheckBox.isSelected())
+                    .adFlag(authenticateDataCheckBox.isSelected())
+                    .doFlag(DNSSECOkCheckBox.isSelected())
+                    .domain(getDomain())
+                    .types(getRecordTypes())
+                    .build();
+            ConnectionSettings connectionSettings = new ConnectionSettings.ConnectionSettingsBuilder()
+                    .holdConnection(holdConnectionCheckbox.isSelected())
+                    .transport_protocol(getTransportProtocol())
+                    .application_protocol(APPLICATION_PROTOCOL.DNS)
+                    .resolverIP(dnsServer)
+                    .netInterface(getInterface())
+                    .build();
             if (transport == TRANSPORT_PROTOCOL.TCP) {
-                task = new DNSOverTCPTask(recursive, adFlag, caFlag, doFlag, holdConnection, domain, records,
+                /*
+                task = new DNSOverTCPTask(recursive, adFlag, cdFlag, doFlag, holdConnection, domain, records,
                         transport, APPLICATION_PROTOCOL.DNS, dnsServer, getInterface());
+                        */
+                task = new DNSOverTCPTask(requestSettings, connectionSettings);
             } else {
-                task = new DNSOverUDPTask(recursive, adFlag, caFlag, doFlag, domain, records, transport,
+                /*
+                task = new DNSOverUDPTask(recursive, adFlag, cdFlag, doFlag, domain, records, transport,
                         APPLICATION_PROTOCOL.DNS,
                         dnsServer, getInterface());
+                        */
+                task = new DNSOverUDPTask(requestSettings, connectionSettings);
             }
             task.setController(this);
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());

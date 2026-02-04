@@ -6,30 +6,20 @@ package testing.tasks;
  * */
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
-import enums.R_CODE;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
-import io.netty.handler.codec.MessageAggregationException;
 import javafx.application.Platform;
-import models.Header;
-import models.MessageParser;
-import models.Response;
-import models.UInt16;
+import models.*;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 import tasks.DNSOverHTTPSTask;
 import testing.Result;
 import ui.TesterController;
 
-import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -42,10 +32,16 @@ public class DnsDohTask extends DNSOverHTTPSTask {
     private Result result;
     private int numberOfRequests;
     private long cooldown;
-
+/*
     public DnsDohTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, String resolverUri, NetworkInterface netInterface, Result result, int numberOfRequests, long cooldown) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         //super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP+"/"+result.getNs().getPath(), netInterface, result.getNs().isGet());
         super(recursion,adFlag,cdFlag,doFlag, domain, types, transport_protocol, application_protocol, resolverIP+"/"+result.getNs().getPath(), netInterface, result.getNs().isGet(),resolverUri, true, false);
+        this.result = result;
+        this.numberOfRequests = numberOfRequests;
+        this.cooldown = cooldown;
+    }*/
+    public DnsDohTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int numberOfRequests, long cooldown) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
+        super(requestSettings, connectionSettings);
         this.result = result;
         this.numberOfRequests = numberOfRequests;
         this.cooldown = cooldown;
@@ -67,7 +63,7 @@ public class DnsDohTask extends DNSOverHTTPSTask {
                     messageToBytes();
                     // send request via super class method sendData()
                     super.sendData();
-                    result.setResponseSize((byteSizeResponseDoHDecompresed));
+                    result.setResponseSize((byteSizeResponseDoHDecompressed));
                     parser = new MessageParser(httpResponse);
                     long status = (long) httpResponse.get("Status");
                     JSONArray answers = (JSONArray) httpResponse.get("Answer");

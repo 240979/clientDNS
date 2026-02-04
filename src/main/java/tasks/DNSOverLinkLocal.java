@@ -9,8 +9,10 @@ import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
+import models.ConnectionSettings;
 import models.LLMNRHeader;
 import models.MessageParser;
+import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.simple.parser.ParseException;
 import tasks.runnables.ProgressUpdateRunnable;
@@ -28,12 +30,15 @@ public class DNSOverLinkLocal extends DNSTaskBase{
     private int messagesSent;
     private boolean run=true;
     MulticastSocket socket;
-
+/*
     public DNSOverLinkLocal(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
         header = new LLMNRHeader(types.length,false,false);
-    }
-
+    }*/
+public DNSOverLinkLocal(RequestSettings requestSettings, ConnectionSettings connectionSettings) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
+    super(requestSettings, connectionSettings, null);
+    header = new LLMNRHeader(requestSettings.getTypes().length, false, false);
+}
     /*
     * Similar to Martin Biolek MessageSender.mdns(), removed multicast response, fixed response over unicast and modified
     * to specification of LLMNR

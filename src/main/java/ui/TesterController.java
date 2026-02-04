@@ -516,7 +516,22 @@ public class TesterController extends GeneralController {
             }
             // start progress bar and start tester task
             Platform.runLater(()->progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS));
-            Task<Void> task = new TesterTask(recursive, adFlag, cdFlag, doFlag, holdConnection, domain, records, transport_protocol, application_protocol, getInterface(), (int)duration, results, cooldown, this);
+            RequestSettings rs = new RequestSettings.RequestSettingsBuilder()
+                    .recursion(recursive)
+                    .adFlag(adFlag)
+                    .cdFlag(cdFlag)
+                    .doFlag(doFlag)
+                    .domain(domain)
+                    .types(records)
+                    .build();
+            ConnectionSettings cs = new ConnectionSettings.ConnectionSettingsBuilder()
+                    .holdConnection(holdConnection)
+                    .transport_protocol(transport_protocol)
+                    .application_protocol(application_protocol)
+                    .netInterface(getInterface())
+                    .build();
+            Task<Void> task = new TesterTask(rs, cs, (int)duration, results, cooldown, this);
+            // Task<Void> task = new TesterTask(recursive, adFlag, cdFlag, doFlag, holdConnection, domain, records, transport_protocol, application_protocol, getInterface(), (int)duration, results, cooldown, this);
             //DNSTaskBase dnsTask = new TcpTester(false,adFlag,cdFlag,doFlag,holdConnection,domain,records, TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DNS,"")
             resultsTableView.setItems(observableList);
             thread = new Thread(task);

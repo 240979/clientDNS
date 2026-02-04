@@ -304,10 +304,25 @@ public class MDNSController extends GeneralController {
             RESPONSE_MDNS_TYPE mdnsType = (RESPONSE_MDNS_TYPE) multicastResponseToggleGroup.getSelectedToggle()
                     .getUserData();
             logAction(records, domain, doFlag, IPv4RadioButton.isSelected() ? IP_PROTOCOL.IPv4 : IP_PROTOCOL.IPv6, mdnsType);
-
+            RequestSettings rs = new RequestSettings.RequestSettingsBuilder()
+                    .cdFlag(checkingDisabledCheckBox.isSelected())
+                    .adFlag(authenticateDataCheckBox.isSelected())
+                    .doFlag(DNSSECOkCheckBox.isSelected())
+                    .domain(getDomain())
+                    .types(getRecordTypes())
+                    .build();
+            ConnectionSettings cs = new ConnectionSettings.ConnectionSettingsBuilder()
+                    .transport_protocol(TRANSPORT_PROTOCOL.UDP)
+                    .application_protocol(APPLICATION_PROTOCOL.MDNS)
+                    .resolverIP(getDnsServerIp())
+                    .netInterface(getInterface())
+                    .build();
+            /*
             task = new DNSOverMulticastTask(multicast, adFlag, caFlag, doFlag, getDomain(),
                     records, TRANSPORT_PROTOCOL.UDP, APPLICATION_PROTOCOL.MDNS, getDnsServerIp(), getInterface(),
                     IPv4RadioButton.isSelected(), (RESPONSE_MDNS_TYPE) multicastResponseToggleGroup.getSelectedToggle().getUserData());
+             */
+            task = new DNSOverMulticastTask(rs, cs, multicast, IPv4RadioButton.isSelected(), (RESPONSE_MDNS_TYPE) multicastResponseToggleGroup.getSelectedToggle().getUserData());
             task.setController(this);
 
             thread = new Thread(task);

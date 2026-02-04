@@ -8,6 +8,8 @@ import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import javafx.concurrent.Task;
 import lombok.Data;
+import models.ConnectionSettings;
+import models.RequestSettings;
 import tasks.DNSTaskBase;
 import testing.tasks.DnsTcpTask;
 import testing.tasks.DnsUdpTask;
@@ -38,7 +40,10 @@ public class UdpTester extends Task<Void> {
     private List<DnsTcpTask> tasks = new LinkedList<>();
     private static Logger LOGGER = Logger.getLogger(TcpTester.class.getName());
     private GeneralController controller;
+    private RequestSettings requestSettings;
+    private ConnectionSettings connectionSettings;
 
+    /*
     public UdpTester(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag, Q_COUNT[] types,
                      TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,
                      NetworkInterface netInterface, int duration, List<Result> results, long cooldown) {
@@ -54,6 +59,14 @@ public class UdpTester extends Task<Void> {
         this.results = results;
         this.cooldown = cooldown;
         LOGGER.info("Created UdpTester task");
+    }*/
+    public UdpTester(RequestSettings requestSettings, ConnectionSettings connectionSettings, int duration, List<Result> results, long cooldown) {
+        this.requestSettings = requestSettings;
+        this.connectionSettings = connectionSettings;
+        this.duration = duration;
+        this.results = results;
+        this.cooldown = cooldown;
+        LOGGER.info("Created UdpTester task");
     }
 
     @Override
@@ -63,9 +76,17 @@ public class UdpTester extends Task<Void> {
             // create new thread, which will start given task, which runs DNS over TCP and returns duration of request
             // to given Double object which was passed inside
             LOGGER.info("Starting UdpTester for "+result.getName());
+            /*
             DNSTaskBase task = new DnsUdpTask(recursion,adFlag,caFlag,doFlag,result.getDomain(),types,
                     TRANSPORT_PROTOCOL.UDP, APPLICATION_PROTOCOL.DNS,result.getIp(),netInterface,
                     result,duration, cooldown);
+
+             */
+            this.connectionSettings.setResolverIP(result.getIp());
+            this.requestSettings.setDomain(result.getDomain());
+            LOGGER.info("Setting resolver IP: " + result.getIp());
+            LOGGER.info("Set resolver IP: " + this.connectionSettings.getResolverIP());
+            DNSTaskBase task = new DnsUdpTask(this.requestSettings, this.connectionSettings, result, duration, cooldown);
             Thread thread = new Thread(task);
             task.setMassTesting(true);
             task.setController(controller);

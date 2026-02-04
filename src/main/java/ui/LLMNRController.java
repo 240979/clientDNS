@@ -16,9 +16,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ToggleGroup;
-import models.DomainConvert;
-import models.Ip;
-import models.WiresharkFilter;
+import models.*;
 import tasks.DNSOverLinkLocal;
 
 import java.io.UnsupportedEncodingException;
@@ -60,14 +58,33 @@ public class LLMNRController extends GeneralController {
         }
         try{
             Q_COUNT[] records = getRecordTypes();
-        String domain = getDomain();
-        boolean caFlag = checkingDisabledCheckBox.isSelected();
-        boolean adFlag = authenticateDataCheckBox.isSelected();
-        boolean doFlag = DNSSECOkCheckBox.isSelected();
-        //logAction(records, domain, doFlag, networkProtocol, mdnsType);
+            String domain = getDomain();
+            boolean caFlag = checkingDisabledCheckBox.isSelected();
+            boolean adFlag = authenticateDataCheckBox.isSelected();
+            boolean doFlag = DNSSECOkCheckBox.isSelected();
+            RequestSettings rs = new RequestSettings.RequestSettingsBuilder()
+                .recursion(false)
+                .cdFlag(checkingDisabledCheckBox.isSelected())
+                .adFlag(authenticateDataCheckBox.isSelected())
+                .doFlag(DNSSECOkCheckBox.isSelected())
+                .domain(getDomain())
+                .types(getRecordTypes())
+                .build();
+            ConnectionSettings cs = new ConnectionSettings.ConnectionSettingsBuilder()
+                    .transport_protocol(TRANSPORT_PROTOCOL.UDP)
+                    .application_protocol(APPLICATION_PROTOCOL.MDNS)
+                    .resolverIP(getDnsServerIp())
+                    .netInterface(getInterface())
+                    .build();
 
+            task = new DNSOverLinkLocal(rs, cs);
+
+        //logAction(records, domain, doFlag, networkProtocol, mdnsType);
+        /*
         task = new DNSOverLinkLocal(false, adFlag, caFlag, doFlag, domain,
                 records, TRANSPORT_PROTOCOL.UDP, APPLICATION_PROTOCOL.MDNS, getDnsServerIp(), getInterface());
+         */
+
         task.setController(this);
         thread = new Thread(task);
         // pass new progress bar to Task

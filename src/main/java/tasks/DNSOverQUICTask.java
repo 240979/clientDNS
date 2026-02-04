@@ -19,8 +19,10 @@ import io.netty.incubator.codec.quic.*;
 import javafx.application.Platform;
 import lombok.Getter;
 import lombok.Setter;
+import models.ConnectionSettings;
 import models.DoQClientInitializer;
 import models.Ip;
+import models.RequestSettings;
 import tasks.runnables.RequestResultsUpdateRunnable;
 
 import javax.net.ssl.TrustManagerFactory;
@@ -40,11 +42,16 @@ public class DNSOverQUICTask  extends DNSTaskBase{
     @Getter
     @Setter
     private boolean notFinished = true;
-
+/*
     public DNSOverQUICTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP,  int resolverPort, NetworkInterface netInterface) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
         this.resolverPort = resolverPort;
+    }*/
+    public DNSOverQUICTask(RequestSettings rs, ConnectionSettings cs) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
+        super(rs, cs, null);
+        this.resolverPort = cs.getResolverPort();
     }
+
     @Override
     protected void sendData() throws KeyStoreException, NoSuchAlgorithmException, InterruptedException, IllegalArgumentException, CancellationException, ExecutionException, ChannelOutputShutdownException, InterfaceDoesNotHaveIPAddressException {
         setStartTime(System.nanoTime());

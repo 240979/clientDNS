@@ -12,7 +12,9 @@ import exceptions.*;
 import javafx.application.Platform;
 import lombok.Getter;
 import lombok.Setter;
+import models.ConnectionSettings;
 import models.Ip;
+import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.runnables.ProgressUpdateRunnable;
 import tasks.runnables.RequestResultsUpdateRunnable;
@@ -31,9 +33,13 @@ public class DNSOverUDPTask extends DNSTaskBase{
 
     protected DatagramSocket datagramSocket;
     protected boolean run = true;
-
+    /*
     public DNSOverUDPTask(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(recursion, adFlag, caFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
+    }*/
+
+    public DNSOverUDPTask(RequestSettings requestSettings, ConnectionSettings connectionSettings) throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
+        super(requestSettings, connectionSettings, null);
     }
 
     /*
@@ -48,8 +54,14 @@ public class DNSOverUDPTask extends DNSTaskBase{
         setMessagesSent(0);
 
         try {
-            datagramSocket = new DatagramSocket(0, Ip.getIpAddressFromInterface(getInterfaceToSend(), getResolver()));
-        } catch (Exception e) {
+            InetAddress sourceIp = Ip.getIpAddressFromInterface(getInterfaceToSend(), getResolver());
+            LOGGER.info("Attempting to bind to: " + sourceIp);
+            datagramSocket = new DatagramSocket(0, sourceIp);
+            LOGGER.info("Successfully bound to: " + datagramSocket.getLocalAddress());
+        } catch (SocketException e) {
+            LOGGER.severe("Socket binding failed: " + e.getMessage());
+            LOGGER.severe("Interface: " + getInterfaceToSend());
+            LOGGER.severe("Resolver: " + getResolver());
             exc = new InterfaceDoesNotHaveIPAddressException();
             throw new InterfaceDoesNotHaveIPAddressException();
         }
@@ -66,6 +78,8 @@ public class DNSOverUDPTask extends DNSTaskBase{
                 DatagramPacket responsePacket = new DatagramPacket(getReceiveReply(), getReceiveReply().length);
                 DatagramPacket datagramPacket = new DatagramPacket(getMessageAsBytes(), getMessageAsBytes().length, getIp(), DNSTaskBase.DNS_PORT);
                 // DatagramPacket datagramPacket = new Data
+                LOGGER.info("Sending to resolver: " + getIp() + ":" + DNSTaskBase.DNS_PORT);
+                LOGGER.info("From local address: " + datagramSocket.getLocalAddress() + ":" + datagramSocket.getLocalPort());
                 datagramSocket.setSoTimeout(DNSTaskBase.TIME_OUT_MILLIS);
                 setStartTime(System.nanoTime());
 

@@ -20,8 +20,6 @@ import lombok.Getter;
 import lombok.Setter;
 import models.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
-//import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -70,10 +68,6 @@ public abstract class DNSTaskBase extends Task<Void> {
     protected boolean mdnsDnssecSignatures;
     protected boolean closeConnection;
     protected Q_COUNT[] qcountTypes;
-    protected String httpRequest;
-    protected JSONObject httpResponse;
-    protected CloseableHttpClient httpClient;
-    protected int byteSizeResponseDoHDecompresed;
     protected NetworkInterface interfaceToSend;
     protected boolean wasSend;
     protected ProgressBar progressBar;
@@ -88,8 +82,8 @@ public abstract class DNSTaskBase extends Task<Void> {
     public static final String KEY_REQUEST = "Request";
     public static final String KEY_ADDITIONAL_RECORDS = "Aditional records";
     public static final String KEY_LENGHT = "Lenght";
-    public static final String[] httpRequestParamsName = new String[]{"name", "type", "do", "cd"};
-    public static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
+
+    public static Logger LOGGER = Logger.getLogger(DNSTaskBase.class.getName());
     protected GeneralController controller;
     protected boolean massTesting = false;
     protected boolean stop = false;
@@ -231,7 +225,7 @@ public abstract class DNSTaskBase extends Task<Void> {
             });
         }
     }
-
+/*
     public DNSTaskBase(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types,
                        TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface, RESPONSE_MDNS_TYPE mdnsType) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super();
@@ -264,6 +258,40 @@ public abstract class DNSTaskBase extends Task<Void> {
 
         this.wasSend = false;
         interfaceToSend = netInterface;
+    }*/
+    public DNSTaskBase(RequestSettings requestSettings, ConnectionSettings connectionSettings, RESPONSE_MDNS_TYPE mdnsType) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
+        super();
+
+        this.mdnsType = mdnsType;
+        requests = new ArrayList<Request>();
+        header = requestSettings.getHeader();
+        size = Header.getSize();
+        // TODO addRequests(types, checkAndStripFullyQualifyName(domain));
+        addRequests(requestSettings.getTypes(), checkAndStripFullyQualifyName(requestSettings.getDomain()));
+
+        messagesSentProperty = new SimpleIntegerProperty();
+        durationProperty = new SimpleDoubleProperty();
+
+        requestProperty = new SimpleObjectProperty<TreeItem<String>>();
+        responseProperty = new SimpleObjectProperty<TreeItem<String>>();
+
+        // this.resolverIP = resolverIP;
+        this.transport_protocol = connectionSettings.getTransport_protocol();
+        this.application_protocol = connectionSettings.getApplication_protocol();
+        if (application_protocol != APPLICATION_PROTOCOL.DOH) {
+            this.ip = InetAddress.getByName(connectionSettings.getResolverIP());
+        }
+        this.resolver = connectionSettings.getResolverIP();
+        LOGGER.info("Resolver IP: " + connectionSettings.getResolverIP());
+        this.receiveReply = new byte[1232];
+        this.doFlag = requestSettings.isDoFlag();
+        this.adFlag = requestSettings.isAdFlag();;
+        this.qcountTypes = requestSettings.getTypes();
+        this.domainAsString = requestSettings.getDomain();
+        setMessagesSentProperty(0);
+
+        this.wasSend = false;
+        interfaceToSend = connectionSettings.getNetInterface();
     }
 
     /*

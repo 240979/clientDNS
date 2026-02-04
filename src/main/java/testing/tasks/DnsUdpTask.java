@@ -9,7 +9,9 @@ import enums.R_CODE;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
+import models.ConnectionSettings;
 import models.Header;
+import models.RequestSettings;
 import models.UInt16;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.DNSOverUDPTask;
@@ -31,7 +33,7 @@ public class DnsUdpTask extends DNSOverUDPTask {
     int i;
     int duration;
     private long cooldown;
-
+    /*
     public DnsUdpTask(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag,
                       String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol,
                       APPLICATION_PROTOCOL application_protocol, String resolverIP,
@@ -44,6 +46,14 @@ public class DnsUdpTask extends DNSOverUDPTask {
         this.duration = duration;
         this.cooldown = cooldown;
         LOGGER.info("Created DnsUdpTask for "+resolverIP);
+    }*/
+    public DnsUdpTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int duration, long cooldown)
+            throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
+        super(requestSettings, connectionSettings);
+        this.result = result;
+        this.duration = duration;
+        this.cooldown = cooldown;
+        LOGGER.info("Created DnsUdpTask for "+connectionSettings.getResolverIP());
     }
 
     @Override

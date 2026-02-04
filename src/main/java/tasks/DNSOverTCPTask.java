@@ -14,6 +14,8 @@ import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
+import models.ConnectionSettings;
+import models.RequestSettings;
 import tasks.runnables.RequestResultsUpdateRunnable;
 
 /**
@@ -22,7 +24,7 @@ import tasks.runnables.RequestResultsUpdateRunnable;
 public class DNSOverTCPTask extends DNSTaskBase {
 
 	protected boolean holdConnection;
-
+/*
 	public DNSOverTCPTask(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag, boolean holdConnection, String domain, Q_COUNT[] types,
 						  TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,
 						  String resolverIP, NetworkInterface netInterface)
@@ -35,6 +37,18 @@ public class DNSOverTCPTask extends DNSTaskBase {
 			if (DNSTaskBase.getTcpConnectionForServer(resolverIP) != null)
 			{
 				DNSTaskBase.getTcpConnectionForServer(resolverIP).closeAll();
+			}
+		}
+	}*/
+
+	public DNSOverTCPTask(RequestSettings requestSettings, ConnectionSettings connectionSettings) throws IOException, NotValidDomainNameException, NotValidIPException {
+		super(requestSettings, connectionSettings, null);
+		this.holdConnection = connectionSettings.isHoldConnection();
+		if (!holdConnection)
+		{
+			if (DNSTaskBase.getTcpConnectionForServer(connectionSettings.getResolverIP()) != null)
+			{
+				DNSTaskBase.getTcpConnectionForServer(connectionSettings.getResolverIP()).closeAll();
 			}
 		}
 	}

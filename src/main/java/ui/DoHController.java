@@ -11,10 +11,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import models.DomainConvert;
-import models.Ip;
-import models.NameServer;
-import models.WiresharkFilter;
+import models.*;
 import tasks.DNSOverHTTPSTask;
 
 import java.io.IOException;
@@ -152,10 +149,32 @@ public class DoHController extends GeneralController {
             String resolverURL = "dummy resolver";
             logRequest(authenticateDataCheckBox.isSelected(), checkingDisabledCheckBox.isSelected(), domain, qCount, resolverURL);
 
+            RequestSettings requestSettings = new RequestSettings.RequestSettingsBuilder()
+                    .recursion(recursiveQueryRadioButton.isSelected())
+                    .adFlag(authenticateDataCheckBox.isSelected())
+                    .cdFlag(checkingDisabledCheckBox.isSelected())
+                    .doFlag(DNSSECOkCheckBox.isSelected())
+                    .types(getRecordTypes())
+                    .domain(getDomain())
+                    .build();
+
+            ConnectionSettings connectionSettings = new ConnectionSettings.ConnectionSettingsBuilder()
+                    .application_protocol(APPLICATION_PROTOCOL.DOH)
+                    .resolverIP(domain/*+"/"+path*/)
+                    .netInterface(getInterface())
+                    .isGet(isGet)
+                    .resolverUri(getDnsServerDomainName(getDnsServerIp())/*+"/"+path*/)
+                    .isReqJsonFormat(isRequestJson())
+                    .isDomainNameUsed(isDomainNameUsed())
+                    .path(path)
+                    .build();
+            task = new DNSOverHTTPSTask(requestSettings, connectionSettings);
+        /*
             task = new DNSOverHTTPSTask(recursiveQueryRadioButton.isSelected(), authenticateDataCheckBox.isSelected(),
                     checkingDisabledCheckBox.isSelected(), DNSSECOkCheckBox.isSelected(),getDomain(),
                     getRecordTypes(), null, APPLICATION_PROTOCOL.DOH, domain+"/"+path,
-                    getInterface(), isGet, getDnsServerDomainName(getDnsServerIp())+"/"+path, isRequestJson(), isDomainNameUsed());
+                 getInterface(), isGet, getDnsServerDomainName(getDnsServerIp())+"/"+path, isRequestJson(), isDomainNameUsed());
+*/
 
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
             responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());

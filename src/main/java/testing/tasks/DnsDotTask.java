@@ -9,7 +9,9 @@ import enums.R_CODE;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
+import models.ConnectionSettings;
 import models.Header;
+import models.RequestSettings;
 import models.UInt16;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.simple.parser.ParseException;
@@ -34,13 +36,19 @@ public class DnsDotTask extends DNSOverTLS {
     private final int duration;
     private long cooldown;
     private int i;
-
+    /*
     public DnsDotTask(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag,
                       String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol,
                       APPLICATION_PROTOCOL application_protocol, String resolverIP,
                       NetworkInterface netInterface, Result result, int duration, long cooldown) throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
         super(recursion,adFlag,caFlag,doFlag,domain,types,transport_protocol,application_protocol,resolverIP,netInterface);
 
+        this.result = result;
+        this.duration = duration;
+        this.cooldown = cooldown;
+    }*/
+    public DnsDotTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int duration, long cooldown) throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
+        super(requestSettings, connectionSettings);
         this.result = result;
         this.duration = duration;
         this.cooldown = cooldown;

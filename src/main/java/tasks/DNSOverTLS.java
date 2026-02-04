@@ -25,7 +25,9 @@ import io.netty.handler.ssl.SslProvider;
 import javafx.application.Platform;
 import lombok.Getter;
 import lombok.Setter;
+import models.ConnectionSettings;
 import models.DoTClientInitializer;
+import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.runnables.RequestResultsUpdateRunnable;
 
@@ -49,8 +51,12 @@ public class DNSOverTLS extends DNSTaskBase{
     private Exception exc = null;
 
     private boolean notFinished = true;
+    /*
     public DNSOverTLS(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
+    }*/
+    public DNSOverTLS(RequestSettings rs, ConnectionSettings cs) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
+        super(rs, cs, null);
     }
 
     @Override

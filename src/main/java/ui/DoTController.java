@@ -19,10 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import lombok.Setter;
-import models.Ip;
-import models.NameServer;
-import models.TCPConnection;
-import models.WiresharkFilter;
+import models.*;
 import tasks.DNSOverTLS;
 
 import java.io.IOException;
@@ -287,13 +284,30 @@ public class DoTController extends GeneralController {
             String domain = getDomain();
             boolean recursive = isRecursiveSet();
             boolean holdConnection = false;
-            boolean caFlag = checkingDisabledCheckBox.isSelected();
+            boolean cdFlag = checkingDisabledCheckBox.isSelected();
             boolean adFlag = authenticateDataCheckBox.isSelected();
             boolean doFlag = DNSSECOkCheckBox.isSelected();
-            logMessage(dnsServer, domain, records, recursive, adFlag, transport, doFlag, holdConnection, caFlag);
-
-            task = new DNSOverTLS(recursive,adFlag,caFlag,doFlag,domain,records,
+            logMessage(dnsServer, domain, records, recursive, adFlag, transport, doFlag, holdConnection, cdFlag);
+            RequestSettings rs = new RequestSettings.RequestSettingsBuilder()
+                    .recursion(recursive)
+                    .adFlag(adFlag)
+                    .cdFlag(cdFlag)
+                    .doFlag(doFlag)
+                    .domain(domain)
+                    .types(records)
+                    .build();
+            ConnectionSettings cs = new ConnectionSettings.ConnectionSettingsBuilder()
+                    .transport_protocol(TRANSPORT_PROTOCOL.TCP)
+                    .application_protocol(APPLICATION_PROTOCOL.DOT)
+                    .resolverIP(dnsServer)
+                    .netInterface(getInterface())
+                    .build();
+            task = new DNSOverTLS(rs,cs);
+            /*
+            task = new DNSOverTLS(recursive,adFlag,cdFlag,doFlag,domain,records,
                     TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DOT,dnsServer,getInterface());
+
+             */
             task.setController(this);
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
             responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());

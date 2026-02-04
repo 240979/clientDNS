@@ -10,7 +10,9 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import models.ConnectionSettings;
 import models.NameServer;
+import models.RequestSettings;
 import models.WiresharkFilter;
 import tasks.DNSOverQUICTask;
 
@@ -114,7 +116,23 @@ public class DoQController extends GeneralController{
                     + "\n" + "\n" + "DNSSEC: " + adFlag + "\n" + "DNSSEC sig records"
                     + doFlag + "\n" + "Transport protocol: " + transport + "\n"
                     + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS + "\n" + "Checking disabled: " + caFlag);
-            task = new DNSOverQUICTask(recursive,adFlag,caFlag,doFlag,domain,records, TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DOT,dnsServIp, dnsServPort, getInterface()); // NotValidIPException
+            RequestSettings rs = new RequestSettings.RequestSettingsBuilder()
+                    .recursion(recursive)
+                    .adFlag(adFlag)
+                    .cdFlag(caFlag)
+                    .doFlag(doFlag)
+                    .domain(domain)
+                    .types(records)
+                    .build();
+            ConnectionSettings cs = new ConnectionSettings.ConnectionSettingsBuilder()
+                    .transport_protocol(TRANSPORT_PROTOCOL.TCP)
+                    .application_protocol(APPLICATION_PROTOCOL.DOQ)
+                    .resolverIP(dnsServIp)
+                    .resolverPort(dnsServPort)
+                    .netInterface(getInterface())
+                    .build();
+            task = new DNSOverQUICTask(rs, cs);
+            //task = new DNSOverQUICTask(recursive,adFlag,caFlag,doFlag,domain,records, TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DOT,dnsServIp, dnsServPort, getInterface()); // NotValidIPException
             task.setController(this);
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
             responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());

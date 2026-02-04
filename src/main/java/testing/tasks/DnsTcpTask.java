@@ -11,7 +11,9 @@ import exceptions.*;
 import javafx.application.Platform;
 import lombok.Getter;
 import lombok.Setter;
+import models.ConnectionSettings;
 import models.Header;
+import models.RequestSettings;
 import models.UInt16;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.DNSOverTCPTask;
@@ -38,7 +40,7 @@ public class DnsTcpTask extends DNSOverTCPTask {
     private long cooldown;
     private int i;
     public static Logger LOGGER = Logger.getLogger(DnsTcpTask.class.getName());
-
+/*
     public DnsTcpTask(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag, boolean holdConnection,
                       String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol,
                       APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface,
@@ -50,6 +52,15 @@ public class DnsTcpTask extends DNSOverTCPTask {
         this.cooldown = cooldown;
 
         LOGGER.info("Created DnsTcpTask for " + resolverIP);
+    } */
+    public DnsTcpTask(RequestSettings requestSettings, ConnectionSettings connectionSettings,
+                      Result result, int numberOfRequests, long cooldown) throws IOException, NotValidIPException, NotValidDomainNameException {
+        super(requestSettings, connectionSettings);
+        this.result = result;
+        this.numberOfRequests = numberOfRequests;
+        this.cooldown = cooldown;
+
+        LOGGER.info("Created DnsUdpTask for "+connectionSettings.getResolverIP());
     }
 
     @Override

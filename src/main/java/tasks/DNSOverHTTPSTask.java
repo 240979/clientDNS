@@ -4,9 +4,7 @@ import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
-import models.Ip;
-import models.LocalAddressRoutePlanner;
-import models.MessageParser;
+import models.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.hc.client5.http.async.methods.*;
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -16,6 +14,7 @@ import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.http.*;
+import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.protocol.BasicHttpContext;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.http2.config.H2Config;
@@ -44,14 +43,20 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class DNSOverHTTPSTask extends DNSTaskBase {
+    public static final String[] httpRequestParamsName = new String[]{"name", "type", "do", "cd"};
+    protected String httpRequest;
+    protected JSONObject httpResponse;
+    protected int byteSizeResponseDoHDecompressed;
 
-    private boolean cdFlag;
-    private boolean isGet;
-    private String serverDomainName;
+    private final boolean cdFlag;
+    private final boolean isGet;
+    private  String serverDomainName;
     private CloseableHttpAsyncClient httpClient;
     private InetAddress localAddress;
-    private boolean isReqJsonFormat;
-    private boolean isDomainNameUsed;
+    private final boolean isReqJsonFormat;
+    private final boolean isDomainNameUsed;
+    private final String path;
+/*
     public DNSOverHTTPSTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain,
                             Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol,
                             APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface,
@@ -63,16 +68,18 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         this.serverDomainName = resolverUri;
         this.isReqJsonFormat = isReqJsonFormat;
         this.isDomainNameUsed = isDomainNameUsed;
-    }
-
-    public DNSOverHTTPSTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain,
-                            Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol,
-                            APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface,
-                            boolean isGet)
+        this.path = resolver.split("/")[1];
+        this.resolver = resolver.split("/")[0];
+    }*/
+    public DNSOverHTTPSTask(RequestSettings requestSettings, ConnectionSettings connectionSettings)
             throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
-        super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
-        this.cdFlag = cdFlag;
-        this.isGet = isGet;
+        super(requestSettings, connectionSettings, null);
+        this.cdFlag = requestSettings.isCdFlag();
+        this.isGet = connectionSettings.isGet();
+        this.serverDomainName = connectionSettings.getResolverUri();
+        this.isReqJsonFormat = connectionSettings.isReqJsonFormat();
+        this.isDomainNameUsed = connectionSettings.isDomainNameUsed();
+        this.path = connectionSettings.getPath();
     }
 
     @Override
@@ -80,11 +87,12 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
             IOException, InterruptedException, ParseException, HttpCodeException, OtherHttpException,
             NotValidDomainNameException, NotValidIPException, QueryIdNotMatchException, ExecutionException {
 
-        String httpsDomain = resolver.split("/")[0];
+        // String httpsDomain = resolver.split("/")[0];
+        String httpsDomain = resolver;
         String[] values = new String[]{domainAsString, qcountAsString(), "" + doFlag, "" + cdFlag};
 
         setMessagesSent(1);
-        String hostname = isDomainNameUsed ? serverDomainName : resolver;
+        String hostname = isDomainNameUsed ? serverDomainName + "/" + path : resolver + "/" + path;
         String uri;
         if(isReqJsonFormat) {
             uri = addParamsToUriAsJson(hostname, httpRequestParamsName, values);
@@ -100,13 +108,13 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
             String content = response.getBodyText();
             JSONParser parser = new JSONParser();
             this.httpResponse = (JSONObject) parser.parse(content);
-            byteSizeResponseDoHDecompresed = getAllHeadersSize(response.getHeaders());
-            byteSizeResponseDoHDecompresed += content.getBytes(StandardCharsets.UTF_8).length;
+            byteSizeResponseDoHDecompressed = getAllHeadersSize(response.getHeaders());
+            byteSizeResponseDoHDecompressed += content.getBytes(StandardCharsets.UTF_8).length;
             parseResponseDoh(content);
         } else if (response.getCode() == 200 && !isReqJsonFormat) {
             // Server is probably waiting for Wire format
             setReceiveReply(response.getBodyBytes());
-            byteSizeResponseDoHDecompresed = response.getBodyBytes().length;
+            byteSizeResponseDoHDecompressed = response.getBodyBytes().length;
         } else {
             throw new HttpCodeException(response.getCode());
         }
@@ -124,7 +132,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
 
     @Override
     protected void updateResultUI() {
-        setByteSizeResponse(byteSizeResponseDoHDecompresed);
+        setByteSizeResponse(byteSizeResponseDoHDecompressed);
         Platform.runLater(new RequestResultsUpdateRunnable(this));
     }
 
