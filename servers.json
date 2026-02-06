@@ -47,23 +47,21 @@
         "dohOnly": true
     },
     {
-        "name":"Google (GET)",
+        "name":"Google (Json)",
         "domainName":"dns.google.com",
         "path": "resolve",
         "ipv4":["8.8.8.8","8.8.4.4"],
         "ipv6":["2001:4860:4860::8888","2001:4860:4860::8844"],
         "doh": true,
-        "isGet": true,
         "dohOnly": true
     },
     {
-        "name":"Google (POST)",
+        "name":"Google (Wire)",
         "domainName":"dns.google.com",
-        "path": "resolve",
+        "path": "dns-query",
         "ipv4":["8.8.8.8","8.8.4.4"],
         "ipv6":["2001:4860:4860::8888","2001:4860:4860::8844"],
         "doh": true,
-        "isGet": false,
         "dohOnly": true
     },
     {
@@ -74,7 +72,7 @@
         "doh": true,
         "dohOnly": true,
         "path": "dns-query",
-        "isGet": true
+        "isGet": false
     },
     {
         "name":"dns.adguard-dns.com",

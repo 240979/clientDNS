@@ -10,6 +10,7 @@ import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.concurrent.FutureCallback;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.protocol.BasicHttpContext;
 import org.apache.hc.core5.http.protocol.HttpContext;
@@ -51,21 +52,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
     private final boolean isReqJsonFormat;
     private final boolean isDomainNameUsed;
     private final String path;
-/*
-    public DNSOverHTTPSTask(boolean recursion, boolean adFlag, boolean cdFlag, boolean doFlag, String domain,
-                            Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol,
-                            APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface,
-                            boolean isGet, String resolverUri, boolean isReqJsonFormat, boolean isDomainNameUsed)
-            throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
-        super(recursion, adFlag, cdFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
-        this.cdFlag = cdFlag;
-        this.isGet = isGet;
-        this.serverDomainName = resolverUri;
-        this.isReqJsonFormat = isReqJsonFormat;
-        this.isDomainNameUsed = isDomainNameUsed;
-        this.path = resolver.split("/")[1];
-        this.resolver = resolver.split("/")[0];
-    }*/
+
     public DNSOverHTTPSTask(RequestSettings requestSettings, ConnectionSettings connectionSettings)
             throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(requestSettings, connectionSettings, null);
@@ -82,16 +69,17 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
             IOException, InterruptedException, ParseException, HttpCodeException, OtherHttpException,
             NotValidDomainNameException, NotValidIPException, QueryIdNotMatchException, ExecutionException {
 
-        // String httpsDomain = resolver.split("/")[0];
         String httpsDomain = resolver;
         String[] values = new String[]{domainAsString, qcountAsString(), "" + doFlag, "" + cdFlag};
         setMessagesSent(1);
         String hostname = isDomainNameUsed ? serverDomainName + "/" + path : resolver + "/" + path;
         String uri;
-        if(isReqJsonFormat) {
+        if(isReqJsonFormat){
             uri = addParamsToUriAsJson(hostname, httpRequestParamsName, values);
-        } else {
+        }else if (isGet){
             uri = addParamsToUriAsBase64Url(hostname, values);
+        }else{
+            uri = createUri(hostname);
         }
         updateProgressUI();
 
@@ -228,6 +216,17 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
                 "?dns=" +
                 query;
     }
+    private String createUri(String hostName){
+        String[] split = hostName.split("/");
+        if (Ip.isIpv6Address(split[0])) {
+            hostName = "[" + split[0] + "]";
+            if (split.length > 1) {
+                hostName += "/" + split[1];
+            }
+        }
+        return "https://" +
+                hostName;
+    }
 
 
     private String qcountAsString() {
@@ -252,7 +251,11 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
             request = SimpleRequestBuilder.get(uri).build();
         } else {
             request = SimpleRequestBuilder.post(uri).build();
+            if(!isReqJsonFormat && !isGet){
+                request.setBody(getMessageAsBytes(), ContentType.create("application/dns-message"));
+            }
         }
+
 
         if (isJson) request.addHeader("Accept", "application/dns-json");
         else request.addHeader("Accept", "application/dns-message");
@@ -264,6 +267,11 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         }
 
         httpRequestAsString(request);
+
+        HttpContext context = new BasicHttpContext();
+        if (localAddress != null) {
+            context.setAttribute("http.local-address", new InetSocketAddress(localAddress, 0));
+        }
 
         H2Config h2Config = H2Config.custom()
                 .setPushEnabled(false)
@@ -292,10 +300,6 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
 
         startTime = System.nanoTime();
 
-        HttpContext context = new BasicHttpContext();
-        if (localAddress != null) {
-            context.setAttribute("http.local-address", new InetSocketAddress(localAddress, 0));
-        }
 
         httpClient.execute(request, context, new FutureCallback<SimpleHttpResponse>() {
             @Override

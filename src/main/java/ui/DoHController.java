@@ -28,8 +28,14 @@ public class DoHController extends GeneralController {
     @FXML
     @Translation
     protected TitledPane requestFormatTiltedPane;
-
     protected ToggleGroup requestFormatToggleGroup;
+    @FXML
+    protected TitledPane getPostTiltedPane;
+    @FXML
+    protected RadioButton get;
+    @FXML
+    protected RadioButton post;
+    protected ToggleGroup getPostToggleGroup;
     @FXML
     @Translation
     protected RadioButton useDomainName;
@@ -69,6 +75,9 @@ public class DoHController extends GeneralController {
         requestFormatToggleGroup = new ToggleGroup();
         jsonFormat.setToggleGroup(requestFormatToggleGroup);
         wireFormat.setToggleGroup(requestFormatToggleGroup);
+        getPostToggleGroup = new ToggleGroup();
+        get.setToggleGroup(getPostToggleGroup);
+        post.setToggleGroup(getPostToggleGroup);
 
 
         Config.getNameServers().stream().filter(NameServer::isDoh).forEach(nameServer -> otherDNSVbox.getChildren()
@@ -139,7 +148,8 @@ public class DoHController extends GeneralController {
                 return;
             }
             Q_COUNT[] qCount = getRecordTypes();
-            boolean isGet = isServerGet();
+            //boolean isGet = isServerGet();
+            boolean isGet = get.isSelected();
             String path = getPath();
             String resolverURL = "dummy resolver";
             logRequest(authenticateDataCheckBox.isSelected(), checkingDisabledCheckBox.isSelected(), domain, qCount, resolverURL);

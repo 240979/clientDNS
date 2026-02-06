@@ -150,6 +150,16 @@
                                     </VBox>
                                  </content>
                               </TitledPane>
+                              <TitledPane fx:id="getPostTiltedPane" expanded="false" maxWidth="1.7976931348623157E308" text="GET/POST">
+                                 <content>
+                                    <VBox>
+                                       <children>
+                                          <RadioButton fx:id="get" mnemonicParsing="false" selected="true" text="GET" />
+                                          <RadioButton fx:id="post" mnemonicParsing="false" text="POST" />
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
                               <TitledPane fx:id="networkTitledPane" expanded="false" text="%networkTitledPane">
                                  <content>
                                     <VBox alignment="CENTER_LEFT">
