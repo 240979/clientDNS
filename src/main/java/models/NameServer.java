@@ -38,8 +38,8 @@ public class NameServer {
     @JsonProperty(value = "doh")
     private boolean doh = false;
 
-    @JsonProperty(value = "isGet")
-    private boolean isGet = false;
+    @JsonProperty(value = "isGetOnly")
+    private boolean isGetOnly = false;
 
     @JsonProperty(value = "dohOnly")
     private boolean dohOnly = false;
@@ -80,22 +80,22 @@ public class NameServer {
         this.ipv6.add(iPv6Addr);
     }
 
-    public NameServer(String name, String domainName, String iPv4Addr, String iPv6Addr, boolean doh, boolean isGet, String path) {
+    public NameServer(String name, String domainName, String iPv4Addr, String iPv6Addr, boolean doh, boolean isGetOnly, String path) {
         this(name, domainName, iPv4Addr, iPv6Addr);
         this.doh = doh;
-        this.isGet = isGet;
+        this.isGetOnly = isGetOnly;
         this.path = path;
     }
 
-    public NameServer(String name, String domainName, List<String> iPv4Addr, List<String> iPv6Addr, boolean doh, boolean isGet, String path) {
+    public NameServer(String name, String domainName, List<String> iPv4Addr, List<String> iPv6Addr, boolean doh, boolean isGetOnly, String path) {
         this(name, domainName, iPv4Addr, iPv6Addr);
         this.doh = doh;
-        this.isGet = isGet;
+        this.isGetOnly = isGetOnly;
         this.path = path;
     }
 
-    public NameServer(String name, String domainName, List<String> iPv4Addr, List<String> iPv6Addr, boolean doh, boolean isGet, String path, boolean doq, int port) {
-        this(name, domainName, iPv4Addr, iPv6Addr, doh, isGet, path);
+    public NameServer(String name, String domainName, List<String> iPv4Addr, List<String> iPv6Addr, boolean doh, boolean isGetOnly, String path, boolean doq, int port) {
+        this(name, domainName, iPv4Addr, iPv6Addr, doh, isGetOnly, path);
         this.doq = doq;
         this.port = port;
     }

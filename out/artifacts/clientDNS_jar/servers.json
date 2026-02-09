@@ -43,7 +43,7 @@
         "ipv4":["1.1.1.1","1.0.0.1"],
         "ipv6":["2606:4700:4700::1111","2606:4700:4700::1001"],
         "doh": true,
-        "isGet": true,
+        "isGetOnly": true,
         "dohOnly": true
     },
     {
@@ -53,7 +53,7 @@
         "ipv4":["8.8.8.8","8.8.4.4"],
         "ipv6":["2001:4860:4860::8888","2001:4860:4860::8844"],
         "doh": true,
-        "isGet": true,
+        "isGetOnly": true,
         "dohOnly": true
     },
     {
@@ -63,7 +63,7 @@
         "ipv4":["8.8.8.8","8.8.4.4"],
         "ipv6":["2001:4860:4860::8888","2001:4860:4860::8844"],
         "doh": true,
-        "isGet": false,
+        "isGetOnly": false,
         "dohOnly": true
     },
     {
@@ -74,7 +74,7 @@
         "doh": true,
         "dohOnly": true,
         "path": "dns-query",
-        "isGet": true
+        "isGetOnly": true
     },
     {
         "name":"dns.adguard-dns.com",

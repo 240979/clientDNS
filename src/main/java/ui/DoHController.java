@@ -82,6 +82,8 @@ public class DoHController extends GeneralController {
         getPostToggleGroup = new ToggleGroup();
         get.setToggleGroup(getPostToggleGroup);
         post.setToggleGroup(getPostToggleGroup);
+        post.setOnMouseClicked(event -> disableGetOnlyServers(true));
+        get.setOnMouseClicked(event -> disableGetOnlyServers(false));
 
         Config.getNameServers().stream().filter(NameServer::isDoh).forEach(nameServer -> otherDNSVbox.getChildren()
                 .add(new NameServerVBox(nameServer, dnsserverToggleGroup, this)));
@@ -105,6 +107,17 @@ public class DoHController extends GeneralController {
 
         setLanguageRadioButton();
     }
+
+    private void disableGetOnlyServers(boolean disable) {
+        otherDNSVbox.getChildren().stream()
+                .filter(node -> node instanceof NameServerVBox)
+                .map(node -> (NameServerVBox) node)
+                .forEach(nameServerVBox -> {
+                        nameServerVBox.setDisable(nameServerVBox.getNameServer().isGetOnly() && disable);
+                    }
+                );
+    }
+
 
     /*
      * Body of method taken from Martin Biolek thesis and modified
@@ -215,7 +228,7 @@ public class DoHController extends GeneralController {
         if (dnsserverToggleGroup.getSelectedToggle().getUserData() instanceof TextField){
             return isGetRadioButton.isSelected();
         }
-        return nameServer.isGet();
+        return nameServer.isGetOnly();
     }
 
     @Override
