@@ -58,7 +58,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
             throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(requestSettings, connectionSettings, null);
         this.cdFlag = requestSettings.isCdFlag();
-        this.isGet = connectionSettings.isGet();
+        this.isGet = requestSettings.isGet();
         this.serverDomainName = connectionSettings.getResolverUri();
         this.isReqJsonFormat = connectionSettings.isReqJsonFormat();
         this.isDomainNameUsed = connectionSettings.isDomainNameUsed();
