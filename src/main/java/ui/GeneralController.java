@@ -1130,8 +1130,6 @@ public abstract class GeneralController {
             logStage.requestFocus();
             return;
         }
-        logStage = new Stage();
-        logStage.setTitle("Log");
         ResourceBundle bundle = GeneralController.language.getLanguageBundle();
         TextArea textArea = new TextArea();
         textArea.setEditable(false);
@@ -1148,6 +1146,9 @@ public abstract class GeneralController {
         vbox.setPadding(new javafx.geometry.Insets(5));
 
         Scene scene = new Scene(vbox, 700, 500);
+        logStage = new Stage();
+        logStage.setTitle("Log");
+        logStage.getIcons().add(new Image(App.ICON_URI));
         logStage.setScene(scene);
         logStage.show();
         logStage.setOnCloseRequest(e -> { // Here I set it to null on close, to be able to open it again

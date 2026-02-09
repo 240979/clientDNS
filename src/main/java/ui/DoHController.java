@@ -1,5 +1,6 @@
 package ui;
 
+import application.App;
 import application.Config;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
@@ -14,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -358,6 +360,7 @@ public class DoHController extends GeneralController {
         }
         ResourceBundle bundle = GeneralController.language.getLanguageBundle();
         helpStage = new Stage();
+        helpStage.getIcons().add(new Image(App.ICON_URI));
         helpStage.setTitle(bundle.getString("helpItem"));
         TextArea textArea = new TextArea();
         textArea.setEditable(false);
