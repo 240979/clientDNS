@@ -10,15 +10,22 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import models.*;
 import tasks.DNSOverHTTPSTask;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
+import java.util.ResourceBundle;
 
 public class DoHController extends GeneralController {
     @FXML
@@ -341,4 +348,18 @@ public class DoHController extends GeneralController {
 
     }
 
+    public void helpFired(ActionEvent actionEvent) {
+        ResourceBundle bundle = GeneralController.language.getLanguageBundle();
+        Stage helpStage = new Stage();
+        helpStage.setTitle(bundle.getString("helpItem"));
+        TextArea textArea = new TextArea();
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        textArea.setText(bundle.getString("helpDoH"));
+        VBox vbox = new VBox(textArea);
+        VBox.setVgrow(textArea, Priority.ALWAYS);
+        Scene scene = new Scene(vbox, 600, 400);
+        helpStage.setScene(scene);
+        helpStage.show();
+    }
 }

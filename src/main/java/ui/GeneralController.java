@@ -123,6 +123,10 @@ public abstract class GeneralController {
 
     @FXML
     @Translation
+    protected MenuItem helpItem;
+
+    @FXML
+    @Translation
     protected MenuItem deleteDomainNameHistory;
 
     @FXML
