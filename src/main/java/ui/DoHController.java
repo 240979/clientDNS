@@ -51,6 +51,8 @@ public class DoHController extends GeneralController {
     @Translation
     protected RadioButton useDomainName;
 
+    private Stage helpStage = null;
+
     public static final String FXML_FILE_NAME = "/fxml/DoH_small.fxml";
 
     private RadioButton isGetRadioButton;
@@ -349,8 +351,13 @@ public class DoHController extends GeneralController {
     }
 
     public void helpFired(ActionEvent actionEvent) {
+        if (helpStage != null && helpStage.isShowing()) {   // This part of the code should prevent user from opening infinite amount of windows
+            helpStage.toFront();
+            helpStage.requestFocus();
+            return;
+        }
         ResourceBundle bundle = GeneralController.language.getLanguageBundle();
-        Stage helpStage = new Stage();
+        helpStage = new Stage();
         helpStage.setTitle(bundle.getString("helpItem"));
         TextArea textArea = new TextArea();
         textArea.setEditable(false);
@@ -361,5 +368,6 @@ public class DoHController extends GeneralController {
         Scene scene = new Scene(vbox, 600, 400);
         helpStage.setScene(scene);
         helpStage.show();
+        helpStage.setOnCloseRequest(e -> helpStage = null); // Here I set it to null on close, to be able to open it again
     }
 }

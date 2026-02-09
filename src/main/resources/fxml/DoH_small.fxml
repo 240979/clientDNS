@@ -59,6 +59,7 @@
           <items>
             <MenuItem fx:id="backMenuItem" mnemonicParsing="false" onAction="#backButtonFired" text="%backMenuItem" />
             <MenuItem fx:id="helpItem" mnemonicParsing="false" onAction="#helpFired" text="%helpItem" />
+             <MenuItem fx:id="logMenuItem" mnemonicParsing="false" onAction="#showLogWindow" text="Log" />
             <MenuItem fx:id="filterInterfacesItem" mnemonicParsing="false" onAction="#filterInterfacesFired" text="%filterInterfacesItem" />
           </items>
         </Menu>

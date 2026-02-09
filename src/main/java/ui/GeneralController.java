@@ -21,6 +21,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -120,6 +121,9 @@ public abstract class GeneralController {
     @FXML
     @Translation
     protected MenuItem filterInterfacesItem;
+
+    @FXML
+    protected MenuItem logMenuItem;
 
     @FXML
     @Translation
@@ -288,6 +292,7 @@ public abstract class GeneralController {
 
     protected static boolean darkMode=false;
     private boolean filterInterfaces = true;
+    protected Stage logStage = null;
 
     public GeneralController() {
         // this is set of DNS resource records that are common to all implemented protocols
@@ -1118,6 +1123,38 @@ public abstract class GeneralController {
                     return ns.getDomainName();
         }
         return "NOT_FOUND";
+    }
+    public void showLogWindow() {
+        if (logStage != null && logStage.isShowing()) { // This part of the code should prevent user from opening infinite amount of windows
+            logStage.toFront();
+            logStage.requestFocus();
+            return;
+        }
+        logStage = new Stage();
+        logStage.setTitle("Log");
+        ResourceBundle bundle = GeneralController.language.getLanguageBundle();
+        TextArea textArea = new TextArea();
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+
+        // Connect the TextArea to the handler
+        LoggerInitializer.getTextAreaHandler().setTextArea(textArea);
+
+        Button clearButton = new Button(bundle.getString("clearLogs"));
+        clearButton.setOnAction(e -> textArea.clear());
+
+        VBox vbox = new VBox(5, clearButton, textArea); // 5 == 5px spacing
+        VBox.setVgrow(textArea, Priority.ALWAYS);
+        vbox.setPadding(new javafx.geometry.Insets(5));
+
+        Scene scene = new Scene(vbox, 700, 500);
+        logStage.setScene(scene);
+        logStage.show();
+        logStage.setOnCloseRequest(e -> { // Here I set it to null on close, to be able to open it again
+            // LoggerInitializer.getTextAreaHandler().setTextArea(null);
+            logStage = null;
+        });
+
     }
 
 }

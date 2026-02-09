@@ -5,6 +5,7 @@
  */
 package models;
 
+import lombok.Getter;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.io.IOException;
@@ -12,6 +13,8 @@ import java.util.logging.*;
 
 public class LoggerInitializer {
     protected static Logger LOGGER = Logger.getLogger(LoggerInitializer.class.getName());
+    @Getter
+    private static TextAreaHandler textAreaHandler;
     public static void init(){
         try{
             Logger rootLogger = Logger.getLogger("");
@@ -20,6 +23,10 @@ public class LoggerInitializer {
             fileHandler.setLevel(Level.WARNING);
             rootLogger.addHandler(fileHandler);
             rootLogger.setLevel(Level.ALL);
+            textAreaHandler = new TextAreaHandler();
+            textAreaHandler.setLevel(Level.INFO);
+            rootLogger.addHandler(textAreaHandler);
+
         }catch(IOException e){
             LOGGER.severe(ExceptionUtils.getStackTrace(e)); // If creating logfiles fails, log it at least into stdout
         }
