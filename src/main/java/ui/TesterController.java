@@ -564,13 +564,13 @@ public class TesterController extends GeneralController {
                     .doFlag(doFlag)
                     .domain(domain)
                     .types(records)
+                    .isGet(getGet().isSelected())
                     .build();
             ConnectionSettings cs = new ConnectionSettings.ConnectionSettingsBuilder()
                     .holdConnection(holdConnection)
                     .transport_protocol(transport_protocol)
                     .application_protocol(application_protocol)
                     .netInterface(getInterface())
-                    .isGet(getGet().isSelected())
                     .isReqJsonFormat(getJsonFormat().isSelected())
                     .build();
             Task<Void> task = new TesterTask(rs, cs, (int)duration, results, cooldown, this);

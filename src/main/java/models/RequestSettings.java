@@ -25,6 +25,9 @@ public class RequestSettings {
     @Getter
     Q_COUNT[] types;
 
+    @Getter
+    boolean isGet;
+
     private RequestSettings(RequestSettingsBuilder rsb){
         this.recursion = rsb.recursion;
         this.adFlag = rsb.adFlag;
@@ -32,6 +35,7 @@ public class RequestSettings {
         this.doFlag = rsb.doFlag;
         this.domain = rsb.domain;
         this.types = rsb.types;
+        this.isGet = rsb.isGet;
     }
 
     public Header getHeader(){
@@ -44,12 +48,14 @@ public class RequestSettings {
         boolean doFlag;
         String domain;
         Q_COUNT[] types;
+        boolean isGet;
 
         public RequestSettingsBuilder(){
             this.recursion = false;
             this.adFlag = false;
             this.cdFlag = false;
             this.doFlag = false;
+            this.isGet = false;
             this.domain = null;
             this.types = null;
         }
@@ -72,6 +78,10 @@ public class RequestSettings {
         }
         public RequestSettingsBuilder doFlag(boolean doFlag){
             this.doFlag = doFlag;
+            return this;
+        }
+        public RequestSettingsBuilder isGet(boolean isGet){
+            this.isGet = isGet;
             return this;
         }
         public RequestSettingsBuilder domain(String domain){

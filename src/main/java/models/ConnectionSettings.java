@@ -22,9 +22,6 @@ public class ConnectionSettings {
     NetworkInterface netInterface;
     @Getter
     @Setter
-    boolean isGet;
-    @Getter
-    @Setter
     String resolverUri;
     @Getter
     @Setter
@@ -46,7 +43,6 @@ public class ConnectionSettings {
         this.application_protocol = csb.application_protocol;
         this.resolverIP = csb.resolverIP;
         this.netInterface = csb.netInterface;
-        this.isGet = csb.isGet;
         this.resolverUri  = csb.resolverUri;
         this.isReqJsonFormat = csb.isReqJsonFormat;
         this.isDomainNameUsed = csb.isDomainNameUsed;
@@ -62,7 +58,6 @@ public class ConnectionSettings {
         APPLICATION_PROTOCOL application_protocol;
         String resolverIP;
         NetworkInterface netInterface;
-        boolean isGet;
         String resolverUri;
         boolean isReqJsonFormat;
         boolean isDomainNameUsed;
@@ -75,7 +70,6 @@ public class ConnectionSettings {
             this.application_protocol = null;
             this.resolverIP = null;
             this.netInterface = null;
-            this.isGet = false;
             this.resolverUri  = null;
             this.isReqJsonFormat = false;
             this.isDomainNameUsed = false;
@@ -101,10 +95,6 @@ public class ConnectionSettings {
         }
         public ConnectionSettingsBuilder netInterface(NetworkInterface netInterface){
             this.netInterface = netInterface;
-            return this;
-        }
-        public ConnectionSettingsBuilder isGet(boolean isGet){
-            this.isGet = isGet;
             return this;
         }
         public ConnectionSettingsBuilder resolverUri(String resolverUri){

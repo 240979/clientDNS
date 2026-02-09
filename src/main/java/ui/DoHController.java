@@ -83,7 +83,6 @@ public class DoHController extends GeneralController {
         get.setToggleGroup(getPostToggleGroup);
         post.setToggleGroup(getPostToggleGroup);
 
-
         Config.getNameServers().stream().filter(NameServer::isDoh).forEach(nameServer -> otherDNSVbox.getChildren()
                 .add(new NameServerVBox(nameServer, dnsserverToggleGroup, this)));
         HBox customDNS = new HBox();
@@ -152,12 +151,10 @@ public class DoHController extends GeneralController {
                 return;
             }
             Q_COUNT[] qCount = getRecordTypes();
-            //boolean isGet = isServerGet();
-            boolean isGet = get.isSelected();
             String path = getPath();
             String resolverURL = "dummy resolver";
+            boolean isGet = get.isSelected();
             logRequest(authenticateDataCheckBox.isSelected(), checkingDisabledCheckBox.isSelected(), domain, qCount, resolverURL);
-
             RequestSettings requestSettings = new RequestSettings.RequestSettingsBuilder()
                     .recursion(recursiveQueryRadioButton.isSelected())
                     .adFlag(authenticateDataCheckBox.isSelected())
@@ -165,6 +162,7 @@ public class DoHController extends GeneralController {
                     .doFlag(DNSSECOkCheckBox.isSelected())
                     .types(getRecordTypes())
                     .domain(getDomain())
+                    .isGet(isGet)
                     .build();
 
             ConnectionSettings connectionSettings = new ConnectionSettings.ConnectionSettingsBuilder()
@@ -172,7 +170,6 @@ public class DoHController extends GeneralController {
                     .transport_protocol(TRANSPORT_PROTOCOL.TCP)
                     .resolverIP(domain)
                     .netInterface(getInterface())
-                    .isGet(isGet)
                     .resolverUri(getDnsServerDomainName(getDnsServerIp()))
                     .isReqJsonFormat(isRequestJson())
                     .isDomainNameUsed(isDomainNameUsed())
@@ -330,4 +327,5 @@ public class DoHController extends GeneralController {
     {
 
     }
+
 }
