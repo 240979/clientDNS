@@ -11,6 +11,7 @@ public class ConnectionSettings {
     @Getter
     String domain;
     @Getter
+    @Setter
     TRANSPORT_PROTOCOL transport_protocol;
     @Getter
     APPLICATION_PROTOCOL application_protocol;

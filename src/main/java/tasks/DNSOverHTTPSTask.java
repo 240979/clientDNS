@@ -52,6 +52,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
     private final boolean isReqJsonFormat;
     private final boolean isDomainNameUsed;
     private final String path;
+    protected int responseCode;
 
     public DNSOverHTTPSTask(RequestSettings requestSettings, ConnectionSettings connectionSettings)
             throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
@@ -85,7 +86,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
 
         SimpleHttpResponse response = sendAndReceiveDoH(uri, httpsDomain, isGet, isReqJsonFormat);
         setDuration(calculateDuration());
-
+        this.responseCode = response.getCode();
         if (response.getCode() == 200 && isReqJsonFormat) {
             String content = response.getBodyText();
             JSONParser parser = new JSONParser();

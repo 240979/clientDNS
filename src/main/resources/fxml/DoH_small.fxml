@@ -142,7 +142,7 @@
                               </TitledPane>
                               <TitledPane fx:id="requestFormatTiltedPane" expanded="false" maxWidth="1.7976931348623157E308" text="%requestFormatTiltedPane">
                                  <content>
-                                    <VBox>
+                                    <VBox fx:id="requestFormatVBox">
                                        <children>
                                           <RadioButton fx:id="jsonFormat" mnemonicParsing="false" selected="true" text="%jsonFormat" />
                                           <RadioButton fx:id="wireFormat" mnemonicParsing="false" text="%wireFormat" />
@@ -152,7 +152,7 @@
                               </TitledPane>
                               <TitledPane fx:id="getPostTiltedPane" expanded="false" maxWidth="1.7976931348623157E308" text="GET/POST">
                                  <content>
-                                    <VBox>
+                                    <VBox fx:id="getPostVBox">
                                        <children>
                                           <RadioButton fx:id="get" mnemonicParsing="false" selected="true" text="GET" />
                                           <RadioButton fx:id="post" mnemonicParsing="false" text="POST" />

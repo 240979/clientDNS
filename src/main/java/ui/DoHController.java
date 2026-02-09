@@ -3,6 +3,7 @@ package ui;
 import application.Config;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
+import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -11,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import models.*;
 import tasks.DNSOverHTTPSTask;
 
@@ -28,6 +30,7 @@ public class DoHController extends GeneralController {
     @FXML
     @Translation
     protected TitledPane requestFormatTiltedPane;
+    @FXML
     protected ToggleGroup requestFormatToggleGroup;
     @FXML
     protected TitledPane getPostTiltedPane;
@@ -35,6 +38,7 @@ public class DoHController extends GeneralController {
     protected RadioButton get;
     @FXML
     protected RadioButton post;
+    @FXML
     protected ToggleGroup getPostToggleGroup;
     @FXML
     @Translation
@@ -165,6 +169,7 @@ public class DoHController extends GeneralController {
 
             ConnectionSettings connectionSettings = new ConnectionSettings.ConnectionSettingsBuilder()
                     .application_protocol(APPLICATION_PROTOCOL.DOH)
+                    .transport_protocol(TRANSPORT_PROTOCOL.TCP)
                     .resolverIP(domain)
                     .netInterface(getInterface())
                     .isGet(isGet)

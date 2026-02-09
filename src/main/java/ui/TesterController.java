@@ -26,6 +26,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.VBox;
 import lombok.Data;
 import models.*;
 import org.json.simple.JSONArray;
@@ -108,6 +109,35 @@ public class TesterController extends GeneralController {
     @FXML
     @Translation
     protected TitledPane protocolTitledPane;
+
+    @FXML
+    @Translation
+    protected TitledPane requestFormatTiltedPane;
+    @FXML
+    protected ToggleGroup requestFormatToggleGroup;
+    @FXML
+    protected VBox requestFormatVBox;
+    @FXML
+    @Translation
+    protected RadioButton jsonFormat;
+
+    @FXML
+    @Translation
+    protected RadioButton wireFormat;
+
+    @FXML
+    @Translation
+    protected TitledPane getPostTiltedPane;
+    @FXML
+    protected VBox getPostVBox;
+    @FXML
+    protected ToggleGroup getPostToggleGroup;
+
+    @FXML
+    protected RadioButton get;
+
+    @FXML
+    protected RadioButton post;
 
     @FXML
     @Translation
@@ -230,13 +260,25 @@ public class TesterController extends GeneralController {
         iterativeQueryRadioButton.setToggleGroup(iterativeToggleGroup);
         recursiveQueryRadioButton.setSelected(true);
 
+        requestFormatToggleGroup = new ToggleGroup();
+        requestFormatVBox = new VBox();
+        requestFormatTiltedPane = new TitledPane();
+
+        jsonFormat.setToggleGroup(requestFormatToggleGroup);
+        wireFormat.setToggleGroup(requestFormatToggleGroup);
+
+        getPostToggleGroup = new ToggleGroup();
+        getPostVBox = new VBox();
+        getPostTiltedPane = new TitledPane();
+
+        get.setToggleGroup(getPostToggleGroup);
+        post.setToggleGroup(getPostToggleGroup);
+        setDisabledDOH(true);
+
+
         dnsTcpButton.selectedProperty().addListener((observable, oldValue, newValue) ->
         {
-            if (newValue) {
-                holdConnectionCheckbox.setDisable(false);
-            } else {
-                holdConnectionCheckbox.setDisable(true);
-            }
+            holdConnectionCheckbox.setDisable(!newValue);
         });
 
         Ip ip = new Ip();
@@ -345,6 +387,7 @@ public class TesterController extends GeneralController {
             NameServerVBox nameServerVBox = (NameServerVBox) node;
             nameServerVBox.setDisable(!nameServerVBox.getNameServer().isDoh());
         });
+        setDisabledDOH(false);
     }
 
     protected void enableDoTServers() {
@@ -352,6 +395,7 @@ public class TesterController extends GeneralController {
             NameServerVBox nameServerVBox = (NameServerVBox) node;
             nameServerVBox.setDisable(!nameServerVBox.getNameServer().isDot());
         });
+        setDisabledDOH(true);
     }
 
     protected void enableDnsServers() {
@@ -359,6 +403,7 @@ public class TesterController extends GeneralController {
             NameServerVBox nameServerVBox = (NameServerVBox) node;
             nameServerVBox.setDisable(nameServerVBox.getNameServer().isDotOnly() || nameServerVBox.getNameServer().isDohOnly());
         });
+        setDisabledDOH(true);
     }
 
     @Override
@@ -525,6 +570,8 @@ public class TesterController extends GeneralController {
                     .transport_protocol(transport_protocol)
                     .application_protocol(application_protocol)
                     .netInterface(getInterface())
+                    .isGet(getGet().isSelected())
+                    .isReqJsonFormat(getJsonFormat().isSelected())
                     .build();
             Task<Void> task = new TesterTask(rs, cs, (int)duration, results, cooldown, this);
             // Task<Void> task = new TesterTask(recursive, adFlag, cdFlag, doFlag, holdConnection, domain, records, transport_protocol, application_protocol, getInterface(), (int)duration, results, cooldown, this);
@@ -640,6 +687,14 @@ public class TesterController extends GeneralController {
     private void deleteDomainNameHistoryFired(Event event) {
         settings.eraseLOADDomainNames();
         savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+    }
+    private void setDisabledDOH(boolean disabled){
+        jsonFormat.setDisable(disabled);
+        wireFormat.setDisable(disabled);
+        requestFormatTiltedPane.setDisable(disabled);
+        get.setDisable(disabled);
+        post.setDisable(disabled);
+        getPostTiltedPane.setDisable(disabled);
     }
 
 }

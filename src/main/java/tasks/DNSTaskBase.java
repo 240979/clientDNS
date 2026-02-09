@@ -299,7 +299,7 @@ public abstract class DNSTaskBase extends Task<Void> {
         if (doFlag) {
             size += new Response().getDnssecAsBytes().length;
         }
-        if (transport_protocol == TRANSPORT_PROTOCOL.TCP) {
+        if (transport_protocol == TRANSPORT_PROTOCOL.TCP && application_protocol != APPLICATION_PROTOCOL.DOH) {
 
             this.messageAsBytes = new byte[size + 2];
             UInt16 tcpSize = new UInt16(size);
@@ -357,7 +357,7 @@ public abstract class DNSTaskBase extends Task<Void> {
                 root.getChildren().add(optRecord);
             }
         }
-        if (transport_protocol == TRANSPORT_PROTOCOL.TCP) {
+        if (transport_protocol == TRANSPORT_PROTOCOL.TCP && application_protocol != APPLICATION_PROTOCOL.DOH) {
             TreeItem<String> tcpTreeItem = new TreeItem<String>("");
             tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + (byteSizeQuery - 2)));
             tcpTreeItem.getChildren().add(root);
@@ -514,7 +514,7 @@ public abstract class DNSTaskBase extends Task<Void> {
             jsonArray.add(request.getAsJson());
         }
         jsonObject.put(KEY_QUERY, jsonArray);
-        if (transport_protocol == TRANSPORT_PROTOCOL.TCP)
+        if (transport_protocol == TRANSPORT_PROTOCOL.TCP && application_protocol != APPLICATION_PROTOCOL.DOH)
             jsonObject.put(KEY_LENGHT, (byteSizeQuery - 2));
 
         // opt record

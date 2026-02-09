@@ -48,13 +48,11 @@ public class DoHTester extends Task<Void> {
             // in given Result data structure
             LOGGER.info("Starting DoHTester for "+result.getName());
 
-            // This settings must be altered here, because this parameters are changing
+            // This settings must be altered here, because these parameters are changing
             this.connectionSettings.setResolverIP(result.getIp());
             this.connectionSettings.setPath(result.getNs().getPath());
             this.connectionSettings.setDomainNameUsed(false);
-            this.connectionSettings.setGet(result.getNs().isGet());
             this.connectionSettings.setResolverUri(result.getNs().getDomainName());
-            this.connectionSettings.setReqJsonFormat(true);
 
             this.requestSettings.setDomain(result.getDomain());
              DNSTaskBase task = new DnsDohTask(this.requestSettings, this.connectionSettings, result,duration,cooldown);
