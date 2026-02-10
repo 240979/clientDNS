@@ -245,6 +245,8 @@
                                                       <CheckBox fx:id="dsCheckBox" mnemonicParsing="false" text="DS" />
                                                       <CheckBox fx:id="txtCheckBox" mnemonicParsing="false" text="TXT" />
                                                       <CheckBox fx:id="nsecCheckBox" mnemonicParsing="false" text="NSEC" />
+                                                      <CheckBox fx:id="svcbCheckBox" mnemonicParsing="false" text="SVCB" />
+                                                      <CheckBox fx:id="httpsCheckBox" mnemonicParsing="false" text="HTTPS" />
                                                    </children>
                                                 </VBox>
                                                 <VBox prefHeight="200.0" prefWidth="100.0">
@@ -256,12 +258,12 @@
                                                       <CheckBox fx:id="caaCheckBox" mnemonicParsing="false" text="CAA" />
                                                       <CheckBox fx:id="rrsigCheckBox" mnemonicParsing="false" text="RRSIG" />
                                                       <CheckBox fx:id="nsec3CheckBox" mnemonicParsing="false" text="NSEC3" />
+                                                      <CheckBox fx:id="anyCheckBox" mnemonicParsing="false" text="ANY" />
                                                    </children>
                                                 </VBox>
                                              </children>
                                           </HBox>
                                           <CheckBox fx:id="nsec3paramCheckBox" layoutX="20.0" layoutY="156.0" mnemonicParsing="false" text="NSEC3PARAM" />
-                                          <CheckBox fx:id="anyCheckBox" mnemonicParsing="false" text="ANY" />
                                        </children>
                                     </VBox>
                                  </content>

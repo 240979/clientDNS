@@ -213,6 +213,8 @@ public abstract class GeneralController {
     @FXML
     protected CheckBox svcbCheckBox;
     @FXML
+    protected CheckBox httpsCheckBox;
+    @FXML
     @Translation
     protected CheckBox holdConnectionCheckbox;
     @FXML

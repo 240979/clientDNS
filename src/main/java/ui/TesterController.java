@@ -463,6 +463,11 @@ public class TesterController extends GeneralController {
         checkBoxArray.add(dsCheckBox);
         checkBoxArray.add(rrsigCheckBox);
         checkBoxArray.add(nsec3paramCheckBox);
+        // 240979
+        svcbCheckBox.setUserData(Q_COUNT.SVCB);
+        checkBoxArray.add(svcbCheckBox);
+        httpsCheckBox.setUserData(Q_COUNT.HTTPS);
+        checkBoxArray.add(httpsCheckBox);
     }
 
 

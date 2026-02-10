@@ -53,8 +53,8 @@ public class DoQController extends GeneralController{
         // 240979
         svcbCheckBox.setUserData(Q_COUNT.SVCB);
         checkBoxArray.add(svcbCheckBox);
-
-
+        httpsCheckBox.setUserData(Q_COUNT.HTTPS);
+        checkBoxArray.add(httpsCheckBox);
     }
     public void initialize() {
         super.initialize();

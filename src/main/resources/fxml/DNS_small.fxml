@@ -165,7 +165,7 @@
                                                       <CheckBox fx:id="nsecCheckBox" mnemonicParsing="false" text="NSEC" />
                                                       <CheckBox fx:id="cdsCheckBox" mnemonicParsing="false" text="CDS" />
                                                       <CheckBox fx:id="anyCheckBox" mnemonicParsing="false" text="ANY" />
-
+                                                      <CheckBox fx:id="httpsCheckBox" mnemonicParsing="false" text="HTTPS" />
                                                    </children>
                                                 </VBox>
                                                 <VBox prefHeight="200.0" prefWidth="100.0">
