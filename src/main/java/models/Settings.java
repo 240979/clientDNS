@@ -69,18 +69,19 @@ public class Settings {
 
 		Path folderPath = Paths.get(userDocumentsFolder, SETTINGS_FOLDER_NAME);
 		Path filePath = Paths.get(folderPath.toString(), SETTINGS_FILE_NAME);
-
 		File folder = new File(folderPath.toString());
 		file = new File(filePath.toString());
-
+        boolean folderSuccess, fileSuccess;
 		if (!folder.exists()) {
-			folder.mkdirs();
+            folderSuccess = folder.mkdirs();
+            LOGGER.info("Folder success: " + folderSuccess);
 		}
 		if (!file.exists()) {
 			try {
-				file.createNewFile();
+                fileSuccess = file.createNewFile();
+                LOGGER.info("File success: " + fileSuccess);
 				setupJsonFile();
-			} catch (Exception e) {
+			} catch (IOException e) {
 				LOGGER.severe("Could not write to file: \n" + ExceptionUtils.getStackTrace(e));
 			}
 		}
@@ -98,8 +99,11 @@ public class Settings {
 		jsonMap.put(LAST_USED_SCREEN, screensHash);
 		Map<String, String> jsonMap2 = new HashMap<String, String>();
 		if (netInterface == null) {
+            LOGGER.info("net IF is null");
 			netInterface = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
+            LOGGER.info("localhost fetch complete");
 		}
+        LOGGER.info("net interface: " + netInterface.toString());
 		jsonMap2.put(LAST_USED_INTERFACE, netInterface.getName());
 		JSONObject json = new JSONObject(jsonMap);
 		json.putAll(jsonMap2);
