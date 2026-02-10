@@ -17,10 +17,7 @@ import java.net.NetworkInterface;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import javax.swing.filechooser.FileSystemView;
 
@@ -66,7 +63,6 @@ public class Settings {
 
 	private void checkIfFileExistsOrCreate() {
 		String userDocumentsFolder = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
-
 		Path folderPath = Paths.get(userDocumentsFolder, SETTINGS_FOLDER_NAME);
 		Path filePath = Paths.get(folderPath.toString(), SETTINGS_FILE_NAME);
 		File folder = new File(folderPath.toString());
@@ -74,12 +70,13 @@ public class Settings {
         boolean folderSuccess, fileSuccess;
 		if (!folder.exists()) {
             folderSuccess = folder.mkdirs();
-            LOGGER.info("Folder success: " + folderSuccess);
+			LOGGER.info("Folder created: " + folderSuccess);
 		}
 		if (!file.exists()) {
 			try {
                 fileSuccess = file.createNewFile();
-                LOGGER.info("File success: " + fileSuccess);
+				LOGGER.info("File created: " + fileSuccess);
+				LOGGER.info("File length BEFORE setupJsonFile: " + file.length());
 				setupJsonFile();
 			} catch (IOException e) {
 				LOGGER.severe("Could not write to file: \n" + ExceptionUtils.getStackTrace(e));
@@ -89,7 +86,7 @@ public class Settings {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void setupJsonFile() throws IOException {
+	private void setupJsonFile()  {
 		Map<String, List<String>> jsonMap = new HashMap<>();
 		jsonMap.put(DNS_SERVERS, dnsServers);
 		jsonMap.put(DOMAIN_NAMES_DNS, domainNamesDNS);
@@ -98,25 +95,20 @@ public class Settings {
 		jsonMap.put(DOMAIN_NAMES_LOAD, domainNamesLOAD);
 		jsonMap.put(LAST_USED_SCREEN, screensHash);
 		Map<String, String> jsonMap2 = new HashMap<String, String>();
-		if (netInterface == null) {
-            LOGGER.info("net IF is null");
-			netInterface = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
-            LOGGER.info("localhost fetch complete");
+		String interfaceName = ""; // Put empty string, otherwise it will crash on first launch
+		if (netInterface != null) {
+			interfaceName = netInterface.getName();
 		}
-        if (netInterface == null) { // This added, because on linux, the getLocalHost() returned null
-            LOGGER.info("net IF is still null");
-            for(int i = 0; netInterface == null && i < NetworkInterface.networkInterfaces().count(); i++){
-                netInterface = NetworkInterface.getByIndex(i);
-                LOGGER.info("setting IF: " + netInterface);
-            }
-        }
-        LOGGER.info("net interface: " + netInterface.toString());
-		jsonMap2.put(LAST_USED_INTERFACE, netInterface.getName());
+		jsonMap2.put(LAST_USED_INTERFACE, interfaceName);
 		JSONObject json = new JSONObject(jsonMap);
 		json.putAll(jsonMap2);
 		try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8);
-				BufferedWriter writer = new BufferedWriter(fw)) {
-			writer.append(json.toString());
+			BufferedWriter writer = new BufferedWriter(fw)) {
+			writer.write(json.toString());
+			writer.flush();
+			LOGGER.info("JSON file written successfully, length: " + file.length());
+		} catch (Exception e) {
+			LOGGER.severe("Error writing JSON file: " + ExceptionUtils.getStackTrace(e));
 		}
 		jsonMap.clear();
 	}
@@ -141,9 +133,9 @@ public class Settings {
 			jsonObject = null;
 			jsonParser = null;
 		} catch (Exception e) {
-			LOGGER.severe("Could not parse settings from file: \n" + ExceptionUtils.getStackTrace(e));
+			LOGGER.severe("Could not parse settings from file: \n" + e.getClass().getSimpleName() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
-	}
+    }
 
 	private ArrayList<String> readJsonArraylist(String key, JSONObject jsonObject) {
 		JSONArray jsonArray = (JSONArray) jsonObject.get(key);
