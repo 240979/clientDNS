@@ -29,8 +29,14 @@ public class Ip {
 	public static final Logger LOGGER = Logger.getLogger(Ip.class.getName());
 	private ArrayList<String> ipv4DnsServers;
 	private ArrayList<String> ipv6DnsServers;
-	private static final String COMMAND = "powershell.exe $ip=Get-NetIPConfiguration; $ip.'DNSServer' | ForEach-Object -Process {$_.ServerAddresses}";
-	private String dohUserInputIp;
+	private static final String PS_COMMAND = "powershell.exe $ip=Get-NetIPConfiguration; $ip.'DNSServer' | ForEach-Object -Process {$_.ServerAddresses}";
+    private static final String[] BASH_COMMAND = new String[]{
+            "sh", "-c",
+            "resolvectl dns 2>/dev/null | grep -oE '([0-9]{1,3}\\.){3}[0-9]{1,3}|([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}'"
+    };
+    private static final String OS = System.getProperty("os.name").toLowerCase();
+    private static final boolean IS_WINDOWS = OS.contains("win");
+    private String dohUserInputIp;
 
 	public Ip() {
 		try {
@@ -47,20 +53,24 @@ public class Ip {
 	}
 
 	private void parseDnsServersIp() throws IOException {
-		Process powerShellProcess;
-		powerShellProcess = Runtime.getRuntime().exec(COMMAND);
-		powerShellProcess.getOutputStream().close();
-		String line;
-		BufferedReader stdout = new BufferedReader(new InputStreamReader(powerShellProcess.getInputStream()));
-		while ((line = stdout.readLine()) != null) {
-			if (isIPv4Address(line)) {
-				ipv4DnsServers.add(line);
-			} else {
-				if (isIpv6Address(line) && !line.startsWith("fe") && !ipv6DnsServers.contains(line))
-					ipv6DnsServers.add(line);
-			}
-		}
-		stdout.close();
+		Process process;
+        if(IS_WINDOWS){
+            process = Runtime.getRuntime().exec(PS_COMMAND);
+        } else {
+            process = Runtime.getRuntime().exec(BASH_COMMAND);
+        }
+		process.getOutputStream().close();
+        try (BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = stdout.readLine()) != null) {
+                line = line.trim(); // Trim once at the start
+                if (isIPv4Address(line)) {
+                    ipv4DnsServers.add(line);
+                } else if (isIpv6Address(line) && !line.startsWith("fe") && !ipv6DnsServers.contains(line)) {
+                    ipv6DnsServers.add(line);
+                }
+            }
+        } // Auto-closes stdout with try-with-resources
 	}
 
 	public static String getIpV6OfDomainName(String domainName) throws UnknownHostException
