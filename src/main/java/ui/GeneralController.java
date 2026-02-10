@@ -280,9 +280,9 @@ public abstract class GeneralController {
     @Translation
     protected MenuItem requestMenuItem;
 
-    //@FXML
+    @FXML
     @Translation
-    protected MenuItem darkModeMenu;
+    protected MenuBar darkModeMenu;
 
     @FXML
     @Translation
