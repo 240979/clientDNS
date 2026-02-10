@@ -103,6 +103,13 @@ public class Settings {
 			netInterface = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
             LOGGER.info("localhost fetch complete");
 		}
+        if (netInterface == null) { // This added, because on linux, the getLocalHost() returned null
+            LOGGER.info("net IF is still null");
+            for(int i = 0; netInterface == null && i < NetworkInterface.networkInterfaces().count(); i++){
+                netInterface = NetworkInterface.getByIndex(i);
+                LOGGER.info("setting IF: " + netInterface);
+            }
+        }
         LOGGER.info("net interface: " + netInterface.toString());
 		jsonMap2.put(LAST_USED_INTERFACE, netInterface.getName());
 		JSONObject json = new JSONObject(jsonMap);
