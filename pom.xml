@@ -186,6 +186,83 @@
                     <classifier>windows-x86_64</classifier>
                 </dependency>
             </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                        <artifactId>launch4j-maven-plugin</artifactId>
+                        <!--<version>2.1.2</version>-->
+                        <version>2.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>l4j-clui</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>launch4j</goal>
+                                </goals>
+                                <configuration>
+
+                                    <!--<headerType>console</headerType>-->
+                                    <headerType>gui</headerType>
+                                    <jar>target/clientDNS-${project.version}-shaded.jar</jar>
+                                    <outfile>target/clientDNS/clientDNS.exe</outfile>
+                                    <downloadUrl>http://java.com/download</downloadUrl>
+                                    <classPath>
+                                        <mainClass>application.Main</mainClass>
+                                        <preCp>anything</preCp>
+                                    </classPath>
+                                    <jre>
+                                        <bundledJre64Bit>false</bundledJre64Bit>
+                                        <bundledJreAsFallback>false</bundledJreAsFallback>
+                                        <!--<minVersion>11</minVersion>-->
+                                        <minVersion>25</minVersion>
+                                        <runtimeBits>64</runtimeBits>
+                                    </jre>
+                                    <versionInfo>
+                                        <fileVersion>1.0.0.0</fileVersion>
+                                        <txtFileVersion>${project.version}</txtFileVersion>
+                                        <fileDescription>${project.name}</fileDescription>
+                                        <copyright>2017 spiraluplabs.com</copyright>
+                                        <productVersion>1.0.0.0</productVersion>
+                                        <txtProductVersion>1.0.0.0</txtProductVersion>
+                                        <productName>${project.name}</productName>
+                                        <companyName>SpiralUp</companyName>
+                                        <internalName>SpiralShareAutoAllocation</internalName>
+                                        <originalFilename>SpiralShareAutoAllocation.exe</originalFilename>
+                                    </versionInfo>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <!--<version>3.0.0</version>-->
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <phase>
+                                    package
+                                </phase>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${basedir}\target\clientDNS"/>
+                                        <copy todir="${basedir}\target\clientDNS">
+                                            <fileset dir="${basedir}" includes="config.properties"/>
+                                            <fileset dir="${basedir}" includes="rootservers.json"/>
+                                            <fileset dir="${basedir}" includes="servers.json"/>
+                                            <fileset dir="${basedir}" includes="LoadTestConfig.json"/>
+                                            <fileset dir="${basedir}" includes="GeneralConfig.json"/>
+                                        </copy>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>linux</id>
@@ -195,6 +272,44 @@
                     <name>Linux</name>
                 </os>
             </activation>
+            <build>
+                <plugins>
+                    <!-- antrun for Linux - copy files + create shell script -->
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${basedir}/target/clientDNS"/>
+                                        <copy todir="${basedir}/target/clientDNS">
+                                            <fileset dir="${basedir}" includes="config.properties"/>
+                                            <fileset dir="${basedir}" includes="rootservers.json"/>
+                                            <fileset dir="${basedir}" includes="servers.json"/>
+                                            <fileset dir="${basedir}" includes="LoadTestConfig.json"/>
+                                            <fileset dir="${basedir}" includes="GeneralConfig.json"/>
+                                        </copy>
+                                        <copy file="${basedir}/target/clientDNS-${project.version}-shaded.jar"
+                                              todir="${basedir}/target/clientDNS"/>
+
+                                        <!-- Create launch script for Linux -->
+                                        <echo file="${basedir}/target/clientDNS/clientDNS.sh">#!/bin/bash
+                                            cd "$(dirname "$0")"
+                                            java -jar clientDNS-${project.version}-shaded.jar "$@"
+                                        </echo>
+                                        <chmod file="${basedir}/target/clientDNS/clientDNS.sh" perm="755"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
             <dependencies>
                 <dependency>
                     <groupId>io.netty.incubator</groupId>
@@ -270,79 +385,8 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
-                <!--<version>2.1.2</version>-->
-                <version>2.6.0</version>
-                <executions>
-                    <execution>
-                        <id>l4j-clui</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
-                        <configuration>
 
-                            <!--<headerType>console</headerType>-->
-                            <headerType>gui</headerType>
-                            <jar>target/clientDNS-${project.version}-shaded.jar</jar>
-                            <outfile>target/clientDNS/clientDNS.exe</outfile>
-                            <downloadUrl>http://java.com/download</downloadUrl>
-                            <classPath>
-                                <mainClass>application.Main</mainClass>
-                                <preCp>anything</preCp>
-                            </classPath>
-                            <jre>
-                                <bundledJre64Bit>false</bundledJre64Bit>
-                                <bundledJreAsFallback>false</bundledJreAsFallback>
-                                <!--<minVersion>11</minVersion>-->
-                                <minVersion>25</minVersion>
-                                <runtimeBits>64</runtimeBits>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>1.0.0.0</fileVersion>
-                                <txtFileVersion>${project.version}</txtFileVersion>
-                                <fileDescription>${project.name}</fileDescription>
-                                <copyright>2017 spiraluplabs.com</copyright>
-                                <productVersion>1.0.0.0</productVersion>
-                                <txtProductVersion>1.0.0.0</txtProductVersion>
-                                <productName>${project.name}</productName>
-                                <companyName>SpiralUp</companyName>
-                                <internalName>SpiralShareAutoAllocation</internalName>
-                                <originalFilename>SpiralShareAutoAllocation.exe</originalFilename>
-                            </versionInfo>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <!--<version>3.0.0</version>-->
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <phase>
-                            package
-                        </phase>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${basedir}\target\clientDNS"/>
-                                <copy todir="${basedir}\target\clientDNS">
-                                    <fileset dir="${basedir}" includes="config.properties"/>
-                                    <fileset dir="${basedir}" includes="rootservers.json"/>
-                                    <fileset dir="${basedir}" includes="servers.json"/>
-                                    <fileset dir="${basedir}" includes="LoadTestConfig.json"/>
-                                    <fileset dir="${basedir}" includes="GeneralConfig.json"/>
-                                </copy>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <!--<version>3.7.0</version>-->
