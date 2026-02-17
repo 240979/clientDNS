@@ -33,22 +33,40 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
         byte[] pck = new byte[dnsBuf.readableBytes()];
         dnsBuf.readBytes(pck);
         task.setReceiveReply(pck);
+
         switch (task) {
-            case DNSOverTLS dnsOverTLS -> dnsOverTLS.setNotFinished(false);
-            case DNSOverQUICTask dnsOverQUICTask -> dnsOverQUICTask.setNotFinished(false);
+            case DNSOverTLS dnsOverTLS -> {
+                dnsOverTLS.getLatch().countDown();
+            }
+            case DNSOverQUICTask dnsOverQUICTask ->{
+                dnsOverQUICTask.getLatch().countDown();
+            }
             case null, default -> {
             }
         }
-    }
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        LOGGER.severe(ExceptionUtils.getStackTrace(cause));
-        ctx.close();
+        channelHandlerContext.close();
     }
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        LOGGER.info("chanelRead");
-        this.channelRead0(ctx, (ByteBuf) msg);
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        LOGGER.severe(ExceptionUtils.getStackTrace(cause));
+        switch (task) {
+            case DNSOverTLS dnsOverTLS -> {
+                dnsOverTLS.setExc(new Exception(cause));
+                dnsOverTLS.getLatch().countDown();
+            }
+            case DNSOverQUICTask dnsOverQUICTask -> {
+                dnsOverQUICTask.setExc(new Exception(cause));
+                dnsOverQUICTask.getLatch().countDown();
+            }
+            case null, default -> {}
+        }
+        ctx.close();
     }
+//    @Override
+//    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+//        LOGGER.info("chanelRead");
+//        this.channelRead0(ctx, (ByteBuf) msg);
+//    }
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("Stream channel active");

@@ -44,6 +44,6 @@ public class DoTClientHandler extends SimpleChannelInboundHandler<Object> {
         dnsBuf.readBytes(pck);
         dnsTaskBase.setReceiveReply(pck);
         LOGGER.info("Packet length: " + pck.length);
-        ((DNSOverTLS)dnsTaskBase).setNotFinished(false);
+        //((DNSOverTLS)dnsTaskBase).setNotFinished(false);
     }
 }

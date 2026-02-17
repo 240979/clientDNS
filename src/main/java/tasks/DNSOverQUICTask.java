@@ -29,14 +29,14 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class DNSOverQUICTask  extends DNSTaskBase{
     private final int resolverPort;
     @Getter
-    @Setter
-    private boolean notFinished = true;
+    private final CountDownLatch latch = new CountDownLatch(1);
 
     public DNSOverQUICTask(RequestSettings rs, ConnectionSettings cs) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(rs, cs, null);
@@ -44,7 +44,7 @@ public class DNSOverQUICTask  extends DNSTaskBase{
     }
 
     @Override
-    protected void sendData() throws KeyStoreException, NoSuchAlgorithmException, InterruptedException, IllegalArgumentException, CancellationException, ExecutionException, ChannelOutputShutdownException, InterfaceDoesNotHaveIPAddressException {
+    protected void sendData() throws KeyStoreException, NoSuchAlgorithmException, InterruptedException, IllegalArgumentException, CancellationException, ExecutionException, ChannelOutputShutdownException, InterfaceDoesNotHaveIPAddressException, TimeoutException {
         setStartTime(System.nanoTime());
         try{
             OpenSsl.ensureAvailability();
@@ -99,8 +99,9 @@ public class DNSOverQUICTask  extends DNSTaskBase{
         }
 
         setWasSend(true);
-        while (notFinished) {
-            Thread.sleep(10); // A lock would be better, but this works and I do not think, that it makes a difference
+        boolean completed = latch.await(5, TimeUnit.SECONDS);
+        if (!completed || exc != null) {
+            throw new TimeoutException();
         }
         setStopTime(System.nanoTime());
         setDuration(calculateDuration());

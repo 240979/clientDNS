@@ -43,7 +43,7 @@ public class DoTClientInitializer extends ChannelInitializer<SocketChannel> {
                     LOGGER.severe(ExceptionUtils.getStackTrace(cause));
                     ctx.close();
                     ((DNSOverTLS)dnsTaskBase).setExc(new TimeoutException());
-                    ((DNSOverTLS)dnsTaskBase).setNotFinished(false);
+                    ((DNSOverTLS)dnsTaskBase).getLatch().countDown();
                 } else {
                     super.exceptionCaught(ctx, cause);
                 }

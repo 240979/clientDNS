@@ -10,6 +10,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -30,6 +31,8 @@ import javax.net.ssl.SSLException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class representing protocol DNS over TLS
@@ -42,9 +45,8 @@ public class DNSOverTLS extends DNSTaskBase{
     private EventLoopGroup group;
     private Bootstrap bootstrap;
     private Channel channel;
-    private Exception exc = null;
-
-    private boolean notFinished = true;
+    private volatile Exception exc = null;
+    private final CountDownLatch latch = new CountDownLatch(1);
 
     public DNSOverTLS(RequestSettings rs, ConnectionSettings cs) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(rs, cs, null);
@@ -65,11 +67,15 @@ public class DNSOverTLS extends DNSTaskBase{
                         "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
                         "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
                         "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"))
-                .sslProvider(SslProvider.JDK)
+                .sslProvider(SslProvider.OPENSSL)
                 .sessionTimeout(3000)
                 .build();
+        if(Epoll.isAvailable()){
+            group = new EpollEventLoopGroup();
+        } else{
+            group = new NioEventLoopGroup();
+        }
 
-        group = new NioEventLoopGroup();
         bootstrap = new Bootstrap()
                 .group(group)
                 .channelFactory(() -> {
@@ -85,10 +91,8 @@ public class DNSOverTLS extends DNSTaskBase{
         channel.config().setConnectTimeoutMillis(3000);
         channel.writeAndFlush(Unpooled.wrappedBuffer(getMessageAsBytes())).sync();
 
-        while (notFinished) {
-            System.out.print("\r");
-        }
-        if (exc != null){
+        boolean completed = latch.await(5, TimeUnit.SECONDS);
+        if (!completed || exc != null) {
             throw new TimeoutException();
         }
         setWasSend(true);
