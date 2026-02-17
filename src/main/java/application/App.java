@@ -21,13 +21,14 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import ui.GeneralController;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class App extends Application {
 
 	private Settings settings;
-	private Language language;
+	//private Language language;
 	public static Stage stage = null;
 
 	public static String MAIN_STAGE_FXML_FILE = "/fxml/Main.fxml";
@@ -40,9 +41,11 @@ public class App extends Application {
 		try {
 			LoggerInitializer.init();
 			// load language
-			GeneralController.getLanguage().changeLanguageBundle(true);
-			this.language = new Language();
-			this.language.changeLanguageBundle(true);
+			Locale locale = Locale.getDefault();
+			boolean isLocaleCzech = locale.toString()
+					.toLowerCase()
+					.contains(Language.CZECH);
+			GeneralController.getLanguage().changeLanguageBundle(isLocaleCzech);
 			this.settings = new Settings();
 			Ip ip = new Ip();
 			//Config.loadConfiguration();
