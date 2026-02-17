@@ -16,7 +16,7 @@ import exceptions.NotValidDomainNameException;
 
 public class DomainConvert {
 	private static Pattern pDomainNameOnly;
-	private static final String DOMAIN_NAME_PATTERN = "^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.)+[A-Za-z]{2,6}$";
+	private static final String DOMAIN_NAME_PATTERN = "^((?!-)[_A-Za-z0-9][A-Za-z0-9-]{0,62}(?<!-)\\.)+[A-Za-z]{2,63}\\.?$";
 	private static final int COMPRESS_CONTANT_NUMBER = 49152;
 	private static final byte[] ROOT = { (byte) 0x00 };
 	static {
@@ -207,7 +207,6 @@ public class DomainConvert {
 		if (domainName.split("\\.").length == 1 && domainName.length() >= 2) {
 			return true;
 		}
-		;
 		boolean asciiName = pDomainNameOnly.matcher(domainName).find();
 		if (asciiName) {
 			return true;

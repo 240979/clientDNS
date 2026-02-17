@@ -231,6 +231,10 @@ public class Response {
 				return new DnsRecordCDS(rawMessage, rdLength.getValue(), currentIndex);
 			case CDNSKEY:
 				return new DnsRecordCDNSKEY(rawMessage, rdLength.getValue(),currentIndex);
+			case SVCB:
+				return new DnsRecordSVCB(rawMessage, rdLength.getValue(), currentIndex);
+			case HTTPS:
+				return new DnsRecordHTTPS(rawMessage, rdLength.getValue(), currentIndex);
 		default:
 			return null;
 		}
