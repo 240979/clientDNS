@@ -381,6 +381,9 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
+                                        <!--240979-->
+                                        <!-- IMPORTANT: Without this, communication using resolver URL won't work!-->
+                                        <exclude>META-INF/services/java.net.spi.InetAddressResolverProvider</exclude>
                                     </excludes>
                                 </filter>
                             </filters>

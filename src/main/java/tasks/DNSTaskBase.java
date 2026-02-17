@@ -467,6 +467,11 @@ public abstract class DNSTaskBase extends Task<Void> {
                 controller.showAlert(e);
 
             });
+        } catch (Exception e) {
+            LOGGER.severe("UNCAUGHT in call(): " + ExceptionUtils.getStackTrace(e));
+        } catch (Throwable t) {
+            // Important note: I added this, because in debug mode, all was fine, but after build it died (pom.xml missing exclude of dnsResolverProvider)
+            LOGGER.severe("THROWABLE in call(): " + t);
         }
         return null;
 
