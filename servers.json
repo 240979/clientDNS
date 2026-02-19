@@ -74,7 +74,7 @@
         "path": "dns-query"
     },
     {
-        "name":"dns.adguard-dns.com",
+        "name":"AdGuard",
         "domainName":"dns.adguard-dns.com",
         "ipv4":["94.140.15.15","94.140.14.14"],
         "ipv6":["2a10:50c0::ad1:ff","2a10:50c0::ad2:ff"],
@@ -125,5 +125,13 @@
         "doh": true,
         "dot": true,
         "path": "dns-query"
+    },
+    {
+        "name":"ControlD",
+        "domainName":"p0.freedns.controld.com",
+        "ipv4":["76.76.2.11","76.76.2.11"],
+        "ipv6":["2606:1a40::11","2606:1a40::11"],
+        "doq":true,
+        "port": 853
     }
 ]
