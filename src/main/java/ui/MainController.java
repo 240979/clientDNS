@@ -41,7 +41,7 @@ public class MainController extends GeneralController
 
     // button to chose protocol
     @FXML
-    private Button llmrButton;
+    private Button llmnrButton;
     @FXML
     private Button mdnsButton;
     @FXML
@@ -320,7 +320,7 @@ public class MainController extends GeneralController
         mdnsButton.setUserData(MDNSController.FXML_FILE_NAME);
         loadButton.setUserData(TesterController.FXML_FILE_NAME);
         dotButton.setUserData(DoTController.FXML_FILE_NAME_SMALL);
-        llmrButton.setUserData(LLMNRController.FXML_FILE_NAME);
+        llmnrButton.setUserData(LLMNRController.FXML_FILE_NAME);
         dohButton.setUserData(DoHController.FXML_FILE_NAME);
         doqButton.setUserData(DoQController.FXML_FILE_NAME);
         Stage stage = (Stage) dnsButton.getScene().getWindow();
