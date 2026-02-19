@@ -64,11 +64,11 @@ public class DNSOverQUICTask  extends DNSTaskBase{
         QuicSslContext context = QuicSslContextBuilder.forClient()
                 .applicationProtocols("doq")
                 .trustManager(tmf) //tmf from JDK
-                .keylog(true) //enable logging keys -- does not work?
+                .keylog(true) //enable logging keys
                 .build();
 
         EventLoopGroup group = new NioEventLoopGroup();
-        InetSocketAddress localAddr = new InetSocketAddress(Ip.getIpAddressFromInterface(interfaceToSend, resolver), 0);
+        InetSocketAddress localAddress = new InetSocketAddress(Ip.getIpAddressFromInterface(interfaceToSend, resolver), 0);
         ChannelHandler codec = new QuicClientCodecBuilder()
                 .sslContext(context)
                 .maxIdleTimeout(5, TimeUnit.SECONDS) // https://github.com/netty/netty-incubator-codec-quic/blob/main/codec-native-quic/src/test/java/io/netty/incubator/codec/quic/example/QuicClientExample.java
@@ -80,14 +80,14 @@ public class DNSOverQUICTask  extends DNSTaskBase{
                 .group(group)
                 .channel(NioDatagramChannel.class)
                 .handler(codec)
-                .bind(localAddr)
+                .bind(localAddress)
                 .sync()
                 .channel();
         String target = useResolverDomainName ? resolverDomainName : resolver;
         LOGGER.info("Target used: " + target);
         QuicChannel quicChannel = QuicChannel.newBootstrap(channel)
                 .streamHandler(new ChannelInboundHandlerAdapter())
-                 .remoteAddress(new InetSocketAddress(target, resolverPort)) //https://gist.github.com/leiless/df17252a17503d3ebf9a04e50f163114
+                .remoteAddress(new InetSocketAddress(target, resolverPort)) //https://gist.github.com/leiless/df17252a17503d3ebf9a04e50f163114
                 .connect()
                 .get(10, TimeUnit.SECONDS);
         ChannelInitializer<QuicStreamChannel> initializer = new DoQClientInitializer(this);
