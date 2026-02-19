@@ -35,16 +35,20 @@ import java.util.concurrent.TimeUnit;
 
 public class DNSOverQUICTask  extends DNSTaskBase{
     private final int resolverPort;
+    private boolean useResolverDomainName;
+    private String resolverDomainName;
     @Getter
     private final CountDownLatch latch = new CountDownLatch(1);
 
     public DNSOverQUICTask(RequestSettings rs, ConnectionSettings cs) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(rs, cs, null);
         this.resolverPort = cs.getResolverPort();
+        this.useResolverDomainName = cs.isDomainNameUsed();
+        this.resolverDomainName = cs.getResolverUri();
     }
 
     @Override
-    protected void sendData() throws KeyStoreException, NoSuchAlgorithmException, InterruptedException, IllegalArgumentException, CancellationException, ExecutionException, ChannelOutputShutdownException, InterfaceDoesNotHaveIPAddressException, TimeoutException {
+    protected void sendData() throws KeyStoreException, NoSuchAlgorithmException, InterruptedException, IllegalArgumentException, CancellationException, ExecutionException, ChannelOutputShutdownException, InterfaceDoesNotHaveIPAddressException, TimeoutException, java.util.concurrent.TimeoutException {
         setStartTime(System.nanoTime());
         try{
             OpenSsl.ensureAvailability();
@@ -80,11 +84,15 @@ public class DNSOverQUICTask  extends DNSTaskBase{
                 .bind(localAddr)
                 .sync()
                 .channel();
+        InetSocketAddress targetInetAddress = useResolverDomainName ? new InetSocketAddress(resolverDomainName, resolverPort) : new InetSocketAddress(resolver, resolverPort);
+        LOGGER.info("userResolverDomainName = " + useResolverDomainName);
+        LOGGER.info("Address used: " + targetInetAddress);
         QuicChannel quicChannel = QuicChannel.newBootstrap(channel)
                 .streamHandler(new ChannelInboundHandlerAdapter())
-                .remoteAddress(new InetSocketAddress(resolver, resolverPort)) //https://gist.github.com/leiless/df17252a17503d3ebf9a04e50f163114
+                // .remoteAddress(new InetSocketAddress(resolver, resolverPort)) //https://gist.github.com/leiless/df17252a17503d3ebf9a04e50f163114
+                .remoteAddress(targetInetAddress)
                 .connect()
-                .get();
+                .get(10, TimeUnit.SECONDS);
         ChannelInitializer<QuicStreamChannel> initializer = new DoQClientInitializer(this);
         QuicStreamChannel stream = quicChannel.createStream(QuicStreamType.BIDIRECTIONAL, initializer)
                 .sync()

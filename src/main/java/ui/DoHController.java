@@ -49,9 +49,6 @@ public class DoHController extends GeneralController {
     protected RadioButton post;
     @FXML
     protected ToggleGroup getPostToggleGroup;
-    @FXML
-    @Translation
-    protected RadioButton useDomainName;
 
     private Stage helpStage = null;
 
@@ -79,7 +76,6 @@ public class DoHController extends GeneralController {
     public void initialize() {
         super.initialize();
         dnsserverToggleGroup = new ToggleGroup();
-
         IPprotToggleGroup = new ToggleGroup();
         IPv4RadioButton.setToggleGroup(IPprotToggleGroup);
         IPv6RadioButton.setToggleGroup(IPprotToggleGroup);
@@ -342,9 +338,6 @@ public class DoHController extends GeneralController {
 
     protected boolean isRequestJson(){
         return this.jsonFormat.isSelected();
-    }
-    protected boolean isDomainNameUsed(){
-        return this.useDomainName.isSelected();
     }
 
     @FXML

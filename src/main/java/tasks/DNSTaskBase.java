@@ -299,7 +299,10 @@ public abstract class DNSTaskBase extends Task<Void> {
         if (doFlag) {
             size += new Response().getDnssecAsBytes().length;
         }
-        if (transport_protocol == TRANSPORT_PROTOCOL.TCP && application_protocol != APPLICATION_PROTOCOL.DOH) {
+        // https://www.rfc-editor.org/rfc/rfc9250#section-4.2 -- DoQ, map exactly as TCP, but also wire format for DoH does not use length prefix
+        if (transport_protocol == TRANSPORT_PROTOCOL.TCP
+                && application_protocol != APPLICATION_PROTOCOL.DOH
+                || application_protocol == APPLICATION_PROTOCOL.DOQ) {
 
             this.messageAsBytes = new byte[size + 2];
             UInt16 tcpSize = new UInt16(size);
@@ -357,7 +360,8 @@ public abstract class DNSTaskBase extends Task<Void> {
                 root.getChildren().add(optRecord);
             }
         }
-        if (transport_protocol == TRANSPORT_PROTOCOL.TCP && application_protocol != APPLICATION_PROTOCOL.DOH) {
+         https://www.rfc-editor.org/rfc/rfc9250#section-4.2 -- DoQ, map exactly as TCP
+        if (transport_protocol == TRANSPORT_PROTOCOL.TCP && application_protocol != APPLICATION_PROTOCOL.DOH || application_protocol == APPLICATION_PROTOCOL.DOQ) {
             TreeItem<String> tcpTreeItem = new TreeItem<String>("");
             tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + (byteSizeQuery - 2)));
             tcpTreeItem.getChildren().add(root);
@@ -396,7 +400,7 @@ public abstract class DNSTaskBase extends Task<Void> {
      * @throws NoSuchAlgorithmException
      * @throws QueryIdNotMatchException
      */
-    protected abstract void sendData() throws TimeoutException, MessageTooBigForUDPException, InterfaceDoesNotHaveIPAddressException, IOException, InterruptedException, ParseException, HttpCodeException, OtherHttpException, NotValidDomainNameException, NotValidIPException, URISyntaxException, NoSuchAlgorithmException, QueryIdNotMatchException, ExecutionException, KeyStoreException, IllegalArgumentException, CancellationException;
+    protected abstract void sendData() throws TimeoutException, MessageTooBigForUDPException, InterfaceDoesNotHaveIPAddressException, IOException, InterruptedException, ParseException, HttpCodeException, OtherHttpException, NotValidDomainNameException, NotValidIPException, URISyntaxException, NoSuchAlgorithmException, QueryIdNotMatchException, ExecutionException, KeyStoreException, IllegalArgumentException, CancellationException, java.util.concurrent.TimeoutException;
 
     protected abstract void updateProgressUI();
 

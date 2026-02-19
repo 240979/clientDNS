@@ -59,10 +59,10 @@ public class DoQController extends GeneralController{
     public void initialize() {
         super.initialize();
         dnsserverToggleGroup = new ToggleGroup();
-
         IPprotToggleGroup = new ToggleGroup();
         IPv4RadioButton.setToggleGroup(IPprotToggleGroup);
         IPv6RadioButton.setToggleGroup(IPprotToggleGroup);
+        useDomainName.setToggleGroup(IPprotToggleGroup);
         iterativeToggleGroup = new ToggleGroup();
         recursiveQueryRadioButton.setToggleGroup(iterativeToggleGroup);
         iterativeQueryRadioButton.setToggleGroup(iterativeToggleGroup);
@@ -115,7 +115,7 @@ public class DoQController extends GeneralController{
             LOGGER.info("DNS server: " + dnsServIp + "\n" + "Domain: " + domain + "\n" + "Records: " + Arrays.toString(records)
                     + "\n" + "\n" + "DNSSEC: " + adFlag + "\n" + "DNSSEC sig records"
                     + doFlag + "\n" + "Transport protocol: " + transport + "\n"
-                    + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS + "\n" + "Checking disabled: " + caFlag);
+                    + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DOQ + "\n" + "Checking disabled: " + caFlag);
             RequestSettings rs = new RequestSettings.RequestSettingsBuilder()
                     .recursion(recursive)
                     .adFlag(adFlag)
@@ -125,11 +125,13 @@ public class DoQController extends GeneralController{
                     .types(records)
                     .build();
             ConnectionSettings cs = new ConnectionSettings.ConnectionSettingsBuilder()
-                    .transport_protocol(TRANSPORT_PROTOCOL.TCP)
+                    .transport_protocol(TRANSPORT_PROTOCOL.UDP)
                     .application_protocol(APPLICATION_PROTOCOL.DOQ)
                     .resolverIP(dnsServIp)
                     .resolverPort(dnsServPort)
                     .netInterface(getInterface())
+                    .isDomainNameUsed(isDomainNameUsed())
+                    .resolverUri(getDnsServerDomainName(getDnsServerIp()))
                     .build();
             task = new DNSOverQUICTask(rs, cs);
             task.setController(this);

@@ -113,7 +113,6 @@ public class DoTController extends GeneralController {
 
     public void initialize() {
         super.initialize();
-
         iterativeToggleGroup = new ToggleGroup();
         iterativeQueryRadioButton.setToggleGroup(iterativeToggleGroup);
         recursiveQueryRadioButton.setToggleGroup(iterativeToggleGroup);
@@ -124,7 +123,7 @@ public class DoTController extends GeneralController {
 
         IPv4RadioButton.setToggleGroup(IPprotToggleGroup);
         IPv6RadioButton.setToggleGroup(IPprotToggleGroup);
-
+        useDomainName.setToggleGroup(IPprotToggleGroup);
         keyMappings = new HashMap<>();
 
         dnsserverToggleGroup = new ToggleGroup();
@@ -302,6 +301,8 @@ public class DoTController extends GeneralController {
                     .application_protocol(APPLICATION_PROTOCOL.DOT)
                     .resolverIP(dnsServer)
                     .netInterface(getInterface())
+                    .isDomainNameUsed(isDomainNameUsed())
+                    .resolverUri(getDnsServerDomainName(getDnsServerIp()))
                     .build();
             task = new DNSOverTLS(rs,cs);
             task.setController(this);

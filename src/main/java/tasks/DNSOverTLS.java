@@ -46,17 +46,21 @@ public class DNSOverTLS extends DNSTaskBase{
     private Bootstrap bootstrap;
     private Channel channel;
     private volatile Exception exc = null;
+    private boolean useResolverDomainName;
+    private String resolverDomainName;
     private final CountDownLatch latch = new CountDownLatch(1);
 
     public DNSOverTLS(RequestSettings rs, ConnectionSettings cs) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(rs, cs, null);
+        this.useResolverDomainName = cs.isDomainNameUsed();
+        this.resolverDomainName = cs.getResolverUri();
     }
 
     @Override
     protected void sendData() throws TimeoutException, SSLException, InterruptedException {
         setStartTime(System.nanoTime());
         OpenSsl.ensureAvailability();
-
+        String target = useResolverDomainName ? resolverDomainName : resolver;
         sslCtx = SslContextBuilder.forClient()
                 .protocols("TLSv1.3")
                 .ciphers(Arrays.asList(
@@ -85,9 +89,9 @@ public class DNSOverTLS extends DNSTaskBase{
                         return new NioSocketChannel();
                     }
                 })
-                .handler(new DoTClientInitializer(sslCtx, resolver, this));
+                .handler(new DoTClientInitializer(sslCtx, target, this));
 
-        channel = bootstrap.connect(resolver, 853).sync().channel();
+        channel = bootstrap.connect(target, 853).sync().channel();
         channel.config().setConnectTimeoutMillis(3000);
         channel.writeAndFlush(Unpooled.wrappedBuffer(getMessageAsBytes())).sync();
 

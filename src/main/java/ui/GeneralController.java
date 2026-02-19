@@ -289,6 +289,10 @@ public abstract class GeneralController {
     @FXML
     @Translation
     protected RadioMenuItem darkModeMenuItem;
+    // 240979:
+    @FXML
+    @Translation
+    protected RadioButton useDomainName;
 
     protected Exception ecx = null;
 
@@ -1158,6 +1162,10 @@ public abstract class GeneralController {
             logStage = null;
         });
 
+    }
+    // 240979:
+    protected boolean isDomainNameUsed(){
+        return this.useDomainName.isSelected();
     }
 
 }
