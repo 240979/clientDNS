@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.biolek.martin</groupId>
     <artifactId>clientDNS</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -383,6 +383,7 @@
                                         <exclude>META-INF/*.RSA</exclude>
                                         <!--240979-->
                                         <!-- IMPORTANT: Without this, communication using resolver URL won't work!-->
+                                        <!-- https://github.com/dnsjava/dnsjava/issues/338 -->
                                         <exclude>META-INF/services/java.net.spi.InetAddressResolverProvider</exclude>
                                     </excludes>
                                 </filter>
