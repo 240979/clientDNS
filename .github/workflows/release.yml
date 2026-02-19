@@ -32,7 +32,8 @@ jobs:
           New-Item -ItemType Directory -Path $dirName
           Copy-Item target/clientDNS/clientDNS.exe $dirName/
           Copy-Item target/clientDNS/*.json $dirName/
-          7z a "$dirName.7z" $dirName
+          Copy-Item target/clientDNS/config.properties $dirName/
+          cp target/clientDNS/config.properties "$dirName/"
         shell: pwsh
 
       - name: Upload Windows artifact
@@ -64,7 +65,8 @@ jobs:
           cp target/clientDNS/clientDNS-*-shaded.jar "$dirName/"
           cp target/clientDNS/clientDNS.sh "$dirName/"
           cp target/clientDNS/*.json "$dirName/"
-          7z a "${dirName}.7z" "$dirName"
+          cp target/clientDNS/config.properties "$dirName/"
+          zip -r "${dirName}.zip" "$dirName"
 
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
