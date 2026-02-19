@@ -61,6 +61,7 @@ public class DNSOverTLS extends DNSTaskBase{
         setStartTime(System.nanoTime());
         OpenSsl.ensureAvailability();
         String target = useResolverDomainName ? resolverDomainName : resolver;
+        LOGGER.info("Target used: " + target);
         sslCtx = SslContextBuilder.forClient()
                 .protocols("TLSv1.3")
                 .ciphers(Arrays.asList(

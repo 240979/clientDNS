@@ -14,7 +14,6 @@ import io.netty.handler.ssl.OpenSsl;
 import io.netty.incubator.codec.quic.*;
 import javafx.application.Platform;
 import lombok.Getter;
-import lombok.Setter;
 import models.ConnectionSettings;
 import models.DoQClientInitializer;
 import models.Ip;
@@ -35,8 +34,8 @@ import java.util.concurrent.TimeUnit;
 
 public class DNSOverQUICTask  extends DNSTaskBase{
     private final int resolverPort;
-    private boolean useResolverDomainName;
-    private String resolverDomainName;
+    private final boolean useResolverDomainName;
+    private final String resolverDomainName;
     @Getter
     private final CountDownLatch latch = new CountDownLatch(1);
 
@@ -84,13 +83,11 @@ public class DNSOverQUICTask  extends DNSTaskBase{
                 .bind(localAddr)
                 .sync()
                 .channel();
-        InetSocketAddress targetInetAddress = useResolverDomainName ? new InetSocketAddress(resolverDomainName, resolverPort) : new InetSocketAddress(resolver, resolverPort);
-        LOGGER.info("userResolverDomainName = " + useResolverDomainName);
-        LOGGER.info("Address used: " + targetInetAddress);
+        String target = useResolverDomainName ? resolverDomainName : resolver;
+        LOGGER.info("Target used: " + target);
         QuicChannel quicChannel = QuicChannel.newBootstrap(channel)
                 .streamHandler(new ChannelInboundHandlerAdapter())
-                // .remoteAddress(new InetSocketAddress(resolver, resolverPort)) //https://gist.github.com/leiless/df17252a17503d3ebf9a04e50f163114
-                .remoteAddress(targetInetAddress)
+                 .remoteAddress(new InetSocketAddress(target, resolverPort)) //https://gist.github.com/leiless/df17252a17503d3ebf9a04e50f163114
                 .connect()
                 .get(10, TimeUnit.SECONDS);
         ChannelInitializer<QuicStreamChannel> initializer = new DoQClientInitializer(this);
