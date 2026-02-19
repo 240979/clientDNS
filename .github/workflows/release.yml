@@ -33,7 +33,7 @@ jobs:
           Copy-Item target/clientDNS/clientDNS.exe $dirName/
           Copy-Item target/clientDNS/*.json $dirName/
           Copy-Item target/clientDNS/config.properties $dirName/
-          cp target/clientDNS/config.properties "$dirName/"
+          Compress-Archive -Path $dirName -DestinationPath "$dirName.zip"
         shell: pwsh
 
       - name: Upload Windows artifact
