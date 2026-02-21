@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Menu;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -27,6 +28,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.ResourceBundle;
 
 public class DoHController extends GeneralController {
@@ -333,7 +336,21 @@ public class DoHController extends GeneralController {
 
     @Override
     protected void setWiresharkMenuItems() {
-        super.setWiresharkMenuItems();
+        parameters = new HashMap<String, String>();
+        parameters.put("prefix", "ipv4");
+        parameters.put("ip", null);
+        parameters.put("tcpPort", null);
+        wiresharkMenu.getItems().removeAll();
+        filters = new LinkedList<>();
+        filters.add(new WiresharkFilter("IP", "${ip}"));
+        filters.add(new WiresharkFilter("IP filter", "${prefix}.addr == ${ip}"));
+        filters.add(new WiresharkFilter("IP & TCP", "${prefix}.addr == ${ip} && tcp.port == ${tcpPort}"));
+        for (WiresharkFilter filter : filters) {
+            RadioMenuItem menuItem = new RadioMenuItem(filter.getName());
+            menuItem.setUserData(filter);
+            menuItem.setToggleGroup(wiresharkFilterToogleGroup);
+            wiresharkMenu.getItems().add(menuItem);
+        }
     }
 
     protected boolean isRequestJson(){

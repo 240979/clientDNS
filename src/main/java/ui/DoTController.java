@@ -25,6 +25,7 @@ import tasks.DNSOverTLS;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -335,6 +336,25 @@ public class DoTController extends GeneralController {
     private void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+    }
+    @Override
+    protected void setWiresharkMenuItems() {
+        wiresharkMenu = new Menu();
+        parameters = new HashMap<String, String>();
+        parameters.put("prefix", "ipv4");
+        parameters.put("ip", null);
+        parameters.put("tcpPort", null);
+        wiresharkMenu.getItems().removeAll();
+        filters = new LinkedList<>();
+        filters.add(new WiresharkFilter("IP", "${ip}"));
+        filters.add(new WiresharkFilter("IP filter", "${prefix}.addr == ${ip}"));
+        filters.add(new WiresharkFilter("IP & TCP", "${prefix}.addr == ${ip} && tcp.port == ${tcpPort}"));
+        for (WiresharkFilter filter : filters) {
+            RadioMenuItem menuItem = new RadioMenuItem(filter.getName());
+            menuItem.setUserData(filter);
+            menuItem.setToggleGroup(wiresharkFilterToogleGroup);
+            wiresharkMenu.getItems().add(menuItem);
+        }
     }
 
 }

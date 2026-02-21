@@ -88,19 +88,31 @@ public class NameServerVBox extends VBox {
         imageViewIPv4.setFitWidth(22);
         imageViewIPv4.setFitHeight(22);
         imageViewIPv4.setOnMouseClicked((event -> {
+            if (!IPv4radioButton.isSelected()) return; // Block copying from not selected NS
             //System.out.println("copying filter");
             LOGGER.fine("copying filter");
             controller.copyWiresharkFilter(getSelectedIP(true));
         }));
+        imageViewIPv4.opacityProperty().bind(
+                javafx.beans.binding.Bindings.when(IPv4radioButton.selectedProperty()) // Blur the copy icon, when not selected
+                        .then(1.0)
+                        .otherwise(0.3)
+        );
 
         ImageView imageViewIPv6 = new ImageView("/images/copy-clipboard.png");
         imageViewIPv6.setFitWidth(22);
         imageViewIPv6.setFitHeight(22);
         imageViewIPv6.setOnMouseClicked((event -> {
+            if (!IPv6radioButton.isSelected()) return; // Block copying from not selected NS
             //System.out.println("copying filter");
             LOGGER.fine("copying filter");
             controller.copyWiresharkFilter(getSelectedIP(false));
         }));
+        imageViewIPv6.opacityProperty().bind(
+                javafx.beans.binding.Bindings.when(IPv6radioButton.selectedProperty()) // Blur the copy icon, when not selected
+                        .then(1.0)
+                        .otherwise(0.3)
+        );
 
         IPv4HBox.getChildren().addAll(IPv4radioButton, imageViewIPv4);
         IPv6HBox.getChildren().addAll(IPv6radioButton, imageViewIPv6);

@@ -19,6 +19,8 @@ import tasks.DNSOverQUICTask;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.concurrent.CancellationException;
 
 public class DoQController extends GeneralController{
@@ -73,7 +75,15 @@ public class DoQController extends GeneralController{
 
     @Override
     protected void updateCustomParameters() {
-        parameters.put(WiresharkFilter.Parameters.UDPPORT, Integer.toString(resolverPort));
+        try {
+            parameters.put(WiresharkFilter.Parameters.UDPPORT, Integer.toString(getDnsServerPort(getDnsServerIp())));
+        } catch (DnsServerIpIsNotValidException
+                    | UnknownHostException
+                    | NoIpAddrForDomainName
+                    | NotValidDomainNameException
+                    | UnsupportedEncodingException e ) {
+            parameters.put(WiresharkFilter.Parameters.UDPPORT, "853");
+        }
     }
 
     @Override
@@ -165,6 +175,25 @@ public class DoQController extends GeneralController{
     }
     public void loadDataFromSettings() {
         savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
+    }
+
+    @Override
+    protected void setWiresharkMenuItems() {
+        parameters = new HashMap<String, String>();
+        parameters.put("prefix", "ipv4");
+        parameters.put("ip", null);
+        parameters.put("udpPort", null);
+        wiresharkMenu.getItems().removeAll();
+        filters = new LinkedList<>();
+        filters.add(new WiresharkFilter("IP", "${ip}"));
+        filters.add(new WiresharkFilter("IP filter", "${prefix}.addr == ${ip}"));
+        filters.add(new WiresharkFilter("IP & UDP", "${prefix}.addr == ${ip} && udp.port == ${udpPort}"));
+        for (WiresharkFilter filter : filters) {
+            RadioMenuItem menuItem = new RadioMenuItem(filter.getName());
+            menuItem.setUserData(filter);
+            menuItem.setToggleGroup(wiresharkFilterToogleGroup);
+            wiresharkMenu.getItems().add(menuItem);
+        }
     }
 
 }

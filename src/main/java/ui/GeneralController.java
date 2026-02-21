@@ -7,6 +7,7 @@ package ui;
 
 import application.App;
 import application.Config;
+import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import exceptions.*;
 import javafx.application.Platform;
@@ -474,7 +475,7 @@ public abstract class GeneralController {
         parameters.put("ip", null);
         parameters.put("tcpPort", null);
         parameters.put("udpPort", null);
-
+        wiresharkMenu.getItems().removeAll();
         filters = new LinkedList<>();
         filters.add(new WiresharkFilter("IP", "${ip}"));
         filters.add(new WiresharkFilter("IP filter", "${prefix}.addr == ${ip}"));
@@ -849,18 +850,18 @@ public abstract class GeneralController {
         } else {
             prefix = "ipv6";
         }
-
         parameters.put("ip", ip);
         parameters.put("prefix", prefix);
-
         updateCustomParameters();
 
         if (wiresharkFilterToogleGroup.getSelectedToggle() == null) {
             showAlert("chooseFilter");
             return;
         }
-        String out =
-                ((WiresharkFilter) wiresharkFilterToogleGroup.getSelectedToggle().getUserData()).generateQuery(parameters);
+        String out = ((WiresharkFilter) wiresharkFilterToogleGroup
+                .getSelectedToggle()
+                .getUserData())
+                .generateQuery(parameters);
         copyDataToClipBoard(out);
         showAlert("filterCopied", Alert.AlertType.INFORMATION);
 
