@@ -3,12 +3,14 @@ package ui;
  * Author - Patricia Ramosova
  * Link - https://github.com/xramos00/DNS_client
  * */
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import lombok.Setter;
@@ -84,38 +86,20 @@ public class NameServerVBox extends VBox {
         Label name = new Label();
         name.setText(nameServer.getDomainName());
 
-        ImageView imageViewIPv4 = new ImageView("/images/copy-clipboard.png");
-        imageViewIPv4.setFitWidth(22);
-        imageViewIPv4.setFitHeight(22);
-        imageViewIPv4.setOnMouseClicked((event -> {
-            if (!IPv4radioButton.isSelected()) return; // Block copying from not selected NS
-            //System.out.println("copying filter");
-            LOGGER.fine("copying filter");
-            controller.copyWiresharkFilter(getSelectedIP(true));
-        }));
-        imageViewIPv4.opacityProperty().bind(
-                javafx.beans.binding.Bindings.when(IPv4radioButton.selectedProperty()) // Blur the copy icon, when not selected
-                        .then(1.0)
-                        .otherwise(0.3)
+        // Created method to increase clickable area
+        StackPane copyIPv4Btn = getIpv4CopyBtnStackPane(controller);
+        // Blur the copy icon, when not selected NS
+        copyIPv4Btn.opacityProperty().bind(
+                Bindings.when(IPv4radioButton.selectedProperty()).then(1.0).otherwise(0.3)
         );
-
-        ImageView imageViewIPv6 = new ImageView("/images/copy-clipboard.png");
-        imageViewIPv6.setFitWidth(22);
-        imageViewIPv6.setFitHeight(22);
-        imageViewIPv6.setOnMouseClicked((event -> {
-            if (!IPv6radioButton.isSelected()) return; // Block copying from not selected NS
-            //System.out.println("copying filter");
-            LOGGER.fine("copying filter");
-            controller.copyWiresharkFilter(getSelectedIP(false));
-        }));
-        imageViewIPv6.opacityProperty().bind(
-                javafx.beans.binding.Bindings.when(IPv6radioButton.selectedProperty()) // Blur the copy icon, when not selected
-                        .then(1.0)
-                        .otherwise(0.3)
+        IPv4HBox.getChildren().addAll(IPv4radioButton, copyIPv4Btn);
+        // Same procedure for IPv6
+        StackPane copyIPv6Btn = getIpv6CopyBtnStackPane(controller);
+        // Blur the copy icon, when not selected
+        copyIPv6Btn.opacityProperty().bind(
+                Bindings.when(IPv6radioButton.selectedProperty()).then(1.0).otherwise(0.3)
         );
-
-        IPv4HBox.getChildren().addAll(IPv4radioButton, imageViewIPv4);
-        IPv6HBox.getChildren().addAll(IPv6radioButton, imageViewIPv6);
+        IPv6HBox.getChildren().addAll(IPv6radioButton, copyIPv6Btn);
 
         // create buttons and toggle groups for every IP
         if (nameServer.getIpv4().size() > 1) {
@@ -129,7 +113,7 @@ public class NameServerVBox extends VBox {
                 // create toggle button for IP
                 IPToggleButton tb = new IPToggleButton(IPv4radioButton);
                 tb.setOnMouseClicked(mouseEvent -> controller.setNameServer(nameServer));
-                tb.setText(Integer.toString(i + 1) + ". IP");
+                tb.setText(i + 1 + ". IP");
                 // store IP as user data
                 tb.setUserData(ip);
                 // set same toggle group for all buttons
@@ -202,6 +186,37 @@ public class NameServerVBox extends VBox {
             IPv6radioButton.setTooltip(new Tooltip("-"));
         }
         loadIPv4();
+    }
+
+    private StackPane getIpv6CopyBtnStackPane(GeneralController controller) {
+        ImageView imageViewIPv6 = new ImageView("/images/copy-clipboard.png");
+        imageViewIPv6.setFitWidth(22);
+        imageViewIPv6.setFitHeight(22);
+        StackPane copyIPv6Btn = new StackPane(imageViewIPv6);
+        copyIPv6Btn.setPadding(new Insets(5)); // Padding 5
+        copyIPv6Btn.setOnMouseClicked((event -> {
+            // Block clicking on not selected NS
+            if (!IPv6radioButton.isSelected()) return;
+            LOGGER.fine("copying filter");
+            controller.copyWiresharkFilter(getSelectedIP(false));
+        }));
+        return copyIPv6Btn;
+    }
+
+    private StackPane getIpv4CopyBtnStackPane(GeneralController controller) {
+        ImageView imageViewIPv4 = new ImageView("/images/copy-clipboard.png");
+        imageViewIPv4.setFitWidth(22);
+        imageViewIPv4.setFitHeight(22);
+        // The copy icon was tricky to click, so I added padding
+        StackPane copyIPv4Btn = new StackPane(imageViewIPv4);
+        copyIPv4Btn.setPadding(new Insets(5));  // Padding 5
+        copyIPv4Btn.setOnMouseClicked((event -> {
+            // Block clicking on not selected
+            if (!IPv4radioButton.isSelected()) return;
+            LOGGER.fine("copying filter");
+            controller.copyWiresharkFilter(getSelectedIP(true));
+        }));
+        return copyIPv4Btn;
     }
 
     /**
