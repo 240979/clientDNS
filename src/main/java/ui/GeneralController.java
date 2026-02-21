@@ -855,8 +855,12 @@ public abstract class GeneralController {
         updateCustomParameters();
 
         if (wiresharkFilterToogleGroup.getSelectedToggle() == null) {
-            showAlert("chooseFilter");
-            return;
+//            showAlert("chooseFilter");
+//            return;
+            //  I don't see the reason why harass user with the alert? Choose 1st instead...
+            wiresharkFilterToogleGroup.getToggles()
+                    .getFirst()
+                    .setSelected(true);
         }
         String out = ((WiresharkFilter) wiresharkFilterToogleGroup
                 .getSelectedToggle()
