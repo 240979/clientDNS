@@ -59,7 +59,7 @@ public class Header {
 
 	public Header(boolean recursion, boolean dnssec, int numberOfQueries, boolean rrRecord) {
 		id = new UInt16().generateRandom();
-		root = new TreeItem<String>("Head");
+		root = new TreeItem<>("Head");
 		qr = QR.REQUEST;
 		opCode = OP_CODE.QUERY;
 		aa = AA.NON_AUTHORITATIVE;
@@ -87,13 +87,9 @@ public class Header {
 		ad = AUTHENTICATE_DATA.getTypeByCode(authenticateData);
 	}
 
-	public Header(int numberOfQueries) {
-		this(false, false, numberOfQueries, true);
-		this.id = new UInt16(0);
-	}
 
 	public Header() {
-		root = new TreeItem<String>("Head");
+		root = new TreeItem<>("Head");
 	}
 
 	public byte[] getHeaderAsBytes() {
@@ -104,12 +100,10 @@ public class Header {
 		boolean[] sub2 = { rcodeBoolean[0], rcodeBoolean[1], rcodeBoolean[2], rcodeBoolean[3], cd.code, ad.code, false,
 				ra.code };
 
-		byte[] result = { id.getAsBytes()[1], id.getAsBytes()[0], DataTypesConverter.booleanArrayAsByte(sub1),
-				DataTypesConverter.booleanArrayAsByte(sub2), QdCount.getAsBytes()[1], QdCount.getAsBytes()[0],
-				AnCount.getAsBytes()[1], AnCount.getAsBytes()[0], NsCount.getAsBytes()[1], NsCount.getAsBytes()[0],
-				ArCount.getAsBytes()[1], ArCount.getAsBytes()[0] };
-
-		return result;
+        return new byte[]{ id.getAsBytes()[1], id.getAsBytes()[0], DataTypesConverter.booleanArrayAsByte(sub1),
+                DataTypesConverter.booleanArrayAsByte(sub2), QdCount.getAsBytes()[1], QdCount.getAsBytes()[0],
+                AnCount.getAsBytes()[1], AnCount.getAsBytes()[0], NsCount.getAsBytes()[1], NsCount.getAsBytes()[0],
+                ArCount.getAsBytes()[1], ArCount.getAsBytes()[0] };
 	}
 
 	@Override
@@ -148,12 +142,12 @@ public class Header {
 	}
 
 	public TreeItem<String> getAsTreeItem() {
-		root.getChildren().add(new TreeItem<String>(ID_KEY + ": " + id.getValue()));
+		root.getChildren().add(new TreeItem<>(ID_KEY + ": " + id.getValue()));
 		root.getChildren().add(getFlagsAsTreeView());
-		root.getChildren().add(new TreeItem<String>(QDCOUNT_KEY + ": " + QdCount.toString()));
-		root.getChildren().add(new TreeItem<String>(ANCOUNT_KEY + ": " + AnCount.toString()));
-		root.getChildren().add(new TreeItem<String>(NSCOUNT_KEY + ": " + NsCount.toString()));
-		root.getChildren().add(new TreeItem<String>(ARCOUNT_KEY + ": " + ArCount.toString()));
+		root.getChildren().add(new TreeItem<>(QDCOUNT_KEY + ": " + QdCount.toString()));
+		root.getChildren().add(new TreeItem<>(ANCOUNT_KEY + ": " + AnCount.toString()));
+		root.getChildren().add(new TreeItem<>(NSCOUNT_KEY + ": " + NsCount.toString()));
+		root.getChildren().add(new TreeItem<>(ARCOUNT_KEY + ": " + ArCount.toString()));
 		return root;
 	}
 
@@ -162,9 +156,9 @@ public class Header {
 				AUTHENTICATE_DATA__KEY, RCODE_KEY };
 		String[] flagsValue = { qr.toString(), opCode.toString(), aa.toString(), tc.toString(), rd.toString(),
 				cd.toString(), ad.toString(), rCode.toString() };
-		TreeItem<String> main = new TreeItem<String>("Flags");
+		TreeItem<String> main = new TreeItem<>("Flags");
 		for (int i = 0; i < flagsValue.length; i++) {
-			main.getChildren().add(new TreeItem<String>(flagsKeys[i] + ": " + flagsValue[i]));
+			main.getChildren().add(new TreeItem<>(flagsKeys[i] + ": " + flagsValue[i]));
 		}
 		return main;
 	}

@@ -5,7 +5,6 @@
  * */
 package models;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -14,7 +13,6 @@ import org.json.simple.JSONObject;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
 import enums.RESPONSE_MDNS_TYPE;
-import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import javafx.scene.control.TreeItem;
 
@@ -37,7 +35,7 @@ public class Request {
 	private static final Logger LOGGER = Logger.getLogger(Request.class.getName());
 
 	public Request(String qName, Q_COUNT qCount)
-			throws NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException {
+			throws NotValidIPException {
 		this.qName = qName;
 		if (qCount.equals(Q_COUNT.PTR)) {
 			ipAddressToPTRFormat();
@@ -51,7 +49,7 @@ public class Request {
 	}
 
 	public Request(String qName, Q_COUNT a, RESPONSE_MDNS_TYPE mdnsType)
-			throws NotValidIPException, UnsupportedEncodingException {
+			throws NotValidIPException {
 		this.qName = qName;
 		this.mdnsType = mdnsType;
 		if (a.equals(Q_COUNT.PTR)) {
@@ -89,13 +87,13 @@ public class Request {
 	}
 
 	public TreeItem<String> getAsTreeItem() {
-		root = new TreeItem<String>(qName + " " + qCount + " " + qtype);
-		root.getChildren().add(new TreeItem<String>(KEY_NAME + ": " + qName));
-		root.getChildren().add(new TreeItem<String>(KEY_QCOUNT + ": " + qCount));
+		root = new TreeItem<>(qName + " " + qCount + " " + qtype);
+		root.getChildren().add(new TreeItem<>(KEY_NAME + ": " + qName));
+		root.getChildren().add(new TreeItem<>(KEY_QCOUNT + ": " + qCount));
 		if (mdnsType != null) {
-			root.getChildren().add(new TreeItem<String>(KEY_RESPONSE_TYPE + ": " + mdnsType.toString()));
+			root.getChildren().add(new TreeItem<>(KEY_RESPONSE_TYPE + ": " + mdnsType.toString()));
 		}
-		root.getChildren().add(new TreeItem<String>(KEY_QTYPE + ": " + qtype));
+		root.getChildren().add(new TreeItem<>(KEY_QTYPE + ": " + qtype));
 		return root;
 	}
 
@@ -111,14 +109,6 @@ public class Request {
 		return "Request [qName=" + qName + ", nameInBytes=" + Arrays.toString(nameInBytes) + ", qCount=" + qCount
 				+ ", qtype=" + qtype + ", mdnsType=" + mdnsType + ", size=" + size + ", endIndex=" + endIndex
 				+ ", root=" + root + "]";
-	}
-
-    public void printEncodedQnameInHex() {
-		StringBuilder res = new StringBuilder();
-		for (byte b : nameInBytes) {
-			res.append(String.format("%02x", b));
-		}
-		System.out.println(res);
 	}
 
 	public Request parseRequest(byte[] request, int startIndex) {

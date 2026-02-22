@@ -46,7 +46,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
 
     private final boolean cdFlag;
     private final boolean isGet;
-    private  String serverDomainName;
+    private final String serverDomainName;
     private CloseableHttpAsyncClient httpClient;
     private InetAddress localAddress;
     private final boolean isReqJsonFormat;
@@ -78,7 +78,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         if(isReqJsonFormat){
             uri = addParamsToUriAsJson(hostname, httpRequestParamsName, values);
         }else if (isGet){
-            uri = addParamsToUriAsBase64Url(hostname, values);
+            uri = addParamsToUriAsBase64Url(hostname);
         }else{
             uri = createUri(hostname);
         }
@@ -94,8 +94,8 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
             byteSizeResponseDoHDecompressed = getAllHeadersSize(response.getHeaders());
             byteSizeResponseDoHDecompressed += content.getBytes(StandardCharsets.UTF_8).length;
             parseResponseDoh(content);
-        } else if (response.getCode() == 200 && !isReqJsonFormat) {
-            // Server is probably waiting for Wire format
+        } else if (response.getCode() == 200) {
+            // Code is 200, but !isReqJsonFormat
             setReceiveReply(response.getBodyBytes());
             byteSizeResponseDoHDecompressed = response.getBodyBytes().length;
         } else {
@@ -150,18 +150,16 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
     @SuppressWarnings("unchecked")
     protected static TreeItem<String> parseJSON(String name, Object json) {
         TreeItem<String> item = new TreeItem<>();
-        if (json instanceof JSONObject) {
+        if (json instanceof JSONObject object) {
             item.setValue(name);
-            JSONObject object = (JSONObject) json;
             ((Set<Map.Entry>) object.entrySet()).forEach(entry -> {
                 String childName = (String) entry.getKey();
                 Object childJson = entry.getValue();
                 TreeItem<String> child = parseJSON(childName, childJson);
                 item.getChildren().add(child);
             });
-        } else if (json instanceof JSONArray) {
+        } else if (json instanceof JSONArray array) {
             item.setValue(name);
-            JSONArray array = (JSONArray) json;
             for (int i = 0; i < array.size(); i++) {
                 String childName = String.valueOf(i);
                 Object childJson = array.get(i);
@@ -199,7 +197,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         }
         return sb.toString();
     }
-    private String addParamsToUriAsBase64Url(String uri, String[] values) {
+    private String addParamsToUriAsBase64Url(String uri) {
 
         String[] split = uri.split("/");
         if (Ip.isIpv6Address(split[0])) {
@@ -302,7 +300,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         startTime = System.nanoTime();
 
 
-        httpClient.execute(request, context, new FutureCallback<SimpleHttpResponse>() {
+        httpClient.execute(request, context, new FutureCallback<>() {
             @Override
             public void completed(SimpleHttpResponse result) {
                 stopTime = System.nanoTime();

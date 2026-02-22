@@ -48,8 +48,8 @@ public class Ip {
 	}
 
 	private void setupArrays() {
-		ipv4DnsServers = new ArrayList<String>();
-		ipv6DnsServers = new ArrayList<String>();
+		ipv4DnsServers = new ArrayList<>();
+		ipv6DnsServers = new ArrayList<>();
 	}
 
 	private void parseDnsServersIp() throws IOException {
@@ -111,7 +111,7 @@ public class Ip {
 		{
 			if (!(address instanceof Inet6Address))
 			{
-				return (InetAddress) address;
+				return address;
 			}
 		}
 		return null;

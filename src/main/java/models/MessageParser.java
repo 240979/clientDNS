@@ -20,7 +20,6 @@ import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.QueryIdNotMatchException;
-import exceptions.ResponseDoesNotContainRequestDomainNameException;
 import javafx.scene.control.TreeItem;
 
 @Getter
@@ -55,12 +54,12 @@ public class MessageParser {
 		this.rawMessage = rawMessage;
 		this.queryHeader = queryHeader;
 		this.currentIndex = 0;
-		this.qcountRequests = new ArrayList<Request>();
-		this.ancountResponses = new ArrayList<Response>();
-		this.nscountResponses = new ArrayList<Response>();
-		this.arcountResponses = new ArrayList<Response>();
+		this.qcountRequests = new ArrayList<>();
+		this.ancountResponses = new ArrayList<>();
+		this.nscountResponses = new ArrayList<>();
+		this.arcountResponses = new ArrayList<>();
 		this.protocol = protocol;
-		this.main = new TreeItem<String>(KEY_ANSWERS);
+		this.main = new TreeItem<>(KEY_ANSWERS);
 		byteSizeResponse = 0;
 		this.httpResponse = null;
 	}
@@ -73,7 +72,6 @@ public class MessageParser {
 	public void parse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
 		applicationProtocol = APPLICATION_PROTOCOL.DNS;
 		header = new Header().parseHead(rawMessage);
-		checkId();
 		currentIndex += Header.getSize();
 		for (int i = 0; i < header.getQdCount().intValue(); i++) {
 			Request r = new Request().parseRequest(rawMessage, currentIndex);
@@ -112,7 +110,7 @@ public class MessageParser {
 		header = new LLMNRHeader().parseHead(rawMessage);
 	}
 
-	public void parseMDNS() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
+	public void parseMDNS() throws UnknownHostException, UnsupportedEncodingException {
 		applicationProtocol = APPLICATION_PROTOCOL.MDNS;
 		header = new Header().parseHead(rawMessage);
 		//checkId(); ????????? makes sense only for legacy unicast response messages generated specifically in
@@ -150,8 +148,8 @@ public class MessageParser {
 		addResponseToTreeItem(nscountResponses, KEY_AUTHORITY);
 		addResponseToTreeItem(arcountResponses, KEY_ADDITIONAL_RECORDS);
 		if (protocol == TRANSPORT_PROTOCOL.TCP) {
-			TreeItem<String> tcpTreeItem = new TreeItem<String>("");
-			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGTH + ": " + (byteSizeResponse - 2)));
+			TreeItem<String> tcpTreeItem = new TreeItem<>("");
+			tcpTreeItem.getChildren().add(new TreeItem<>(KEY_LENGTH + ": " + (byteSizeResponse - 2)));
 			tcpTreeItem.getChildren().add(main);
 			return tcpTreeItem;
 
@@ -188,7 +186,7 @@ public class MessageParser {
 
 	@SuppressWarnings("unchecked")
 	private void flagsDoH(Set<String> keys) {
-		ArrayList<String> flagsShortList = new ArrayList<String>(Arrays.asList(flagsShort));
+		ArrayList<String> flagsShortList = new ArrayList<>(Arrays.asList(flagsShort));
 		for (String key : keys) {
 			if (flagsShortList.contains(key)) {
 				boolean value = (boolean) httpResponse.get(key);
@@ -199,7 +197,7 @@ public class MessageParser {
 	}
 
 	private void addRequestToTreeItem() {
-		TreeItem<String> questionTreeItem = new TreeItem<String>(KEY_QUESTIONS);
+		TreeItem<String> questionTreeItem = new TreeItem<>(KEY_QUESTIONS);
 		if (header.getQdCount().getValue() > 0) {
 			for (Request request : qcountRequests) {
 				questionTreeItem.getChildren().add(request.getAsTreeItem());
@@ -210,18 +208,12 @@ public class MessageParser {
 	}
 
 	private void addResponseToTreeItem(ArrayList<Response> responses, String treeItemName) {
-		TreeItem<String> item = new TreeItem<String>(treeItemName);
+		TreeItem<String> item = new TreeItem<>(treeItemName);
 		if (!responses.isEmpty()) {
 			for (Response response : responses) {
 				item.getChildren().add(response.getAsTreeItem());
 			}
 			main.getChildren().add(item);
-		}
-	}
-
-	private void checkId() throws QueryIdNotMatchException {
-		if (!queryHeader.getId().equals(header.getId())) {
-			//throw new QueryIdNotMatchException();
 		}
 	}
 
@@ -269,43 +261,5 @@ public class MessageParser {
 			return new GsonBuilder().setPrettyPrinting().create().toJson(httpResponse);
 		}
 		return new GsonBuilder().setPrettyPrinting().create().toJson(getAsJson());
-	}
-
-    // TODO add this method call to parsing of MDNS
-	public void checkDomainNamesWithRequest(String domainFromRequest)
-			throws ResponseDoesNotContainRequestDomainNameException {
-		String requestDomain = domainFromRequest.toLowerCase();
-		String responseDomain = "";
-		for (Response response : ancountResponses) {
-			responseDomain = response.getDomain().toLowerCase();
-			if (responseDomain.equals(requestDomain)) {
-				checkCaseSensitive(domainFromRequest, response.getDomain());
-				return;
-			}
-		}
-		for (Response response : arcountResponses) {
-			responseDomain = response.getDomain().toLowerCase();
-			if (responseDomain.equals(requestDomain)) {
-				checkCaseSensitive(domainFromRequest, response.getDomain());
-				return;
-			}
-		}
-		for (Response response : nscountResponses) {
-			responseDomain = response.getDomain().toLowerCase();
-			if (responseDomain.equals(requestDomain)) {
-				checkCaseSensitive(domainFromRequest, response.getDomain());
-				return;
-			}
-
-		}
-		throw new ResponseDoesNotContainRequestDomainNameException();
-	}
-
-	private void checkCaseSensitive(String requestDomain, String responseDomain) {
-        mdnsDomainNameCaseSensitive = requestDomain.equals(responseDomain);
-	}
-
-	public boolean isCaseSensitive() {
-		return mdnsDomainNameCaseSensitive;
 	}
 }

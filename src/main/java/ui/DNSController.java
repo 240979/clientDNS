@@ -14,11 +14,9 @@ import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -100,8 +98,8 @@ public class DNSController extends GeneralController {
     @FXML
     @Translation
     protected TitledPane transportTitledPane;
-    // toogleGroup
-    // toogleGroup
+
+    // toggleGroup
     private ToggleGroup transportToggleGroup;
     private ToggleGroup iterativeToggleGroup;
     // choice box
@@ -177,7 +175,7 @@ public class DNSController extends GeneralController {
         TextField input = new TextField();
         //input.setPromptText(language.getLanguageBundle().getString("dnsServerDropDownLabel"));
         customToggle.setUserData(input);
-        input.setOnMouseClicked(actionEvent -> customToggle.setSelected(true));
+        input.setOnMouseClicked(_ -> customToggle.setSelected(true));
         customDNS.getChildren().addAll(customToggle, input);
         Separator separator = new Separator();
         separator.setPadding(new Insets(10, 0, 5, 0));
@@ -190,7 +188,7 @@ public class DNSController extends GeneralController {
 
         // disable checkbox for holding TCP connection, because default selected transport protocol is UDP
         holdConnectionCheckbox.setDisable(true);
-        tcpRadioButton.selectedProperty().addListener((observable, oldValue, newValue) ->
+        tcpRadioButton.selectedProperty().addListener((_, _, newValue) ->
                 holdConnectionCheckbox.setDisable(!newValue));
         setLanguageRadioButton();
     }
@@ -300,16 +298,6 @@ public class DNSController extends GeneralController {
         return recursiveQueryRadioButton.isSelected();
     }
 
-    /*
-     * Body of method taken from Martin Biolek thesis
-     * */
-    private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec,
-                            TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection) {
-        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + Arrays.toString(records)
-                + "\n" + "Recursive:" + recursive + "\n" + "DNSSEC: " + dnssec + "\n" + "DNSSEC sig records"
-                + dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n" + "Hold connection: " + holdConnection
-                + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
-    }
 
     /*
      * Body of method taken from Martin Biolek thesis and modified
@@ -397,7 +385,7 @@ public class DNSController extends GeneralController {
      * Body of method taken from Martin Biolek thesis and modified
      * */
     @FXML
-    private void deleteDomainNameHistoryFired(Event event) {
+    private void deleteDomainNameHistoryFired() {
 		settings.eraseDomainNames();
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
     }
@@ -406,7 +394,7 @@ public class DNSController extends GeneralController {
      * Body of method taken from Martin Biolek thesis and modified
      * */
     @FXML
-    private void transportProtocolAction(ActionEvent event) {
+    private void transportProtocolAction() {
         if (tcpRadioButton.isSelected()) {
             holdConnectionCheckbox.setDisable(false);
         } else {
@@ -416,10 +404,10 @@ public class DNSController extends GeneralController {
     }
 
     @FXML
-    private void changeLayout(ActionEvent event) {
+    private void changeLayout() {
         // change to small layout
         try {
-            FXMLLoader loader = null;
+            FXMLLoader loader;
             if (layoutLarge) {
                 loader = new FXMLLoader(getClass().getResource(FXML_FILE_NAME_SMALL));
             } else {
@@ -427,8 +415,8 @@ public class DNSController extends GeneralController {
             }
             Stage newStage = new Stage();
 
-            newStage.setScene(new Scene((Parent) loader.load()));
-            GeneralController controller = (GeneralController) loader.getController();
+            newStage.setScene(new Scene(loader.load()));
+            GeneralController controller = loader.getController();
 
             Stage oldStage = (Stage) sendButton.getScene().getWindow();
             newStage.setX(oldStage.getX());

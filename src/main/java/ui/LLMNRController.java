@@ -11,7 +11,6 @@ import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
@@ -149,7 +148,7 @@ public class LLMNRController extends GeneralController {
     }
 
     @FXML
-    private void deleteDomainNameHistoryFired(Event event) {
+    private void deleteDomainNameHistoryFired() {
         settings.eraseLLMNRDomainNames();
         savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
     }

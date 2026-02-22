@@ -33,7 +33,7 @@ public class DoTClientInitializer extends ChannelInitializer<SocketChannel> {
     }
 
     @Override
-    public void initChannel(SocketChannel ch) throws Exception {
+    public void initChannel(SocketChannel ch) {
         ChannelPipeline pipeline = ch.pipeline();
         ReadTimeoutHandler readTimeoutHandler = new ReadTimeoutHandler(2);
         ChannelDuplexHandler channelDuplexHandler = new ChannelDuplexHandler(){
@@ -42,7 +42,7 @@ public class DoTClientInitializer extends ChannelInitializer<SocketChannel> {
                 if (cause instanceof ReadTimeoutException){
                     LOGGER.severe(ExceptionUtils.getStackTrace(cause));
                     ctx.close();
-                    ((DNSOverTLS)dnsTaskBase).setExc(new TimeoutException());
+                    (dnsTaskBase).setExc(new TimeoutException());
                     ((DNSOverTLS)dnsTaskBase).getLatch().countDown();
                 } else {
                     super.exceptionCaught(ctx, cause);

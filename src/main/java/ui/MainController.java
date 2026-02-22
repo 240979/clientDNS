@@ -18,12 +18,10 @@ import application.App;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -74,19 +72,7 @@ public class MainController extends GeneralController
     @Translation
     protected Label encryptedDNSLabel;
 
-    @FXML
-    private ImageView llmrButtonHelp;
-    @FXML
-    private ImageView mdnsButtonHelp;
-    @FXML
-    private ImageView dohButtonHelp;
-    @FXML
-    private ImageView dotButtonHelp;
-    @FXML
-    private ImageView doqButtonHelp;
-
     private static final String BUG_URL = "https://github.com/xramos00/DNS_client/issues";
-    private ToggleGroup languagegroup;
 
     private static Map<String, String> defaultPropertyValues = null;
 
@@ -100,7 +86,7 @@ public class MainController extends GeneralController
         LOGGER = Logger.getLogger(DNSController.class.getName());
 
         // setup toogle group
-        languagegroup = new ToggleGroup();
+        ToggleGroup languagegroup = new ToggleGroup();
         czechLangRadioButton.setToggleGroup(languagegroup);
         englishLangRadioButton.setToggleGroup(languagegroup);
         PROTOCOL = "DNS";
@@ -122,8 +108,8 @@ public class MainController extends GeneralController
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml_file), GeneralController.language.getLanguageBundle());
             Stage newStage = new Stage();
 
-            newStage.setScene(new Scene((Parent) loader.load()));
-            GeneralController controller = (GeneralController) loader.getController();
+            newStage.setScene(new Scene(loader.load()));
+            GeneralController controller = loader.getController();
 
             Stage oldStage = (Stage) dnsButton.getScene().getWindow();
             newStage.setX(oldStage.getX());
@@ -207,7 +193,7 @@ public class MainController extends GeneralController
             info.setTitle(GeneralController.language.getLanguageBundle().getString("errorConfigProp") + " config.properties");
             info.setContentText(GeneralController.language.getLanguageBundle().getString("errorConfigProp") + " config.properties"+"\n"+language.getLanguageBundle().getString("addConfig"));
             info.initModality(Modality.APPLICATION_MODAL);
-            info.initOwner((Stage) dnsButton.getScene().getWindow());
+            info.initOwner(dnsButton.getScene().getWindow());
             info.showAndWait();
             System.exit(1);
         }
@@ -223,7 +209,7 @@ public class MainController extends GeneralController
             info.setContentText(GeneralController.language.getLanguageBundle().getString("errorConfigProp") + " " + defaultPropertyValues.get(prop)+"\n"+
                     GeneralController.language.getLanguageBundle().getString(prop));
             info.initModality(Modality.APPLICATION_MODAL);
-            info.initOwner((Stage) dnsButton.getScene().getWindow());
+            info.initOwner(dnsButton.getScene().getWindow());
             info.getButtonTypes().clear();
             info.getButtonTypes().addAll(findInFiles,loadBackup);
             Optional<ButtonType> result =  info.showAndWait();
@@ -232,17 +218,14 @@ public class MainController extends GeneralController
                 fileChooser.setTitle("Open Resource File");
                 fileChooser.getExtensionFilters().addAll(
                         new FileChooser.ExtensionFilter("All Files", "*.*"));
-                File selectedFile = fileChooser.showOpenDialog((Stage) dnsButton.getScene().getWindow());
+                File selectedFile = fileChooser.showOpenDialog(dnsButton.getScene().getWindow());
                 if (selectedFile != null)
                 {
                     try
                     {
                         Config.getConfProperties().setProperty(prop, selectedFile.getAbsolutePath());
                         Config.getConfProperties().save();
-                    } catch (ConfigurationException e)
-                    {
-                        //showAlert(e.getClass().getSimpleName());
-                        //e.printStackTrace();
+                    } catch (ConfigurationException e) {
                         showAlert(e);
                     }
                 } else {
@@ -272,7 +255,7 @@ public class MainController extends GeneralController
     }
 
     @FXML
-    private void reportBugButtonFired(ActionEvent event)
+    private void reportBugButtonFired()
     {
         final Desktop desktop = Desktop.getDesktop();
         try
@@ -282,7 +265,7 @@ public class MainController extends GeneralController
         {
             Alert alert = new Alert(AlertType.ERROR, GeneralController.language.getLanguageBundle().getString("bugButtonError"));
             alert.initModality(Modality.APPLICATION_MODAL);
-            alert.initOwner((Stage) dnsButton.getScene().getWindow());
+            alert.initOwner(dnsButton.getScene().getWindow());
             alert.showAndWait();
         }
     }

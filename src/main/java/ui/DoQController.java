@@ -7,7 +7,6 @@ import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import models.ConnectionSettings;
@@ -25,7 +24,7 @@ import java.util.concurrent.CancellationException;
 
 public class DoQController extends GeneralController{
     public static final String FXML_FILE_NAME = "/fxml/DoQ_small.fxml";
-    private int resolverPort;
+
     public DoQController(){
         super();
         PROTOCOL = "DNS over QUIC";
@@ -96,7 +95,7 @@ public class DoQController extends GeneralController{
         settings.addDNSDomain(domain);
     }
     @FXML
-    private void deleteDomainNameHistoryFired(Event event) {
+    private void deleteDomainNameHistoryFired() {
         settings.eraseDomainNames();
         savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
     }
@@ -113,7 +112,6 @@ public class DoQController extends GeneralController{
                 return;
             }
             int dnsServPort = getDnsServerPort(dnsServIp);
-            this.resolverPort = dnsServPort;
             LOGGER.info(dnsServIp + ":" + dnsServPort);
             Q_COUNT[] records = getRecordTypes(); // Throws: exceptions.MoreRecordsTypesWithPTRException, exceptions.NonRecordSelectedException
             TRANSPORT_PROTOCOL transport = TRANSPORT_PROTOCOL.UDP;
@@ -179,7 +177,7 @@ public class DoQController extends GeneralController{
 
     @Override
     protected void setWiresharkMenuItems() {
-        parameters = new HashMap<String, String>();
+        parameters = new HashMap<>();
         parameters.put("prefix", "ipv4");
         parameters.put("ip", null);
         parameters.put("udpPort", null);

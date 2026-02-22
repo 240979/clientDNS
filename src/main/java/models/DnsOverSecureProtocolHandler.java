@@ -35,13 +35,9 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
         task.setReceiveReply(pck);
 
         switch (task) {
-            case DNSOverTLS dnsOverTLS -> {
-                dnsOverTLS.getLatch().countDown();
-            }
-            case DNSOverQUICTask dnsOverQUICTask ->{
-                dnsOverQUICTask.getLatch().countDown();
-            }
-            case null, default -> {
+            case DNSOverTLS dnsOverTLS -> dnsOverTLS.getLatch().countDown();
+            case DNSOverQUICTask dnsOverQUICTask -> dnsOverQUICTask.getLatch().countDown();
+            default -> {
             }
         }
         channelHandlerContext.close();
@@ -62,11 +58,7 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
         }
         ctx.close();
     }
-//    @Override
-//    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-//        LOGGER.info("chanelRead");
-//        this.channelRead0(ctx, (ByteBuf) msg);
-//    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("Stream channel active");

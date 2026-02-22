@@ -25,9 +25,7 @@ public class DataTypesConverter {
 		boolean[] slice = new boolean[end - start];
 
 		// Copy elements of arr to slice
-		for (int i = 0; i < slice.length; i++) {
-			slice[i] = arr[start + i];
-		}
+        System.arraycopy(arr, start, slice, 0, slice.length);
 
 		// return the slice
 		return slice;

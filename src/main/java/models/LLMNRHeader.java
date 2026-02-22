@@ -21,7 +21,7 @@ public class LLMNRHeader extends Header{
     {}
 
     /*
-    * Similar to super method from super class, but slightly modified to fit LLMNR haeder
+    * Similar to super method from super class, but slightly modified to fit LLMNR header
     * */
     @Override
     public Header parseHead(byte[] byteHead) {
@@ -50,16 +50,16 @@ public class LLMNRHeader extends Header{
     }
 
     /*
-     * Similar to super method from super class, but slightly modified to fit LLMNR haeder
+     * Similar to super method from super class, but slightly modified to fit LLMNR header
      * */
     @Override
     protected TreeItem<String> getFlagsAsTreeView() {
         // added T and TC key
         String[] flagsKeys = { QR_KEY, OPCODE_KEY, CONFLICT_KEY, TC_KEY, T_KEY, RCODE_KEY };
         String[] flagsValue = { qr.toString(), opCode.toString(), c.toString(), tc.toString(), t.toString(), rCode.toString() };
-        TreeItem<String> main = new TreeItem<String>("Flags");
+        TreeItem<String> main = new TreeItem<>("Flags");
         for (int i = 0; i < flagsValue.length; i++) {
-            main.getChildren().add(new TreeItem<String>(flagsKeys[i] + ": " + flagsValue[i]));
+            main.getChildren().add(new TreeItem<>(flagsKeys[i] + ": " + flagsValue[i]));
         }
         return main;
     }

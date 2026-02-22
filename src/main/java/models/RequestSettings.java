@@ -7,7 +7,7 @@ import lombok.Setter;
 public class RequestSettings {
 
     @Getter
-    private boolean recursion;
+    private final boolean recursion;
 
     @Getter
     boolean adFlag;

@@ -7,7 +7,6 @@ package ui;
 
 import application.App;
 import application.Config;
-import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import exceptions.*;
 import javafx.application.Platform;
@@ -15,7 +14,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -325,11 +323,11 @@ public abstract class GeneralController {
         requestMenuItem = new MenuItem(GeneralController.language.getLanguageBundle().getString("requestMenuItem"));
 
         // create menuitems
-        responseMenuItem.setOnAction(event -> {
+        responseMenuItem.setOnAction(_ -> {
             getValueFromTreeViewToClipboard(responseTreeView);
             showAlert("dataCopied", Alert.AlertType.INFORMATION);
         });
-        requestMenuItem.setOnAction(event -> {
+        requestMenuItem.setOnAction(_ -> {
             getValueFromTreeViewToClipboard(requestTreeView);
             showAlert("dataCopied", Alert.AlertType.INFORMATION);
         });
@@ -339,7 +337,7 @@ public abstract class GeneralController {
         if (GeneralController.darkMode){
             darkModeMenuItem.setSelected(true);
         }
-        darkModeMenuItem.setOnAction((mouseEvent) -> {
+        darkModeMenuItem.setOnAction((_) -> {
             if (GeneralController.darkMode) {
                 GeneralController.darkMode = false;
                 clearDarkMode();
@@ -375,75 +373,77 @@ public abstract class GeneralController {
 
     protected void setDarkMode(){
         if (sendButton == null) {
-            dnsButton.getScene().getRoot().setStyle(".root { \n" +
-                    "    -fx-accent: #1e74c6;\n" +
-                    "    -fx-focus-color: -fx-accent;\n" +
-                    "    -fx-base: #373e43;\n" +
-                    "    -fx-control-inner-background: derive(-fx-base, 35%);\n" +
-                    "    -fx-control-inner-background-alt: -fx-control-inner-background ;\n" +
-                    "}\n" +
-                    "\n" +
-                    ".label{\n" +
-                    "    -fx-text-fill: lightgray;\n" +
-                    "}\n" +
-                    "\n" +
-                    ".text-field {\n" +
-                    "    -fx-prompt-text-fill: gray;\n" +
-                    "}\n" +
-                    "\n" +
-                    ".titulo{\n" +
-                    "    -fx-font-weight: bold;\n" +
-                    "    -fx-font-size: 18px;\n" +
-                    "}\n" +
-                    "\n" +
-                    ".button{\n" +
-                    "    -fx-focus-traversable: false;\n" +
-                    "}\n" +
-                    "\n" +
-                    ".button:hover{\n" +
-                    "    -fx-text-fill: white;\n" +
-                    "}\n" +
-                    "\n" +
-                    ".separator *.line { \n" +
-                    "    -fx-background-color: #3C3C3C;\n" +
-                    "    -fx-border-style: solid;\n" +
-                    "    -fx-border-width: 1px;\n" +
-                    "}");
+            dnsButton.getScene().getRoot().setStyle("""
+                    .root {\s
+                        -fx-accent: #1e74c6;
+                        -fx-focus-color: -fx-accent;
+                        -fx-base: #373e43;
+                        -fx-control-inner-background: derive(-fx-base, 35%);
+                        -fx-control-inner-background-alt: -fx-control-inner-background ;
+                    }
+                    
+                    .label{
+                        -fx-text-fill: lightgray;
+                    }
+                    
+                    .text-field {
+                        -fx-prompt-text-fill: gray;
+                    }
+                    
+                    .titulo{
+                        -fx-font-weight: bold;
+                        -fx-font-size: 18px;
+                    }
+                    
+                    .button{
+                        -fx-focus-traversable: false;
+                    }
+                    
+                    .button:hover{
+                        -fx-text-fill: white;
+                    }
+                    
+                    .separator *.line {\s
+                        -fx-background-color: #3C3C3C;
+                        -fx-border-style: solid;
+                        -fx-border-width: 1px;
+                    }""");
         } else {
-            vboxRoot.getScene().getRoot().setStyle(".root { \n" +
-                "    -fx-accent: #1e74c6;\n" +
-                "    -fx-focus-color: -fx-accent;\n" +
-                "    -fx-base: #373e43;\n" +
-                "    -fx-control-inner-background: derive(-fx-base, 35%);\n" +
-                "    -fx-control-inner-background-alt: -fx-control-inner-background ;\n" +
-                "}\n" +
-                "\n" +
-                ".label{\n" +
-                "    -fx-text-fill: lightgray;\n" +
-                "}\n" +
-                "\n" +
-                ".text-field {\n" +
-                "    -fx-prompt-text-fill: gray;\n" +
-                "}\n" +
-                "\n" +
-                ".titulo{\n" +
-                "    -fx-font-weight: bold;\n" +
-                "    -fx-font-size: 18px;\n" +
-                "}\n" +
-                "\n" +
-                ".button{\n" +
-                "    -fx-focus-traversable: false;\n" +
-                "}\n" +
-                "\n" +
-                ".button:hover{\n" +
-                "    -fx-text-fill: white;\n" +
-                "}\n" +
-                "\n" +
-                ".separator *.line { \n" +
-                "    -fx-background-color: #3C3C3C;\n" +
-                "    -fx-border-style: solid;\n" +
-                "    -fx-border-width: 1px;\n" +
-                "}");
+            vboxRoot.getScene().getRoot().setStyle("""
+                    .root {\s
+                        -fx-accent: #1e74c6;
+                        -fx-focus-color: -fx-accent;
+                        -fx-base: #373e43;
+                        -fx-control-inner-background: derive(-fx-base, 35%);
+                        -fx-control-inner-background-alt: -fx-control-inner-background ;
+                    }
+                    
+                    .label{
+                        -fx-text-fill: lightgray;
+                    }
+                    
+                    .text-field {
+                        -fx-prompt-text-fill: gray;
+                    }
+                    
+                    .titulo{
+                        -fx-font-weight: bold;
+                        -fx-font-size: 18px;
+                    }
+                    
+                    .button{
+                        -fx-focus-traversable: false;
+                    }
+                    
+                    .button:hover{
+                        -fx-text-fill: white;
+                    }
+                    
+                    .separator *.line {\s
+                        -fx-background-color: #3C3C3C;
+                        -fx-border-style: solid;
+                        -fx-border-width: 1px;
+                    }""");
         }
 
     }
@@ -473,7 +473,7 @@ public abstract class GeneralController {
      */
     protected void setWiresharkMenuItems() {
         // wiresharkFilterToogleGroup = new ToggleGroup();
-        parameters = new HashMap<String, String>();
+        parameters = new HashMap<>();
         parameters.put("prefix", "ipv4");
         parameters.put("ip", null);
         parameters.put("tcpPort", null);
@@ -488,10 +488,10 @@ public abstract class GeneralController {
                 ".port == ${udpPort})"));
 
         for (WiresharkFilter filter : filters) {
-            RadioMenuItem menuItem = null;
+            RadioMenuItem menuItem;
             if (getProtocol().equals("LLMNR") || getProtocol().equals("MDNS")) {
                 menuItem = new RadioMenuItem(filter.getName());
-                menuItem.setOnAction(event -> copyWiresharkFilter());
+                menuItem.setOnAction(_ -> copyWiresharkFilter());
             } else {
                 menuItem = new RadioMenuItem(filter.getName());
             }
@@ -527,7 +527,7 @@ public abstract class GeneralController {
     }
 
     @FXML
-    private void languageChanged(ActionEvent event) throws IllegalAccessException {
+    private void languageChanged() {
         GeneralController.language.changeLanguageBundle(czechLangRadioButton.isSelected());
         translateUI();
     }
@@ -608,7 +608,7 @@ public abstract class GeneralController {
         try {
             interfaceToggleGroup = new ToggleGroup();
             Enumeration<NetworkInterface> interfaceEnumeration = NetworkInterface.getNetworkInterfaces();
-            ArrayList<RadioMenuItem> listMenuItems = new ArrayList<RadioMenuItem>();
+            ArrayList<RadioMenuItem> listMenuItems = new ArrayList<>();
 
             while (interfaceEnumeration.hasMoreElements()) {
                 RadioMenuItem pom = new RadioMenuItem();
@@ -699,11 +699,11 @@ public abstract class GeneralController {
             message = GeneralController.getLanguage().getLanguageBundle().getString(exceptionName);
         }catch (NullPointerException | MissingResourceException | ClassCastException e) {
             LOGGER.severe("Caught Exception: " + exceptionName + ". Message does not have a localization.");
-            message = GeneralController.getLanguage().getLanguageBundle().getString("otherException"); // Exception was not found, show allert telling that
+            message = GeneralController.getLanguage().getLanguageBundle().getString("otherException"); // Exception was not found, show alert telling that
         }
         Alert alert = new Alert(Alert.AlertType.ERROR, message);
         alert.initModality(Modality.APPLICATION_MODAL);
-        alert.initOwner((Stage) sendButton.getScene().getWindow());
+        alert.initOwner( sendButton.getScene().getWindow());
         alert.show();
     }
    //240979: The same method, but if you give exception as input, it will automatically log it as severe
@@ -718,7 +718,7 @@ public abstract class GeneralController {
     public void showAlert(String messageId, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType, GeneralController.language.getLanguageBundle().getString(messageId));
         alert.initModality(Modality.APPLICATION_MODAL);
-        alert.initOwner((Stage) sendButton.getScene().getWindow());
+        alert.initOwner(sendButton.getScene().getWindow());
         alert.show();
     }
 
@@ -730,14 +730,7 @@ public abstract class GeneralController {
         }
         Alert alert = new Alert(Alert.AlertType.ERROR, stringBuilder.toString());
         alert.initModality(Modality.APPLICATION_MODAL);
-        alert.initOwner((Stage) sendButton.getScene().getWindow());
-        alert.show();
-    }
-
-    public void showCustomAlert(String message, Alert.AlertType alertType) {
-        Alert alert = new Alert(alertType, message);
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.initOwner((Stage) sendButton.getScene().getWindow());
+        alert.initOwner( sendButton.getScene().getWindow());
         alert.show();
     }
 
@@ -798,8 +791,7 @@ public abstract class GeneralController {
             return true;
         }
         buttonText = sendButton.getText();
-        Platform.runLater(() -> {sendButton.setText("Stop");
-        });
+        Platform.runLater(() -> sendButton.setText("Stop"));
         return false;
     }
 
@@ -807,7 +799,7 @@ public abstract class GeneralController {
      * Body of method taken from Martin Biolek thesis and modified
      * */
     @FXML
-    protected void copyJsonResponseDataFired(ActionEvent event) {
+    protected void copyJsonResponseDataFired() {
         copyDataToClipBoard(GeneralController.requestResponseMap.get("response"));
     }
 
@@ -815,12 +807,12 @@ public abstract class GeneralController {
      * Body of method taken from Martin Biolek thesis and modified
      * */
     @FXML
-    protected void copyJsonRequestDataFired(ActionEvent event) {
+    protected void copyJsonRequestDataFired() {
         copyDataToClipBoard(GeneralController.requestResponseMap.get("request"));
     }
 
     @FXML
-    protected void onDomainNameChoiceBoxAction(ActionEvent e) {
+    protected void onDomainNameChoiceBoxAction() {
         if (savedDomainNamesChoiseBox.getValue() != null && !savedDomainNamesChoiseBox.getValue().isEmpty()) {
             domainNameTextField.setText(savedDomainNamesChoiseBox.getValue());
         }
@@ -889,7 +881,7 @@ public abstract class GeneralController {
     }
 
     @FXML
-    private void holdConnectionAction(ActionEvent event) throws IOException {
+    private void holdConnectionAction() {
         if (!holdConnectionCheckbox.isSelected()) {
             if (DNSTaskBase.getTcp() != null) {
                 DNSTaskBase.getTcp().forEach((s, tcpConnection) -> {
@@ -909,10 +901,9 @@ public abstract class GeneralController {
             return;
         }
         for (Node node : otherDNSVbox.getChildren()) {
-            if (!(node instanceof NameServerVBox)) {
+            if (!(node instanceof NameServerVBox nsVBox)) {
                 return;
             }
-            NameServerVBox nsVBox = (NameServerVBox) node;
             if (ipv4) {
                 nsVBox.loadIPv4();
                 nsVBox.setDisable(nsVBox.getNameServer().getIpv4().isEmpty());
@@ -1003,8 +994,8 @@ public abstract class GeneralController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(MainController.FXML_FILE_NAME), GeneralController.language.getLanguageBundle());
             Stage newStage = new Stage();
-            newStage.setScene(new Scene((Parent) loader.load()));
-            GeneralController controller = (GeneralController) loader.getController();
+            newStage.setScene(new Scene(loader.load()));
+            GeneralController controller = loader.getController();
             controller.setSettings(settings);
             newStage.initModality(Modality.APPLICATION_MODAL);
 
@@ -1032,8 +1023,7 @@ public abstract class GeneralController {
     }
     // 240979:
     @FXML
-    protected void filterInterfacesFired(ActionEvent actionEvent)
-    {
+    protected void filterInterfacesFired() {
         this.filterInterfaces = !this.filterInterfaces;
         this.networkInterfaces();
 
@@ -1158,7 +1148,7 @@ public abstract class GeneralController {
         LoggerInitializer.getTextAreaHandler().setTextArea(textArea);
 
         Button clearButton = new Button(bundle.getString("clearLogs"));
-        clearButton.setOnAction(e -> textArea.clear());
+        clearButton.setOnAction(_ -> textArea.clear());
 
         VBox vbox = new VBox(5, clearButton, textArea); // 5 == 5px spacing
         VBox.setVgrow(textArea, Priority.ALWAYS);
@@ -1166,7 +1156,7 @@ public abstract class GeneralController {
 
         Scene scene = new Scene(vbox, 700, 500);
         logStage.setScene(scene);
-        logStage.setOnCloseRequest(e -> {
+        logStage.setOnCloseRequest(_ -> {
             // Here I set it to null on close, to be able to open it again
             LoggerInitializer.getTextAreaHandler().setTextArea(null);
             logStage.close();

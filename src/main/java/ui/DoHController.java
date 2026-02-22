@@ -8,7 +8,6 @@ import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -54,8 +53,6 @@ public class DoHController extends GeneralController {
 
     public static final String FXML_FILE_NAME = "/fxml/DoH_small.fxml";
 
-    private RadioButton isGetRadioButton;
-
 
     public DoHController() {
         super();
@@ -89,24 +86,22 @@ public class DoHController extends GeneralController {
         getPostToggleGroup = new ToggleGroup();
         get.setToggleGroup(getPostToggleGroup);
         post.setToggleGroup(getPostToggleGroup);
-        post.setOnMouseClicked(event -> disableGetOnlyServers(true));
-        get.setOnMouseClicked(event -> disableGetOnlyServers(false));
+        post.setOnMouseClicked(_ -> disableGetOnlyServers(true));
+        get.setOnMouseClicked(_ -> disableGetOnlyServers(false));
 
         Config.getNameServers().stream().filter(NameServer::isDoh).forEach(nameServer -> otherDNSVbox.getChildren()
                 .add(new NameServerVBox(nameServer, dnsserverToggleGroup, this)));
         HBox customDNS = new HBox();
         RadioButton customToggle = new RadioButton();
-        isGetRadioButton = new RadioButton();
+        RadioButton isGetRadioButton = new RadioButton();
         isGetRadioButton.setText("GET");
         isGetRadioButton.setTooltip(new Tooltip("GET"));
         customToggle.setToggleGroup(dnsserverToggleGroup);
         TextField input = new TextField();
 
         customToggle.setUserData(input);
-        input.setOnMouseClicked(actionEvent -> {
-            customToggle.setSelected(true);
-        });
-        customDNS.getChildren().addAll(customToggle, input,isGetRadioButton);
+        input.setOnMouseClicked(_ -> customToggle.setSelected(true));
+        customDNS.getChildren().addAll(customToggle, input, isGetRadioButton);
         Separator separator = new Separator();
         separator.setPadding(new Insets(10, 0, 5, 0));
         otherDNSVbox.getChildren().add(separator);
@@ -119,10 +114,7 @@ public class DoHController extends GeneralController {
         otherDNSVbox.getChildren().stream()
                 .filter(node -> node instanceof NameServerVBox)
                 .map(node -> (NameServerVBox) node)
-                .forEach(nameServerVBox -> {
-                        nameServerVBox.setDisable(nameServerVBox.getNameServer().isGetOnly() && disable);
-                    }
-                );
+                .forEach(nameServerVBox -> nameServerVBox.setDisable(nameServerVBox.getNameServer().isGetOnly() && disable));
     }
 
 
@@ -232,13 +224,6 @@ public class DoHController extends GeneralController {
         return nameServer.getPath();
     }
 
-    private boolean isServerGet() {
-        if (dnsserverToggleGroup.getSelectedToggle().getUserData() instanceof TextField){
-            return isGetRadioButton.isSelected();
-        }
-        return nameServer.isGetOnly();
-    }
-
     @Override
     protected String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException, NoIpAddrForDomainName, NotValidDomainNameException, UnsupportedEncodingException {
         Toggle selected = dnsserverToggleGroup.getSelectedToggle();
@@ -326,14 +311,14 @@ public class DoHController extends GeneralController {
      * Body of method taken from Martin Biolek thesis and modified
      * */
     @FXML
-    private void deleteDomainNameHistoryFired(Event event) {
+    private void deleteDomainNameHistoryFired() {
         settings.eraseDomainNames();
         savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
     }
 
     @Override
     protected void setWiresharkMenuItems() {
-        parameters = new HashMap<String, String>();
+        parameters = new HashMap<>();
         parameters.put("prefix", "ipv4");
         parameters.put("ip", null);
         parameters.put("tcpPort", null);
@@ -360,7 +345,7 @@ public class DoHController extends GeneralController {
 
     }
 
-    public void helpFired(ActionEvent actionEvent) {
+    public void helpFired() {
         if (helpStage != null && helpStage.isShowing()) {   // This part of the code should prevent user from opening infinite amount of windows
             helpStage.toFront();
             helpStage.requestFocus();
@@ -379,6 +364,6 @@ public class DoHController extends GeneralController {
         Scene scene = new Scene(vbox, 600, 400);
         helpStage.setScene(scene);
         helpStage.show();
-        helpStage.setOnCloseRequest(e -> helpStage = null); // Here I set it to null on close, to be able to open it again
+        helpStage.setOnCloseRequest(_ -> helpStage = null); // Here I set it to null on close, to be able to open it again
     }
 }

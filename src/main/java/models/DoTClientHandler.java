@@ -10,7 +10,6 @@ package models;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import tasks.DNSOverTLS;
 import tasks.DNSTaskBase;
 
 import java.util.logging.Logger;

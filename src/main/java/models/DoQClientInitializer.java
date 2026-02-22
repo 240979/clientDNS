@@ -9,7 +9,7 @@ import io.netty.incubator.codec.quic.QuicStreamChannel;
 import tasks.DNSTaskBase;
 
 public class DoQClientInitializer extends ChannelInitializer<QuicStreamChannel> {
-    private DNSTaskBase dnsTask;
+    private final DNSTaskBase dnsTask;
     public DoQClientInitializer(DNSTaskBase task)
     {
         this.dnsTask = task;

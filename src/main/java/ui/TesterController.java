@@ -5,22 +5,17 @@ package ui;
  * Some utility methods from Martin Biolek thesis are marked
  * */
 import application.Config;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.MoreRecordsTypesWithPTRException;
 import exceptions.NonRecordSelectedException;
 import exceptions.NotValidDomainNameException;
-import exceptions.NotValidIPException;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -35,13 +30,10 @@ import testing.Result;
 import testing.tasks.TesterTask;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @Data
 public class TesterController extends GeneralController {
@@ -177,7 +169,7 @@ public class TesterController extends GeneralController {
         super.initialize();
         // create a menu
 
-        resultsTableView.setRowFactory(tv -> {
+        resultsTableView.setRowFactory(_ -> {
             TableRow<Result> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (! row.isEmpty() && event.getButton()== MouseButton.PRIMARY
@@ -192,7 +184,7 @@ public class TesterController extends GeneralController {
             return row;
         });
 
-        copyCsv.setOnAction(actionEvent -> {
+        copyCsv.setOnAction(_ -> {
             ObservableList<Result> results = resultsTableView.getItems();
             String csvHead = "DNSserver;Domain;avgTime;minTime;maxTime;Success;Fail;Size";
             StringBuilder builder = new StringBuilder();
@@ -202,7 +194,7 @@ public class TesterController extends GeneralController {
             showAlert("dataCopied", Alert.AlertType.INFORMATION);
         });
 
-        copyJson.setOnAction(actionEvent -> {
+        copyJson.setOnAction(_ -> {
             ObservableList<Result> results = resultsTableView.getItems();
             JSONArray result = new JSONArray();
             results.forEach(r -> result.add(r.toJsonObject()));
@@ -210,7 +202,7 @@ public class TesterController extends GeneralController {
             showAlert("dataCopied", Alert.AlertType.INFORMATION);
         });
 
-        copyJsonResponses.setOnAction(actionEvent -> {
+        copyJsonResponses.setOnAction(_ -> {
             ObservableList<Result> results = resultsTableView.getItems();
             JSONObject jsonResult = new JSONObject();
             results.forEach(result -> {
@@ -221,9 +213,7 @@ public class TesterController extends GeneralController {
                     if (responsesList.getFirst().getDohData() != null){
                         jsonObjectServer.put(result.getDomain(),responsesList.getFirst().getDohData());
                     } else{
-                        responsesList.forEach(r->{
-                            jsonResponsesArray.add(r.getAsJson(APPLICATION_PROTOCOL.DNS));
-                        });
+                        responsesList.forEach(r-> jsonResponsesArray.add(r.getAsJson(APPLICATION_PROTOCOL.DNS)));
                         jsonObjectServer.put(responsesList.getFirst().getDomain(),jsonResponsesArray);
                     }
                 });
@@ -276,37 +266,31 @@ public class TesterController extends GeneralController {
         setDisabledDOH(true);
 
 
-        dnsTcpButton.selectedProperty().addListener((observable, oldValue, newValue) ->
-        {
-            holdConnectionCheckbox.setDisable(!newValue);
-        });
+        dnsTcpButton.selectedProperty().addListener((_, _, newValue) ->
+                holdConnectionCheckbox.setDisable(!newValue));
 
         Ip ip = new Ip();
         Config.getNameServers().add(new NameServer("System DNS", "System DNS", ip.getIpv4DnsServers(),
                 ip.getIpv6DnsServers()));
 
         nameServerVBoxes = new LinkedList<>();
-        Config.getNameServers().stream().forEach(nameServer -> otherDNSVbox.getChildren()
+        Config.getNameServers().forEach(nameServer -> otherDNSVbox.getChildren()
                 .add(new NameServerVBox(nameServer, null, this)));
         enableDnsServers();
 
 
-        numberOfRequests.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue,
-                                String newValue) {
-                if (!newValue.matches("\\d*")) {
-                    numberOfRequests.setText(newValue.replaceAll("[^\\d]", ""));
-                }
+        numberOfRequests.textProperty().addListener((_, _, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                numberOfRequests.setText(newValue.replaceAll("\\D", ""));
             }
         });
 
         // if user clicks on DoH protocol button, non DoH servers are disabled
-        dnsDohButton.setOnMouseClicked(mouseEvent -> enableDoHServers());
+        dnsDohButton.setOnMouseClicked(_ -> enableDoHServers());
         // if user clicks on DNS over TCP or UDP, non DoH only servers are enabled
-        dnsUdpButton.setOnMouseClicked(mouseEvent -> enableDnsServers());
-        dnsTcpButton.setOnMouseClicked(mouseEvent -> enableDnsServers());
-        dnsDotButton.setOnMouseClicked(mouseEvent -> enableDoTServers());
+        dnsUdpButton.setOnMouseClicked(_ -> enableDnsServers());
+        dnsTcpButton.setOnMouseClicked(_ -> enableDnsServers());
+        dnsDotButton.setOnMouseClicked(_ -> enableDoTServers());
 
         LoadTestConfig loadTestConfig = Config.getLoadTestConfig();
         numberOfRequests.setText(loadTestConfig.getDuration());
@@ -351,7 +335,7 @@ public class TesterController extends GeneralController {
         authenticateDataCheckBox.setSelected(loadTestConfig.isAd());
         cooldownTextField.setText(Integer.toString(Config.getLoadTestConfig().getCooldown()));
 
-        numberOfRequests.textProperty().addListener((observable, oldValue, newValue) -> {
+        numberOfRequests.textProperty().addListener((_, oldValue, newValue) -> {
             try{
                 if (!numberOfRequests.equals("") && Long.parseLong(newValue) <= 1000000 && Long.parseLong(newValue) > 0) {
                     numberOfRequests.setText(newValue);
@@ -362,7 +346,7 @@ public class TesterController extends GeneralController {
                 numberOfRequests.setText("1");
             }
         });
-        cooldownTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+        cooldownTextField.textProperty().addListener((_, oldValue, newValue) -> {
             try{
                 if (!cooldownTextField.equals("") && Long.parseLong(newValue) <= 1000000 && Long.parseLong(newValue) >= 10) {
                     cooldownTextField.setText(newValue);
@@ -429,10 +413,9 @@ public class TesterController extends GeneralController {
         // if DoH is selected then disable servers that do not support DoH
         if (dnsDohButton.isSelected()) {
             for (Node node : otherDNSVbox.getChildren()) {
-                if (!(node instanceof NameServerVBox)) {
+                if (!(node instanceof NameServerVBox nsVBox)) {
                     return;
                 }
-                NameServerVBox nsVBox = (NameServerVBox) node;
                 if (!nsVBox.getNameServer().isDoh()) {
                     nsVBox.setDisable(true);
                 }
@@ -607,7 +590,7 @@ public class TesterController extends GeneralController {
     * Marks all servers to be tested
     * */
     @FXML
-    private void testAllFired(ActionEvent event) {
+    private void testAllFired() {
         otherDNSVbox.getChildren().filtered(node -> !node.isDisabled()).forEach(node -> {
             NameServerVBox nameServerVBox = (NameServerVBox) node;
             if (IPv4RadioButton.isSelected()) {
@@ -638,7 +621,7 @@ public class TesterController extends GeneralController {
      * + and - buttons
      */
     @FXML
-    private void addButton(ActionEvent event) {
+    private void addButton() {
         int duration = Integer.parseInt(numberOfRequests.getText());
         numberOfRequests.setText(Integer.toString(duration + 1));
     }
@@ -647,7 +630,7 @@ public class TesterController extends GeneralController {
      * + and - buttons
      */
     @FXML
-    private void subButton(ActionEvent event) {
+    private void subButton() {
         int duration = Integer.parseInt(numberOfRequests.getText());
         if (duration > 1) {
             numberOfRequests.setText(Integer.toString(duration - 1));
@@ -689,7 +672,7 @@ public class TesterController extends GeneralController {
     * erase saved domain names
     * */
     @FXML
-    private void deleteDomainNameHistoryFired(Event event) {
+    private void deleteDomainNameHistoryFired() {
         settings.eraseLOADDomainNames();
         savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
     }

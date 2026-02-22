@@ -80,8 +80,8 @@ public abstract class DNSTaskBase extends Task<Void> {
     public static final String KEY_HEAD = "Head";
     public static final String KEY_QUERY = "Questions";
     public static final String KEY_REQUEST = "Request";
-    public static final String KEY_ADDITIONAL_RECORDS = "Aditional records";
-    public static final String KEY_LENGHT = "Lenght";
+    public static final String KEY_ADDITIONAL_RECORDS = "Additional records";
+    public static final String KEY_LENGTH = "Length";
 
     public static Logger LOGGER = Logger.getLogger(DNSTaskBase.class.getName());
     protected GeneralController controller;
@@ -229,7 +229,7 @@ public abstract class DNSTaskBase extends Task<Void> {
         super();
 
         this.mdnsType = mdnsType;
-        requests = new ArrayList<Request>();
+        requests = new ArrayList<>();
         header = requestSettings.getHeader();
         size = Header.getSize();
         addRequests(requestSettings.getTypes(), checkAndStripFullyQualifyName(requestSettings.getDomain()));
@@ -237,8 +237,8 @@ public abstract class DNSTaskBase extends Task<Void> {
         messagesSentProperty = new SimpleIntegerProperty();
         durationProperty = new SimpleDoubleProperty();
 
-        requestProperty = new SimpleObjectProperty<TreeItem<String>>();
-        responseProperty = new SimpleObjectProperty<TreeItem<String>>();
+        requestProperty = new SimpleObjectProperty<>();
+        responseProperty = new SimpleObjectProperty<>();
 
         this.transport_protocol = connectionSettings.getTransport_protocol();
         this.application_protocol = connectionSettings.getApplication_protocol();
@@ -363,7 +363,7 @@ public abstract class DNSTaskBase extends Task<Void> {
          https://www.rfc-editor.org/rfc/rfc9250#section-4.2 -- DoQ, map exactly as TCP
         if (transport_protocol == TRANSPORT_PROTOCOL.TCP && application_protocol != APPLICATION_PROTOCOL.DOH || application_protocol == APPLICATION_PROTOCOL.DOQ) {
             TreeItem<String> tcpTreeItem = new TreeItem<String>("");
-            tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + (byteSizeQuery - 2)));
+            tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGTH + ": " + (byteSizeQuery - 2)));
             tcpTreeItem.getChildren().add(root);
             return tcpTreeItem;
 
@@ -524,7 +524,7 @@ public abstract class DNSTaskBase extends Task<Void> {
         }
         jsonObject.put(KEY_QUERY, jsonArray);
         if (transport_protocol == TRANSPORT_PROTOCOL.TCP && application_protocol != APPLICATION_PROTOCOL.DOH)
-            jsonObject.put(KEY_LENGHT, (byteSizeQuery - 2));
+            jsonObject.put(KEY_LENGTH, (byteSizeQuery - 2));
 
         // opt record
         if (header.getArCount().getValue() == 1) {

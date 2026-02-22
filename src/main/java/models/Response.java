@@ -192,103 +192,81 @@ public class Response {
 	* Added records CDS and CDNSKEY
 	* */
 	private DnsRecord parseRecord(int currentIndex) throws UnknownHostException, UnsupportedEncodingException {
-		switch (qcount) {
-			case A:
-				return new DnsRecordA(rawMessage, rdLength.getValue(), currentIndex);
-			case AAAA:
-				return new DnsRecordAAAA(rawMessage, rdLength.getValue(), currentIndex);
-			case CNAME:
-				return new DnsRecordCNAME(rawMessage, rdLength.getValue(), currentIndex);
-			case NS:
-				return new DnsRecordNS(rawMessage, rdLength.getValue(), currentIndex);
-			case TXT:
-				return new DnsRecordTXT(rawMessage, rdLength.getValue(), currentIndex);
-			case MX:
-				return new DnsRecordMX(rawMessage, rdLength.getValue(), currentIndex);
-			case SOA:
-				return new DnsRecordSOA(rawMessage, rdLength.getValue(), currentIndex);
-			case DNSKEY:
-				return new DnsRecordDNSKEY(rawMessage, rdLength.getValue(), currentIndex);
-			case CAA:
-				return new DnsRecordCAA(rawMessage, rdLength.getValue(), currentIndex);
-			case RRSIG:
-				return new DnsRecordRRSIG(rawMessage, rdLength.getValue(), currentIndex);
-			case OPT:
-				return new DnsRecordOPT(rawMessage, rdLength.getValue(), currentIndex);
-			case PTR:
-				return new DnsRecordPTR(rawMessage, rdLength.getValue(), currentIndex);
-			case DS:
-				return new DnsRecordDS(rawMessage, rdLength.getValue(), currentIndex);
-			case NSEC:
-				return new DnsRecordNSEC(rawMessage, rdLength.getValue(), currentIndex);
-			case NSEC3:
-				return new DnsRecordNSEC3(rawMessage, rdLength.getValue(), currentIndex);
-			case NSEC3PARAM:
-				return new DnsRecordNSEC3PARAM(rawMessage, rdLength.getValue(), currentIndex);
-			case SRV:
-				return new DnsRecordSRV(rawMessage, rdLength.getValue(), currentIndex);
-			case CDS:
-				return new DnsRecordCDS(rawMessage, rdLength.getValue(), currentIndex);
-			case CDNSKEY:
-				return new DnsRecordCDNSKEY(rawMessage, rdLength.getValue(),currentIndex);
-			case SVCB:
-				return new DnsRecordSVCB(rawMessage, rdLength.getValue(), currentIndex);
-			case HTTPS:
-				return new DnsRecordHTTPS(rawMessage, rdLength.getValue(), currentIndex);
-		default:
-			return null;
-		}
+        return switch (qcount) {
+            case A -> new DnsRecordA(rawMessage, rdLength.getValue(), currentIndex);
+            case AAAA -> new DnsRecordAAAA(rawMessage, rdLength.getValue(), currentIndex);
+            case CNAME -> new DnsRecordCNAME(rawMessage, rdLength.getValue(), currentIndex);
+            case NS -> new DnsRecordNS(rawMessage, rdLength.getValue(), currentIndex);
+            case TXT -> new DnsRecordTXT(rawMessage, rdLength.getValue(), currentIndex);
+            case MX -> new DnsRecordMX(rawMessage, rdLength.getValue(), currentIndex);
+            case SOA -> new DnsRecordSOA(rawMessage, rdLength.getValue(), currentIndex);
+            case DNSKEY -> new DnsRecordDNSKEY(rawMessage, rdLength.getValue(), currentIndex);
+            case CAA -> new DnsRecordCAA(rawMessage, rdLength.getValue(), currentIndex);
+            case RRSIG -> new DnsRecordRRSIG(rawMessage, rdLength.getValue(), currentIndex);
+            case OPT -> new DnsRecordOPT(rawMessage, rdLength.getValue(), currentIndex);
+            case PTR -> new DnsRecordPTR(rawMessage, rdLength.getValue(), currentIndex);
+            case DS -> new DnsRecordDS(rawMessage, rdLength.getValue(), currentIndex);
+            case NSEC -> new DnsRecordNSEC(rawMessage, rdLength.getValue(), currentIndex);
+            case NSEC3 -> new DnsRecordNSEC3(rawMessage, rdLength.getValue(), currentIndex);
+            case NSEC3PARAM -> new DnsRecordNSEC3PARAM(rawMessage, rdLength.getValue(), currentIndex);
+            case SRV -> new DnsRecordSRV(rawMessage, rdLength.getValue(), currentIndex);
+            case CDS -> new DnsRecordCDS(rawMessage, rdLength.getValue(), currentIndex);
+            case CDNSKEY -> new DnsRecordCDNSKEY(rawMessage, rdLength.getValue(), currentIndex);
+            case SVCB -> new DnsRecordSVCB(rawMessage, rdLength.getValue(), currentIndex);
+            case HTTPS -> new DnsRecordHTTPS(rawMessage, rdLength.getValue(), currentIndex);
+            default -> null;
+        };
 	}
 
 	public TreeItem<String> getAsTreeItem() {
-		TreeItem<String> main = new TreeItem<String>(
+		TreeItem<String> main = new TreeItem<>(
 				nameAsString + " " + qcount + " " + rdata.getDataForTreeViewName());
 		// check if type is SRV
 		if (qcount == Q_COUNT.SRV) {
-			main.getChildren().add(new TreeItem<String>(KEY_SRV_SERVICE + ": " + srvService));
-			main.getChildren().add(new TreeItem<String>(KEY_SRV_PROTOCOL + ": " + srvProtocol));
-			main.getChildren().add(new TreeItem<String>(KEY_SRV_NAME + ": " + srvName));
+			main.getChildren().add(new TreeItem<>(KEY_SRV_SERVICE + ": " + srvService));
+			main.getChildren().add(new TreeItem<>(KEY_SRV_PROTOCOL + ": " + srvProtocol));
+			main.getChildren().add(new TreeItem<>(KEY_SRV_NAME + ": " + srvName));
 		} else {
-			main.getChildren().add(new TreeItem<String>(NAME_KEY + ": " + nameAsString));
+			main.getChildren().add(new TreeItem<>(NAME_KEY + ": " + nameAsString));
 		}
 
 		// check if it is mdns
 		if (cache != null) {
-			main.getChildren().add(new TreeItem<String>(CACHE_KEY + ": " + cache));
+			main.getChildren().add(new TreeItem<>(CACHE_KEY + ": " + cache));
 		}
 
-		main.getChildren().add(new TreeItem<String>(TYPE_KEY + ": " + qcount));
+		main.getChildren().add(new TreeItem<>(TYPE_KEY + ": " + qcount));
 
 		if (qcount.code != Q_COUNT.OPT.code) {
-			main.getChildren().add(new TreeItem<String>(TTL_KEY + ": " + ttl));
-			main.getChildren().add(new TreeItem<String>(CLASS_KEY + ": " + qtype));
+			main.getChildren().add(new TreeItem<>(TTL_KEY + ": " + ttl));
+			main.getChildren().add(new TreeItem<>(CLASS_KEY + ": " + qtype));
 			for (String item : rdata.getValesForTreeItem()) {
-				main.getChildren().add(new TreeItem<String>(item));
+				main.getChildren().add(new TreeItem<>(item));
 			}
 		} else {
 			main.setValue(nameAsString + " " + qcount);
 
-			main.getChildren().add(new TreeItem<String>(KEY_OPT_RCODE + ": " + (int) rCode));
-			main.getChildren().add(new TreeItem<String>(KEY_OPT_VERSION + ": " + (int) version));
-			main.getChildren().add(new TreeItem<String>(KEY_OPT_UDP_SIZE + ": " + size.getValue()));
+			main.getChildren().add(new TreeItem<>(KEY_OPT_RCODE + ": " + (int) rCode));
+			main.getChildren().add(new TreeItem<>(KEY_OPT_VERSION + ": " + (int) version));
+			main.getChildren().add(new TreeItem<>(KEY_OPT_UDP_SIZE + ": " + size.getValue()));
 			String doBitString = doBit.getValue() >= DO_BIT_VALUE ? "true" : "false";
-			main.getChildren().add(new TreeItem<String>(KEY_OPT_DO_BIT + ": " + doBitString));
+			main.getChildren().add(new TreeItem<>(KEY_OPT_DO_BIT + ": " + doBitString));
 		}
 
 		return main;
 	}
 
 	public static TreeItem<String> getOptAsTreeItem(boolean dnssec, boolean mdns) {
-		TreeItem<String> root = new TreeItem<String>(ROOT_DOMAIN + " " + Q_COUNT.OPT);
-		root.getChildren().add(new TreeItem<String>(NAME_KEY + ": " + ROOT_DOMAIN));
-		root.getChildren().add(new TreeItem<String>(TYPE_KEY + ": " + Q_COUNT.OPT));
-		root.getChildren().add(new TreeItem<String>(KEY_OPT_RCODE + ": " + 0));
-		root.getChildren().add(new TreeItem<String>(KEY_OPT_VERSION + ": " + 0));
+		TreeItem<String> root = new TreeItem<>(ROOT_DOMAIN + " " + Q_COUNT.OPT);
+		root.getChildren().add(new TreeItem<>(NAME_KEY + ": " + ROOT_DOMAIN));
+		root.getChildren().add(new TreeItem<>(TYPE_KEY + ": " + Q_COUNT.OPT));
+		root.getChildren().add(new TreeItem<>(KEY_OPT_RCODE + ": " + 0));
+		root.getChildren().add(new TreeItem<>(KEY_OPT_VERSION + ": " + 0));
 		if (mdns) {
-			root.getChildren().add(new TreeItem<String>(KEY_FLUSH_CACHE + ": " + CACHE.NO_FLUSH_CACHE.code));
+			root.getChildren().add(new TreeItem<>(KEY_FLUSH_CACHE + ": " + CACHE.NO_FLUSH_CACHE.code));
 		}
-		root.getChildren().add(new TreeItem<String>(KEY_OPT_UDP_SIZE + ": " + MAX_UDP_SIZE));
-		root.getChildren().add(new TreeItem<String>(KEY_OPT_DO_BIT + ": " + dnssec));
+		root.getChildren().add(new TreeItem<>(KEY_OPT_UDP_SIZE + ": " + MAX_UDP_SIZE));
+		root.getChildren().add(new TreeItem<>(KEY_OPT_DO_BIT + ": " + dnssec));
 		return root;
 	}
 
@@ -357,16 +335,16 @@ public class Response {
 	}
 
 	public byte[] getDnssecAsBytes() {
-		ArrayList<Byte> bytes = new ArrayList<Byte>();
+		ArrayList<Byte> bytes = new ArrayList<>();
 		bytes.add((byte) 0x00);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[1]);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[0]);
-		bytes.add((byte) new UInt16(MAX_UDP_SIZE).getAsBytes()[1]);
-		bytes.add((byte) new UInt16(MAX_UDP_SIZE).getAsBytes()[0]);
+		bytes.add(new UInt16(MAX_UDP_SIZE).getAsBytes()[1]);
+		bytes.add(new UInt16(MAX_UDP_SIZE).getAsBytes()[0]);
 		bytes.add((byte) 0x00);
 		bytes.add((byte) 0x00);
-		bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[1]);
-		bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[0]);
+		bytes.add(new UInt16(DO_BIT_VALUE).getAsBytes()[1]);
+		bytes.add(new UInt16(DO_BIT_VALUE).getAsBytes()[0]);
 		bytes.add((byte) 0x00);
 		bytes.add((byte) 0x00);
 
@@ -379,7 +357,7 @@ public class Response {
 	}
 
 	public static byte[] getDnssecAsBytesMDNS(boolean dnssecSignatures) {
-		ArrayList<Byte> bytes = new ArrayList<Byte>();
+		ArrayList<Byte> bytes = new ArrayList<>();
 		bytes.add((byte) 0x00);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[1]);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[0]);

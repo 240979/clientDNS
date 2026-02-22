@@ -1,6 +1,6 @@
 /*
-    240979: Since I am using netty http core5, I can not just assign local address, so I am ussing this planner
-    This should add IP address from the correct network IF to the route, therefore the Aapp should use it
+    240979: Since I am using netty http core5, I can not just assign local address, so I am using this planner
+    This should add IP address from the correct network IF to the route, therefore the App should use it
  */
 package models;
 

@@ -94,7 +94,7 @@ public class Settings {
 		jsonMap.put(DOMAIN_NAMES_LLMNR, domainNamesLLMNR);
 		jsonMap.put(DOMAIN_NAMES_LOAD, domainNamesLOAD);
 		jsonMap.put(LAST_USED_SCREEN, screensHash);
-		Map<String, String> jsonMap2 = new HashMap<String, String>();
+		Map<String, String> jsonMap2 = new HashMap<>();
 		String interfaceName = ""; // Put empty string, otherwise it will crash on first launch
 		if (netInterface != null) {
 			interfaceName = netInterface.getName();
@@ -130,8 +130,6 @@ public class Settings {
 				netInterface = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
 			}
 			reader.close();
-			jsonObject = null;
-			jsonParser = null;
 		} catch (Exception e) {
 			LOGGER.severe("Could not parse settings from file: \n" + e.getClass().getSimpleName() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
@@ -139,7 +137,7 @@ public class Settings {
 
 	private ArrayList<String> readJsonArraylist(String key, JSONObject jsonObject) {
 		JSONArray jsonArray = (JSONArray) jsonObject.get(key);
-		ArrayList<String> list = new ArrayList<String>();
+		ArrayList<String> list = new ArrayList<>();
 		jsonArray.forEach(o -> list.add((String) o));
 		return list;
 	}
@@ -184,21 +182,19 @@ public class Settings {
 	}
 
 	public void appIsClosing() {
-		file.delete();
+		if (!file.delete()) {
+			LOGGER.warning("Failed to delete file: " + file.getPath());
+		}
 		checkIfFileExistsOrCreate();
 		LOGGER.info("Setting written in file");
 	}
 
 	public void eraseDomainNames() {
-		this.domainNamesDNS = new ArrayList<String>();
-	}
-
-	public void eraseDNSServers() {
-		this.dnsServers = new ArrayList<String>();
+		this.domainNamesDNS = new ArrayList<>();
 	}
 
 	public void eraseMDNSDomainNames() {
-		this.domainNamesMDNS = new ArrayList<String>();
+		this.domainNamesMDNS = new ArrayList<>();
 	}
 
 	public void eraseLLMNRDomainNames() {

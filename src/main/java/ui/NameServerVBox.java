@@ -58,13 +58,13 @@ public class NameServerVBox extends VBox {
 
         IPv4radioButton = new RadioButton();
         IPv6radioButton = new RadioButton();
-        IPv4radioButton.setOnMouseClicked(mouseEvent -> {
+        IPv4radioButton.setOnMouseClicked(_ -> {
             controller.setNameServer(nameServer);
             if (IPv4ToggleButtonsHBox != null && !IPv4ToggleButtonsHBox.getChildren().isEmpty() && IPv4ToggleButtonsHBox.getChildren().stream().noneMatch(node -> ((IPToggleButton) node).isSelected())){
                 ((IPToggleButton)IPv4ToggleButtonsHBox.getChildren().getFirst()).setSelected(true);
             }
         });
-        IPv6radioButton.setOnMouseClicked(mouseEvent -> {
+        IPv6radioButton.setOnMouseClicked(_ -> {
             controller.setNameServer(nameServer);
             if (IPv6ToggleButtonsHBox != null && !IPv6ToggleButtonsHBox.getChildren().isEmpty() && IPv6ToggleButtonsHBox.getChildren().stream().noneMatch(node -> ((IPToggleButton) node).isSelected())){
                 ((IPToggleButton)IPv6ToggleButtonsHBox.getChildren().getFirst()).setSelected(true);
@@ -112,7 +112,7 @@ public class NameServerVBox extends VBox {
             for (String ip : nameServer.getIpv4()) {
                 // create toggle button for IP
                 IPToggleButton tb = new IPToggleButton(IPv4radioButton);
-                tb.setOnMouseClicked(mouseEvent -> controller.setNameServer(nameServer));
+                tb.setOnMouseClicked(_ -> controller.setNameServer(nameServer));
                 tb.setText(i + 1 + ". IP");
                 // store IP as user data
                 tb.setUserData(ip);
@@ -120,7 +120,7 @@ public class NameServerVBox extends VBox {
                 tb.setToggleGroup(IPv4AddressesGroup);
                 // show IP in tool tip
                 tb.setTooltip(new Tooltip("IPv4: " + ip));
-                tb.setOnAction(actionEvent -> {
+                tb.setOnAction(_ -> {
                     if (!tb.getControlButton().isSelected()){
                         tb.setSelected(true);
                     }
@@ -155,15 +155,15 @@ public class NameServerVBox extends VBox {
             for (String ip : nameServer.getIpv6()) {
                 // create toggle button for IP
                 IPToggleButton tb = new IPToggleButton(IPv6radioButton);
-                tb.setOnMouseClicked(mouseEvent -> controller.setNameServer(nameServer));
-                tb.setText(Integer.toString(i + 1) + ". IP");
+                tb.setOnMouseClicked(_ -> controller.setNameServer(nameServer));
+                tb.setText(i + 1 + ". IP");
                 // set same toggle group for all buttons
                 tb.setToggleGroup(IPv6AddressesGroup);
                 // store IP as user data
                 tb.setUserData(ip);
                 // show IP in tool tip
                 tb.setTooltip(new Tooltip("IPv6: " + ip));
-                tb.setOnAction(actionEvent -> {
+                tb.setOnAction(_ -> {
                     if (!tb.getControlButton().isSelected()){
                         tb.setSelected(true);
                     }
@@ -194,7 +194,7 @@ public class NameServerVBox extends VBox {
         imageViewIPv6.setFitHeight(22);
         StackPane copyIPv6Btn = new StackPane(imageViewIPv6);
         copyIPv6Btn.setPadding(new Insets(5)); // Padding 5
-        copyIPv6Btn.setOnMouseClicked((event -> {
+        copyIPv6Btn.setOnMouseClicked((_ -> {
             // Block clicking on not selected NS
             if (!IPv6radioButton.isSelected()) return;
             LOGGER.fine("copying filter");
@@ -210,7 +210,7 @@ public class NameServerVBox extends VBox {
         // The copy icon was tricky to click, so I added padding
         StackPane copyIPv4Btn = new StackPane(imageViewIPv4);
         copyIPv4Btn.setPadding(new Insets(5));  // Padding 5
-        copyIPv4Btn.setOnMouseClicked((event -> {
+        copyIPv4Btn.setOnMouseClicked((_ -> {
             // Block clicking on not selected
             if (!IPv4radioButton.isSelected()) return;
             LOGGER.fine("copying filter");

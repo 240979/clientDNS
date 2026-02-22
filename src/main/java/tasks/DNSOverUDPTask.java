@@ -30,10 +30,6 @@ public class DNSOverUDPTask extends DNSTaskBase{
 
     protected DatagramSocket datagramSocket;
     protected boolean run = true;
-    /*
-    public DNSOverUDPTask(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
-        super(recursion, adFlag, caFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
-    }*/
 
     public DNSOverUDPTask(RequestSettings requestSettings, ConnectionSettings connectionSettings) throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
         super(requestSettings, connectionSettings, null);
@@ -63,7 +59,6 @@ public class DNSOverUDPTask extends DNSTaskBase{
             throw new InterfaceDoesNotHaveIPAddressException();
         }
 
-        boolean exception = false;
         boolean timeout = false;
         while (run) {
             try {

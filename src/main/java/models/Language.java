@@ -29,7 +29,7 @@ public class Language {
 
 	public void changeLanguageBundle(boolean isCzechSelected) {
 		currentLanguage = isCzechSelected ? Language.CZECH : Language.ENGLISH;
-		locale = new Locale(currentLanguage);
+		locale = Locale.of(currentLanguage);
 		languageBundle = ResourceBundle.getBundle(Language.INTERNATIONAL_BUNDLE_PATH, locale);
 		LOGGER.info("Changing language: " + currentLanguage);
 	}

@@ -1,7 +1,6 @@
 package models;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;

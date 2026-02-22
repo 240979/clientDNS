@@ -5,38 +5,35 @@
  * */
 package models;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import exceptions.NotValidDomainNameException;
 
 public class DomainConvert {
-	private static Pattern pDomainNameOnly;
+	private static final Pattern pDomainNameOnly;
 	private static final String DOMAIN_NAME_PATTERN = "^((?!-)[_A-Za-z0-9][A-Za-z0-9-]{0,62}(?<!-)\\.)+[A-Za-z]{2,63}\\.?$";
-	private static final int COMPRESS_CONTANT_NUMBER = 49152;
+	private static final int COMPRESS_CONSTANT_NUMBER = 49152;
 	private static final byte[] ROOT = { (byte) 0x00 };
 	static {
 		pDomainNameOnly = Pattern.compile(DOMAIN_NAME_PATTERN);
 	}
 
-	public static byte[] encodeDNS(String domain) throws UnsupportedEncodingException, NotValidDomainNameException {
-		if (domain.equals(null) || domain.isEmpty()) {
+	public static byte[] encodeDNS(String domain) {
+		if (domain == null || domain.isEmpty()) {
 			return ROOT;
 		}
 		// String original = domain;
 		domain = encodeIDN(domain);
-		ArrayList<Byte> resultByte = new ArrayList<Byte>();
+		ArrayList<Byte> resultByte = new ArrayList<>();
 		String[] split = domain.split("\\.");
 		for (String string : split) {
 			resultByte.add((byte) string.length());
-			byte[] toAdd = string.getBytes("Us-ASCII");
-			for (int i = 0; i < toAdd.length; i++) {
-				resultByte.add(toAdd[i]);
-			}
+			byte[] toAdd = string.getBytes(StandardCharsets.US_ASCII);
+            for (byte b : toAdd) {
+                resultByte.add(b);
+            }
 		}
 		resultByte.add((byte) 0x00);
 		byte[] arrayToReturn = new byte[resultByte.size()];
@@ -47,17 +44,17 @@ public class DomainConvert {
 		return arrayToReturn;
 	}
 
-	public static byte[] encodeMDNS(String domain) throws UnsupportedEncodingException {
-		domain.getBytes("UTF-8");
+	public static byte[] encodeMDNS(String domain){
+		// domain.getBytes(StandardCharsets.UTF_8);
 
-		ArrayList<Byte> resultByte = new ArrayList<Byte>();
-		String splited[] = domain.split("\\.");
-		for (String string : splited) {
-			byte[] toAdd = string.getBytes("UTF-8");
+		ArrayList<Byte> resultByte = new ArrayList<>();
+		String[] split = domain.split("\\.");
+		for (String string : split) {
+			byte[] toAdd = string.getBytes(StandardCharsets.UTF_8);
 			resultByte.add((byte) toAdd.length);
-			for (int i = 0; i < toAdd.length; i++) {
-				resultByte.add(toAdd[i]);
-			}
+            for (byte b : toAdd) {
+                resultByte.add(b);
+            }
 		}
 		resultByte.add((byte) 0x00);
 		byte[] arrayToReturn = new byte[resultByte.size()];
@@ -72,7 +69,7 @@ public class DomainConvert {
 		int passed = startIndex;
 		StringBuilder result = new StringBuilder();
 		while (true) {
-			int size = (int) encodedDomain[passed];
+			int size = encodedDomain[passed];
 			if (size == 0) {
 				if (result.isEmpty())
 					return result.toString();
@@ -93,7 +90,7 @@ public class DomainConvert {
 	}
 
 	public static String encodeIDN(String domain) {
-		if (!Charset.forName("US-ASCII").newEncoder().canEncode(domain)) {
+		if (!StandardCharsets.US_ASCII.newEncoder().canEncode(domain)) {
 			return Punycode.toPunycode(domain);
 		} else {
 			return domain;
@@ -104,7 +101,7 @@ public class DomainConvert {
 		int passed = 0;
 		StringBuilder result = new StringBuilder();
 		while (true) {
-			int size = (int) encodedDomain[passed];
+			int size = encodedDomain[passed];
 			if (size == 0) {
 				return result.substring(0, result.length() - 1);
 			} else {
@@ -121,7 +118,7 @@ public class DomainConvert {
 		int passed = startIndex;
 		StringBuilder result = new StringBuilder();
 		while (true) {
-			int size = (int) encodedDomain[passed];
+			int size = encodedDomain[passed];
 			if (size == 0) {
 				if (result.isEmpty())
 					return result.toString();
@@ -142,25 +139,21 @@ public class DomainConvert {
 		}
 	}
 
-	private static boolean isDnsNameCompressed(byte rawMessage[], int currentPosition) {
+	private static boolean isDnsNameCompressed(byte[] rawMessage, int currentPosition) {
 		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[currentPosition], rawMessage[currentPosition + 1]);
-		if (firstTwoBytes.getValue() >= COMPRESS_CONTANT_NUMBER) {
-			return true;
-		} else {
-			return false;
-		}
+        return firstTwoBytes.getValue() >= COMPRESS_CONSTANT_NUMBER;
 
 	}
 
 	private static String getCompressedName(byte[] rawMessage, int currentPosition) {
 		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[currentPosition], rawMessage[currentPosition + 1]);
-		UInt16 nameStartByte = new UInt16(firstTwoBytes.getValue() - COMPRESS_CONTANT_NUMBER);
+		UInt16 nameStartByte = new UInt16(firstTwoBytes.getValue() - COMPRESS_CONSTANT_NUMBER);
 		return DomainConvert.decodeDNS(rawMessage, nameStartByte.getValue());
 	}
 
 	private static String getCompressedNameMDNS(byte[] rawMessage, int currentPosition) {
 		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[currentPosition], rawMessage[currentPosition + 1]);
-		UInt16 nameStartByte = new UInt16(firstTwoBytes.getValue() - COMPRESS_CONTANT_NUMBER);
+		UInt16 nameStartByte = new UInt16(firstTwoBytes.getValue() - COMPRESS_CONSTANT_NUMBER);
 		return DomainConvert.decodeMDNS(rawMessage, nameStartByte.getValue());
 	}
 
@@ -175,22 +168,19 @@ public class DomainConvert {
 						return position + 1;
 					}
 
-					position += (int) wholeAnswerSection[position] + 1;
-				} else {
-					position += (int) wholeAnswerSection[position] + 1;
-				}
+                }
+                position += (int) wholeAnswerSection[position] + 1;
 
-			}
+            }
 		}
 	}
 
 	private static boolean isUTF8Domain(String domain) {
 		try {
-			domain.getBytes("UTF-8");
-			String toCompare = domain;
-			String encoded = Punycode.toPunycode(domain);
+			// domain.getBytes(StandardCharsets.UTF_8);
+            String encoded = Punycode.toPunycode(domain);
 
-			return !encoded.equals(toCompare);
+			return !encoded.equals(domain);
 		} catch (Exception e) {
 			return false;
 		}
