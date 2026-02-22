@@ -339,7 +339,6 @@ public class DoTController extends GeneralController {
     }
     @Override
     protected void setWiresharkMenuItems() {
-        wiresharkMenu = new Menu();
         parameters = new HashMap<String, String>();
         parameters.put("prefix", "ipv4");
         parameters.put("ip", null);
