@@ -96,7 +96,8 @@ public class DNSOverQUICTask  extends DNSTaskBase{
                 .getNow();
 
         if (stream.isActive() && stream.isWritable()) {
-            stream.writeAndFlush(Unpooled.wrappedBuffer(getMessageAsBytes())).sync();
+            stream.writeAndFlush(Unpooled.wrappedBuffer(getMessageAsBytes()))
+                    .addListener(QuicStreamChannel.SHUTDOWN_OUTPUT);
             LOGGER.info("Message sent");
         } else {
             LOGGER.severe("QUIC stream inactive!");

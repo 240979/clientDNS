@@ -129,8 +129,16 @@
     {
         "name":"ControlD",
         "domainName":"p0.freedns.controld.com",
-        "ipv4":["76.76.2.11","76.76.2.11"],
-        "ipv6":["2606:1a40::11","2606:1a40::11"],
+        "ipv4":["76.76.2.11"],
+        "ipv6":["2606:1a40::11"],
+        "doq":true,
+        "port": 853
+    },
+    {
+        "name":"NextDNS",
+        "domainName":"726e92.dns.nextdns.io",
+        "ipv4":["38.175.112.132","178.255.154.59"],
+        "ipv6":["2a07:a8c0::72:6e92","2a07:a8c1::72:6e92"],
         "doq":true,
         "port": 853
     }
