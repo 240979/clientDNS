@@ -183,7 +183,7 @@ public class Settings {
 		screensHash.add(hash);
 	}
 
-	public void appIsClossing() {
+	public void appIsClosing() {
 		file.delete();
 		checkIfFileExistsOrCreate();
 		LOGGER.info("Setting written in file");

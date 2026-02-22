@@ -13,7 +13,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Menu;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -23,8 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import models.*;
 import tasks.DNSOverHTTPSTask;
-
-import java.awt.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;

@@ -13,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import models.Ip;
 import models.Language;
 import models.LoggerInitializer;
@@ -20,6 +21,7 @@ import models.Settings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import ui.GeneralController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -32,7 +34,6 @@ public class App extends Application {
 	public static Stage stage = null;
 
 	public static String MAIN_STAGE_FXML_FILE = "/fxml/Main.fxml";
-	public static String INFO_STAGE_FXML_FILE = "/fxml/InfoWindow.fxml";
 	public static String ICON_URI = "/images/icon.png";
 	protected static Logger LOGGER = Logger.getLogger(App.class.getName());
 
@@ -56,10 +57,10 @@ public class App extends Application {
 			if (settings.getScreensHash().isEmpty()) {
 				screen = Screen.getPrimary();
 			} else {
-				String hash = settings.getScreensHash().get(0);
+				String hash = settings.getScreensHash().getFirst();
 				ObservableList<Screen> screens = Screen.getScreens();
-				List<Screen> screens1 = screens.stream().filter(screen1 -> Integer.toString(screen1.hashCode()).equals(hash)).collect(Collectors.toList());
-				screen = screens1.size() == 0 ? Screen.getPrimary():screens1.get(0);
+				List<Screen> screens1 = screens.stream().filter(screen1 -> Integer.toString(screen1.hashCode()).equals(hash)).toList();
+				screen = screens1.isEmpty() ? Screen.getPrimary():screens1.getFirst();
 			}
 			settings.saveScreenHash(Integer.toString(screen.hashCode()));
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_STAGE_FXML_FILE),GeneralController.getLanguage().getLanguageBundle());
@@ -100,7 +101,7 @@ public class App extends Application {
 		for (Screen screen : Screen.getScreensForRectangle(stage.getX(), stage.getY(), 1., 1.)) {
 			settings.saveScreenHash(Integer.toString(screen.hashCode()));
 		}
-		settings.appIsClossing();
+		settings.appIsClosing();
 		System.exit(0);
 	}
 

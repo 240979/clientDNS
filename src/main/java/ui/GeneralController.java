@@ -299,7 +299,10 @@ public abstract class GeneralController {
 
     protected static boolean darkMode=false;
     private boolean filterInterfaces = true;
-    protected Stage logStage = null;
+
+    private Stage mainStage;
+    private Stage helpStage = null;
+    private Stage logStage = null;
 
     public GeneralController() {
         // this is set of DNS resource records that are common to all implemented protocols
@@ -1136,17 +1139,22 @@ public abstract class GeneralController {
         return "NOT_FOUND";
     }
     public void showLogWindow() {
-        if (logStage != null && logStage.isShowing()) { // This part of the code should prevent user from opening infinite amount of windows
+        if (logStage != null && logStage.isShowing()) {
+            // This part of the code should prevent user from opening infinite amount of windows
             logStage.toFront();
             logStage.requestFocus();
             return;
         }
         ResourceBundle bundle = GeneralController.language.getLanguageBundle();
+        logStage = new Stage();
+        logStage.initOwner(mainStage); // Set the main stage as owner
+        logStage.setTitle("Log");
+        logStage.getIcons().add(new Image(App.ICON_URI));
+
         TextArea textArea = new TextArea();
         textArea.setEditable(false);
         textArea.setWrapText(true);
 
-        // Connect the TextArea to the handler
         LoggerInitializer.getTextAreaHandler().setTextArea(textArea);
 
         Button clearButton = new Button(bundle.getString("clearLogs"));
@@ -1157,16 +1165,14 @@ public abstract class GeneralController {
         vbox.setPadding(new javafx.geometry.Insets(5));
 
         Scene scene = new Scene(vbox, 700, 500);
-        logStage = new Stage();
-        logStage.setTitle("Log");
-        logStage.getIcons().add(new Image(App.ICON_URI));
         logStage.setScene(scene);
-        logStage.show();
-        logStage.setOnCloseRequest(e -> { // Here I set it to null on close, to be able to open it again
-            // LoggerInitializer.getTextAreaHandler().setTextArea(null);
+        logStage.setOnCloseRequest(e -> {
+            // Here I set it to null on close, to be able to open it again
+            LoggerInitializer.getTextAreaHandler().setTextArea(null);
+            logStage.close();
             logStage = null;
         });
-
+        logStage.show();
     }
     // 240979:
     protected boolean isDomainNameUsed(){
