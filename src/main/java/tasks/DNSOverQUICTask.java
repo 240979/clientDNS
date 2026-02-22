@@ -89,7 +89,7 @@ public class DNSOverQUICTask  extends DNSTaskBase{
                 .streamHandler(new ChannelInboundHandlerAdapter())
                 .remoteAddress(new InetSocketAddress(target, resolverPort)) //https://gist.github.com/leiless/df17252a17503d3ebf9a04e50f163114
                 .connect()
-                .get(10, TimeUnit.SECONDS);
+                .get();
         ChannelInitializer<QuicStreamChannel> initializer = new DoQClientInitializer(this);
         QuicStreamChannel stream = quicChannel.createStream(QuicStreamType.BIDIRECTIONAL, initializer)
                 .sync()
