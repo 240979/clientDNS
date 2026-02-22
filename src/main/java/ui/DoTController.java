@@ -7,7 +7,6 @@ import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -34,10 +33,7 @@ import java.util.logging.Logger;
 public class DoTController extends GeneralController {
 
     public static final String FXML_FILE_NAME_SMALL = "/fxml/DoT_small.fxml";
-    public static final String FXML_FILE_NAME_LARGE = "/fxml/DoT_small.fxml";
 
-    public static boolean layoutLarge = true;
-    @FXML
     protected Label wiresharkLabel;
     @FXML
     protected RadioButton dnssecYesRadioButton;
@@ -70,7 +66,7 @@ public class DoTController extends GeneralController {
     @FXML
     protected ImageView cloudflareIpv4ImageView;
     @FXML
-    protected ImageView googleIpv4IamgeView;
+    protected ImageView googleIpv4ImageView;
 
     @FXML
     private VBox vboxRoot;
@@ -87,7 +83,7 @@ public class DoTController extends GeneralController {
     private RadioMenuItem ipWithUDPAsFilter;
     @FXML
     private RadioMenuItem ipWithUDPandTcpAsFilter;
-    // titledpane
+    // titled pane
     private ToggleGroup iterativeToggleGroup;
     // choice box
     @FXML
@@ -133,9 +129,7 @@ public class DoTController extends GeneralController {
 
         Config.getNameServers().add(new NameServer("System DNS", "System DNS", ip.getIpv4DnsServer(),
                 ip.getIpv6DnsServer()));
-        Config.getNameServers().stream().filter(nameServer1 -> nameServer1.isDot() && !nameServer1.isDohOnly()).forEach(ns -> {
-            otherDNSVbox.getChildren().add(new NameServerVBox(ns, dnsserverToggleGroup, this));
-        });
+        Config.getNameServers().stream().filter(nameServer1 -> nameServer1.isDot() && !nameServer1.isDohOnly()).forEach(ns -> otherDNSVbox.getChildren().add(new NameServerVBox(ns, dnsserverToggleGroup, this)));
 
         HBox customDNS = new HBox();
         RadioButton customToggle = new RadioButton();
@@ -143,9 +137,7 @@ public class DoTController extends GeneralController {
         TextField input = new TextField();
         //input.setPromptText(language.getLanguageBundle().getString("dnsServerDropDownLabel"));
         customToggle.setUserData(input);
-        input.setOnMouseClicked(actionEvent -> {
-            customToggle.setSelected(true);
-        });
+        input.setOnMouseClicked(_ -> customToggle.setSelected(true));
         customDNS.getChildren().addAll(customToggle, input);
         Separator separator = new Separator();
         separator.setPadding(new Insets(10, 0, 5, 0));
@@ -246,17 +238,6 @@ public class DoTController extends GeneralController {
      * Body of method taken from Martin Biolek thesis
      * */
     private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec,
-                            TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection) {
-        LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + Arrays.toString(records)
-                + "\n" + "Recursive:" + recursive + "\n" + "DNSSEC: " + dnssec + "\n" + "DNSSEC sig records"
-                + dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n" + "Hold connection: " + holdConnection
-                + "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
-    }
-
-    /*
-     * Body of method taken from Martin Biolek thesis
-     * */
-    private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec,
                             TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection,
                             boolean checkingdisabled) {
         LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + Arrays.toString(records)
@@ -333,13 +314,13 @@ public class DoTController extends GeneralController {
      * Body of method taken from Martin Biolek thesis and modified
      * */
     @FXML
-    private void deleteDomainNameHistoryFired(Event event) {
+    private void deleteDomainNameHistoryFired() {
 		settings.eraseDomainNames();
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
     }
     @Override
     protected void setWiresharkMenuItems() {
-        parameters = new HashMap<String, String>();
+        parameters = new HashMap<>();
         parameters.put("prefix", "ipv4");
         parameters.put("ip", null);
         parameters.put("tcpPort", null);
