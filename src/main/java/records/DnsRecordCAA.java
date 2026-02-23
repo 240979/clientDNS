@@ -10,8 +10,7 @@ import enums.CERTIFICATE_FLAG;
 
 public class DnsRecordCAA extends DnsRecord {
 	private CERTIFICATE_FLAG flag;
-	private int tagLenght;
-	private String tag;
+    private String tag;
 	private String value;
 	private static final String KEY_CERTIFICATE_FLAG = "Flag";
 	private static final String KEY_TAG = "Tag";
@@ -25,17 +24,21 @@ public class DnsRecordCAA extends DnsRecord {
 	}
 
 	private void parse() {
+		StringBuilder sb = new StringBuilder();
 		flag = CERTIFICATE_FLAG.getTypeByCode(rawMessage[startIndex]);
-		tagLenght = (int) rawMessage[startIndex + 1];
+        int tagLength = rawMessage[startIndex + 1];
 		int currentIndex = startIndex + 2;
-		for (int i = currentIndex; i < currentIndex + tagLenght; i++) {
-			tag += (char) rawMessage[i];
+		for (int i = currentIndex; i < currentIndex + tagLength; i++) {
+			sb.append(rawMessage[i]);
 		}
-		currentIndex += tagLenght;
+		tag = sb.toString();
+		sb.setLength(0); // This should clear SB
+		currentIndex += tagLength;
 
 		for (int i = currentIndex; i < startIndex + length; i++) {
-			value += (char) rawMessage[i];
+			sb.append(rawMessage[i]);
 		}
+		value = sb.toString();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -55,7 +58,7 @@ public class DnsRecordCAA extends DnsRecord {
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
         return new String[]{ KEY_CERTIFICATE_FLAG + ": " + flag, KEY_TAG + ": " + tag, KEY_VALUE + ": " + value };
 	}
 
