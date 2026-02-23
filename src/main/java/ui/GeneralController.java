@@ -240,7 +240,7 @@ public abstract class GeneralController {
     private ComboBox<String> dnsServerComboBox;
 
     @FXML
-    protected ComboBox<String> savedDomainNamesChoiseBox;
+    protected ComboBox<String> savedDomainNamesChoiceBox;
 
     @FXML
     protected RadioMenuItem czechRadioButton;
@@ -565,8 +565,10 @@ public abstract class GeneralController {
                             ((Labeled) field.get(this)).setText(GeneralController.language.getLanguageBundle().getString(field.getName()));
                         } else if (TableColumnBase.class.isAssignableFrom(field.getType())) {
                             ((TableColumnBase<?, ?>) field.get(this)).setText(GeneralController.language.getLanguageBundle().getString(field.getName()));
-                        } else {
+                        } else if (MenuItem.class.isAssignableFrom(field.getType())) {
                             ((MenuItem) field.get(this)).setText(GeneralController.language.getLanguageBundle().getString(field.getName()));
+                        } else {
+                            LOGGER.warning("Unsupported type for translation: " + field.getType().getName() + " for field: " + field.getName());
                         }
                     }
                 } catch (IllegalAccessException e) {
@@ -761,14 +763,14 @@ public abstract class GeneralController {
     }
 
     protected void saveToDomainChoiceBox() {
-        if (savedDomainNamesChoiseBox.getItems().stream().noneMatch(s -> s.equalsIgnoreCase(domainNameTextField.getText()))) {
-            savedDomainNamesChoiseBox.getItems().add(domainNameTextField.getText());
+        if (savedDomainNamesChoiceBox.getItems().stream().noneMatch(s -> s.equalsIgnoreCase(domainNameTextField.getText()))) {
+            savedDomainNamesChoiceBox.getItems().add(domainNameTextField.getText());
         }
     }
 
     protected void setChoiceBoxValue() {
         if (domainNameTextField.getText() != null && !domainNameTextField.getText().isEmpty()) {
-            savedDomainNamesChoiseBox.setValue(domainNameTextField.getText());
+            savedDomainNamesChoiceBox.setValue(domainNameTextField.getText());
         }
     }
 
@@ -814,8 +816,8 @@ public abstract class GeneralController {
 
     @FXML
     protected void onDomainNameChoiceBoxAction() {
-        if (savedDomainNamesChoiseBox.getValue() != null && !savedDomainNamesChoiseBox.getValue().isEmpty()) {
-            domainNameTextField.setText(savedDomainNamesChoiseBox.getValue());
+        if (savedDomainNamesChoiceBox.getValue() != null && !savedDomainNamesChoiceBox.getValue().isEmpty()) {
+            domainNameTextField.setText(savedDomainNamesChoiceBox.getValue());
         }
     }
 

@@ -6,143 +6,139 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="447.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.MainController">
-	<children>
-		<Pane layoutX="25.0" layoutY="14.0" prefHeight="60.0" prefWidth="550.0" style="-fx-background-color: #929D9E;">
-			<children>
-				<Group layoutX="316.0" layoutY="18.0">
-					<children>
-						<ImageView fitHeight="25.0" fitWidth="25.0" layoutX="30.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@../images/czech-republic.png" />
-							</image>
-						</ImageView>
-						<RadioButton fx:id="czechLangRadioButton" layoutY="4.0" mnemonicParsing="false" onAction="#languageChanged" selected="true" />
-					</children>
-				</Group>
-				<Group layoutX="201.0" layoutY="18.0">
-					<children>
-						<ImageView fitHeight="25.0" fitWidth="25.0" layoutX="30.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@../images/united-kingdom.png" />
-							</image>
-						</ImageView>
-						<RadioButton fx:id="englishLangRadioButton" layoutY="4.0" mnemonicParsing="false" onAction="#languageChanged" />
-					</children>
-				</Group>
-            <Button fx:id="reportBugButton" layoutX="432.0" layoutY="18.0" mnemonicParsing="false" onAction="#reportBugButtonFired" prefHeight="25.0" prefWidth="104.0" text="Nahlásit chybu" />
-			</children>
-		</Pane>
-		<Pane layoutX="25.0" layoutY="93.0" prefHeight="295.0" prefWidth="150.0" style="-fx-background-color: #7F8688;">
-			<children>
-				<Label fx:id="basicDNSLabel" layoutX="11.0" layoutY="6.0" prefHeight="17.0" prefWidth="104.0" text="%basicDNSLabel" textAlignment="CENTER" textFill="WHITE">
-					<font>
-						<Font size="15.0" />
-					</font>
-				</Label>
-				<Button fx:id="dnsButton" layoutX="26.0" layoutY="62.0" mnemonicParsing="false" onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80.0" text="DNS">
-					<font>
-						<Font name="System Bold" size="15.0" />
-					</font>
-				</Button>
-				<Label fx:id="dnsButtonHelp" layoutX="111.0" layoutY="66.0" style="-fx-border-color: black;" text=" ? ">
-					<font>
-						<Font name="System Bold" size="20.0" />
-					</font>
-					<tooltip>
-						<Tooltip text="Domain Name Service" />
-					</tooltip>
-				</Label>
-			</children>
-		</Pane>
-		<Pane layoutX="225.0" layoutY="93.0" prefHeight="295.0" prefWidth="150.0" style="-fx-background-color: #7F8688;">
-			<children>
-				<Label fx:id="multicastDNSLabel" layoutX="11.0" layoutY="6.0" prefHeight="17.0" prefWidth="135.0" text="%multicastDNSLabel" textFill="WHITE">
-					<font>
-						<Font size="15.0" />
-					</font>
-				</Label>
-				<Button fx:id="llmnrButton" layoutX="26.0" layoutY="62.0" mnemonicParsing="false" onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80" text="LLMNR">
-					<font>
-						<Font name="System Bold" size="15.0" />
-					</font>
-				</Button>
-				<Button fx:id="mdnsButton" layoutX="26.0" layoutY="128.0" mnemonicParsing="false" onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80" text="mDNS">
-					<font>
-						<Font name="System Bold" size="15.0" />
-					</font>
-				</Button>
-				<Label fx:id="dnsButtonHelp1" layoutX="111.0" layoutY="66.0" style="-fx-border-color: black;" text=" ? ">
-					<font>
-						<Font name="System Bold" size="20.0" />
-					</font>
-					<tooltip>
-						<Tooltip text="Link-Local Multicast Name Resolution" />
-					</tooltip>
-				</Label>
-				<Label fx:id="dnsButtonHelp11" layoutX="111.0" layoutY="132.0" style="-fx-border-color: black;" text=" ? ">
-					<font>
-						<Font name="System Bold" size="20.0" />
-					</font>
-					<tooltip>
-						<Tooltip text="Multicast Domain Name Service" />
-					</tooltip>
-				</Label>
-			</children>
-		</Pane>
-		<Pane layoutX="425.0" layoutY="93.0" prefHeight="295.0" prefWidth="150.0" style="-fx-background-color: #7F8688;">
-			<children>
-				<Label fx:id="encryptedDNSLabel" layoutX="11.0" layoutY="6.0" prefHeight="17.0" prefWidth="142.0" text="%encryptedDNSLabel" textAlignment="CENTER" textFill="WHITE">
-					<font>
-						<Font size="15.0" />
-					</font>
-				</Label>
-				<Button fx:id="dohButton" layoutX="26.0" layoutY="62.0" mnemonicParsing="false" onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80.0" text="DoH">
-					<font>
-						<Font name="System Bold" size="15.0" />
-					</font>
-				</Button>
-				<Button fx:id="dotButton" layoutX="26.0" layoutY="128.0" mnemonicParsing="false" onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80.0" text="DoT">
-				<font>
-					<Font name="System Bold" size="15.0" />
-				</font>
-			</Button>
+<AnchorPane prefHeight="447.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12"
+			xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.MainController">
+	<Pane layoutX="25.0" layoutY="14.0" prefHeight="60.0" prefWidth="550.0" style="-fx-background-color: #929D9E;">
+		<Group layoutX="316.0" layoutY="18.0">
+			<ImageView fitHeight="25.0" fitWidth="25.0" layoutX="30.0" pickOnBounds="true" preserveRatio="true">
+				<Image url="@../images/czech-republic.png"/>
+			</ImageView>
+			<RadioButton fx:id="czechLangRadioButton" layoutY="4.0" mnemonicParsing="false"
+						 onAction="#languageChanged" selected="true"/>
+		</Group>
+		<Group layoutX="201.0" layoutY="18.0">
+			<ImageView fitHeight="25.0" fitWidth="25.0" layoutX="30.0" pickOnBounds="true" preserveRatio="true">
+				<Image url="@../images/united-kingdom.png"/>
+			</ImageView>
+			<RadioButton fx:id="englishLangRadioButton" layoutY="4.0" mnemonicParsing="false"
+						 onAction="#languageChanged"/>
+		</Group>
+		<Button fx:id="reportBugButton" layoutX="432.0" layoutY="18.0" mnemonicParsing="false"
+				onAction="#reportBugButtonFired" prefHeight="25.0" prefWidth="104.0" text="Nahlásit chybu"/>
+	</Pane>
+	<Pane layoutX="25.0" layoutY="93.0" prefHeight="295.0" prefWidth="150.0" style="-fx-background-color: #7F8688;">
+		<Label fx:id="basicDNSLabel" layoutX="11.0" layoutY="6.0" prefHeight="17.0" prefWidth="104.0"
+			   text="%basicDNSLabel" textAlignment="CENTER" textFill="WHITE">
+			<font>
+				<Font size="15.0"/>
+			</font>
+		</Label>
+		<Button fx:id="dnsButton" layoutX="26.0" layoutY="62.0" mnemonicParsing="false"
+				onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80.0" text="DNS">
+			<font>
+				<Font name="System Bold" size="15.0"/>
+			</font>
+		</Button>
+		<Label fx:id="dnsButtonHelp" layoutX="111.0" layoutY="66.0" style="-fx-border-color: black;" text=" ? ">
+			<font>
+				<Font name="System Bold" size="20.0"/>
+			</font>
+			<tooltip>
+				<Tooltip text="Domain Name Service"/>
+			</tooltip>
+		</Label>
+	</Pane>
+	<Pane layoutX="225.0" layoutY="93.0" prefHeight="295.0" prefWidth="150.0" style="-fx-background-color: #7F8688;">
+		<Label fx:id="multicastDNSLabel" layoutX="11.0" layoutY="6.0" prefHeight="17.0" prefWidth="135.0"
+			   text="%multicastDNSLabel" textFill="WHITE">
+			<font>
+				<Font size="15.0"/>
+			</font>
+		</Label>
+		<Button fx:id="llmnrButton" layoutX="26.0" layoutY="62.0" mnemonicParsing="false"
+				onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80" text="LLMNR">
+			<font>
+				<Font name="System Bold" size="15.0"/>
+			</font>
+		</Button>
+		<Button fx:id="mdnsButton" layoutX="26.0" layoutY="128.0" mnemonicParsing="false"
+				onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80" text="mDNS">
+			<font>
+				<Font name="System Bold" size="15.0"/>
+			</font>
+		</Button>
+		<Label layoutX="111.0" layoutY="66.0" style="-fx-border-color: black;" text=" ? ">
+			<font>
+				<Font name="System Bold" size="20.0"/>
+			</font>
+			<tooltip>
+				<Tooltip text="Link-Local Multicast Name Resolution"/>
+			</tooltip>
+		</Label>
+		<Label layoutX="111.0" layoutY="132.0" style="-fx-border-color: black;" text=" ? ">
+			<font>
+				<Font name="System Bold" size="20.0"/>
+			</font>
+			<tooltip>
+				<Tooltip text="Multicast Domain Name Service"/>
+			</tooltip>
+		</Label>
+	</Pane>
+	<Pane layoutX="425.0" layoutY="93.0" prefHeight="295.0" prefWidth="150.0" style="-fx-background-color: #7F8688;">
+		<Label fx:id="encryptedDNSLabel" layoutX="11.0" layoutY="6.0" prefHeight="17.0" prefWidth="142.0"
+			   text="%encryptedDNSLabel" textAlignment="CENTER" textFill="WHITE">
+			<font>
+				<Font size="15.0"/>
+			</font>
+		</Label>
+		<Button fx:id="dohButton" layoutX="26.0" layoutY="62.0" mnemonicParsing="false"
+				onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80.0" text="DoH">
+			<font>
+				<Font name="System Bold" size="15.0"/>
+			</font>
+		</Button>
+		<Button fx:id="dotButton" layoutX="26.0" layoutY="128.0" mnemonicParsing="false"
+				onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80.0" text="DoT">
+		<font>
+			<Font name="System Bold" size="15.0"/>
+		</font>
+	</Button>
 
-				<Button fx:id="doqButton" layoutX="26.0" layoutY="194.0" mnemonicParsing="false" onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80.0" text="DoQ">
-					<font>
-						<Font name="System Bold" size="15.0" />
-					</font>
-				</Button>
-				<Label fx:id="dnsButtonHelp12" layoutX="111.0" layoutY="66.0" style="-fx-border-color: black;" text=" ? ">
-					<font>
-						<Font name="System Bold" size="20.0" />
-					</font>
-					<tooltip>
-						<Tooltip text="DNS over https" />
-					</tooltip>
-				</Label>
-				<Label fx:id="dnsButtonHelp121" layoutX="111.0" layoutY="132.0" style="-fx-border-color: black;" text=" ? ">
-					<font>
-						<Font name="System Bold" size="20.0" />
-					</font>
-					<tooltip>
-						<Tooltip text="DNS over TLS" />
-					</tooltip>
-				</Label>
-				<Label fx:id="dnsButtonHelp122" layoutX="111.0" layoutY="198.0" style="-fx-border-color: black;" text=" ? ">
-					<font>
-						<Font name="System Bold" size="20.0" />
-					</font>
-					<tooltip>
-						<Tooltip text="DNS over QUIC" />
-					</tooltip>
-				</Label>
-			</children>
-		</Pane>
-      <Button fx:id="loadButton" layoutX="175.0" layoutY="397.0" mnemonicParsing="false" onAction="#definedButtonFired" prefHeight="40.0" prefWidth="250.0" text="%loadButton">
-         <font>
-            <Font name="System Bold" size="15.0" />
-         </font>
-      </Button>
-	</children>
+		<Button fx:id="doqButton" layoutX="26.0" layoutY="194.0" mnemonicParsing="false"
+				onAction="#definedButtonFired" prefHeight="40.0" prefWidth="80.0" text="DoQ">
+			<font>
+				<Font name="System Bold" size="15.0"/>
+			</font>
+		</Button>
+		<Label layoutX="111.0" layoutY="66.0" style="-fx-border-color: black;" text=" ? ">
+			<font>
+				<Font name="System Bold" size="20.0"/>
+			</font>
+			<tooltip>
+				<Tooltip text="DNS over https"/>
+			</tooltip>
+		</Label>
+		<Label layoutX="111.0" layoutY="132.0" style="-fx-border-color: black;" text=" ? ">
+			<font>
+				<Font name="System Bold" size="20.0"/>
+			</font>
+			<tooltip>
+				<Tooltip text="DNS over TLS"/>
+			</tooltip>
+		</Label>
+		<Label layoutX="111.0" layoutY="198.0" style="-fx-border-color: black;" text=" ? ">
+			<font>
+				<Font name="System Bold" size="20.0"/>
+			</font>
+			<tooltip>
+				<Tooltip text="DNS over QUIC"/>
+			</tooltip>
+		</Label>
+	</Pane>
+	<Button fx:id="loadButton" layoutX="175.0" layoutY="397.0" mnemonicParsing="false" onAction="#definedButtonFired"
+			prefHeight="40.0" prefWidth="250.0" text="%loadButton">
+		<font>
+			<Font name="System Bold" size="15.0"/>
+		</font>
+	</Button>
 </AnchorPane>

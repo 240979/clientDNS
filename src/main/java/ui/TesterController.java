@@ -105,7 +105,7 @@ public class TesterController extends GeneralController {
 
     @FXML
     @Translation
-    protected TitledPane requestFormatTiltedPane;
+    protected TitledPane requestFormatTitledPane;
     @FXML
     protected ToggleGroup requestFormatToggleGroup;
     @FXML
@@ -120,7 +120,7 @@ public class TesterController extends GeneralController {
 
     @FXML
     @Translation
-    protected TitledPane getPostTiltedPane;
+    protected TitledPane getPostTitledPane;
     @FXML
     protected VBox getPostVBox;
     @FXML
@@ -253,14 +253,14 @@ public class TesterController extends GeneralController {
 
         requestFormatToggleGroup = new ToggleGroup();
         requestFormatVBox = new VBox();
-        requestFormatTiltedPane = new TitledPane();
+        requestFormatTitledPane = new TitledPane();
 
         jsonFormat.setToggleGroup(requestFormatToggleGroup);
         wireFormat.setToggleGroup(requestFormatToggleGroup);
 
         getPostToggleGroup = new ToggleGroup();
         getPostVBox = new VBox();
-        getPostTiltedPane = new TitledPane();
+        getPostTitledPane = new TitledPane();
 
         get.setToggleGroup(getPostToggleGroup);
         post.setToggleGroup(getPostToggleGroup);
@@ -364,7 +364,7 @@ public class TesterController extends GeneralController {
     }
 
     public void loadDataFromSettings() {
-        savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesLOAD());
+        savedDomainNamesChoiceBox.getItems().addAll(settings.getDomainNamesLOAD());
     }
 
     protected void enableDoHServers() {
@@ -676,15 +676,15 @@ public class TesterController extends GeneralController {
     @FXML
     private void deleteDomainNameHistoryFired() {
         settings.eraseLOADDomainNames();
-        savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+        savedDomainNamesChoiceBox.getItems().removeAll(savedDomainNamesChoiceBox.getItems());
     }
     private void setDisabledDOH(boolean disabled){
         jsonFormat.setDisable(disabled);
         wireFormat.setDisable(disabled);
-        requestFormatTiltedPane.setDisable(disabled);
+        requestFormatTitledPane.setDisable(disabled);
         get.setDisable(disabled);
         post.setDisable(disabled);
-        getPostTiltedPane.setDisable(disabled);
+        getPostTitledPane.setDisable(disabled);
     }
 
 }

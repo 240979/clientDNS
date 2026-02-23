@@ -105,7 +105,7 @@ public class LLMNRController extends GeneralController {
     }
 
     public void loadDataFromSettings() {
-        savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesLLMNR());
+        savedDomainNamesChoiceBox.getItems().addAll(settings.getDomainNamesLLMNR());
     }
 
     /*
@@ -150,6 +150,6 @@ public class LLMNRController extends GeneralController {
     @FXML
     private void deleteDomainNameHistoryFired() {
         settings.eraseLLMNRDomainNames();
-        savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+        savedDomainNamesChoiceBox.getItems().removeAll(savedDomainNamesChoiceBox.getItems());
     }
 }

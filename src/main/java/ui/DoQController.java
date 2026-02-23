@@ -97,7 +97,7 @@ public class DoQController extends GeneralController{
     @FXML
     private void deleteDomainNameHistoryFired() {
         settings.eraseDomainNames();
-        savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+        savedDomainNamesChoiceBox.getItems().removeAll(savedDomainNamesChoiceBox.getItems());
     }
     @FXML
     protected void sendButtonFired(ActionEvent event) {
@@ -172,7 +172,7 @@ public class DoQController extends GeneralController{
 
     }
     public void loadDataFromSettings() {
-        savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
+        savedDomainNamesChoiceBox.getItems().addAll(settings.getDomainNamesDNS());
     }
 
     @Override

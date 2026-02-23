@@ -37,11 +37,11 @@ public class DoHController extends GeneralController {
     protected RadioButton wireFormat;
     @FXML
     @Translation
-    protected TitledPane requestFormatTiltedPane;
+    protected TitledPane requestFormatTitledPane;
     @FXML
     protected ToggleGroup requestFormatToggleGroup;
     @FXML
-    protected TitledPane getPostTiltedPane;
+    protected TitledPane getPostTitledPane;
     @FXML
     protected RadioButton get;
     @FXML
@@ -152,6 +152,7 @@ public class DoHController extends GeneralController {
     }
 
     @FXML
+    @Override
     protected void sendButtonFired(ActionEvent event){
         super.sendButtonFired(event);
         if (isTerminatingThread()){
@@ -304,7 +305,7 @@ public class DoHController extends GeneralController {
      * Body of method taken from Martin Biolek thesis and modified
      * */
     public void loadDataFromSettings() {
-        savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
+        savedDomainNamesChoiceBox.getItems().addAll(settings.getDomainNamesDNS());
     }
 
     /*
@@ -313,7 +314,7 @@ public class DoHController extends GeneralController {
     @FXML
     private void deleteDomainNameHistoryFired() {
         settings.eraseDomainNames();
-        savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+        savedDomainNamesChoiceBox.getItems().removeAll(savedDomainNamesChoiceBox.getItems());
     }
 
     @Override

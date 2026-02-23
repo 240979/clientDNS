@@ -206,7 +206,7 @@ public class DoTController extends GeneralController {
      * Body of method taken from Martin Biolek thesis and modified
      * */
     public void loadDataFromSettings() {
-        savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
+        savedDomainNamesChoiceBox.getItems().addAll(settings.getDomainNamesDNS());
     }
 
     @FXML
@@ -316,7 +316,7 @@ public class DoTController extends GeneralController {
     @FXML
     private void deleteDomainNameHistoryFired() {
 		settings.eraseDomainNames();
-		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+		savedDomainNamesChoiceBox.getItems().removeAll(savedDomainNamesChoiceBox.getItems());
     }
     @Override
     protected void setWiresharkMenuItems() {
