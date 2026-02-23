@@ -110,6 +110,6 @@ public class DnsTcpTask extends DNSOverTCPTask {
     protected void updateResultUI() {
         LOGGER.info("Calculated duration to be stored " + calculateDuration());
         result.getDurations().add(calculateDuration());
-        LOGGER.info("Finished run of DnsTcpTask for " + getResolver() + " with duration " + result.getDurations().get(i));
+        LOGGER.info("Finished run of DnsTcpTask for " + getResolver() + " with duration " + result.getDurations().getLast());
     }
 }

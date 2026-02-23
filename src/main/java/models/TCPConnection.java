@@ -75,7 +75,7 @@ public class TCPConnection {
 	}
 
 	public void closeAll() throws IOException {
-		if (socket.isConnected() || !socket.isClosed()) {
+		if (socket != null && (socket.isConnected() || !socket.isClosed())) {
 			LOGGER.info("Closing sockets");
 			inputStream.close();
 			outputStream.close();
@@ -88,7 +88,7 @@ public class TCPConnection {
 	* */
 	public boolean isClosed()
 	{
-		return socket.isClosed();
+		return socket == null || socket.isClosed();
 	}
 
 	private void sendAndReceive(byte[] messagesAsBytes)
@@ -105,7 +105,8 @@ public class TCPConnection {
 		} catch (ArrayIndexOutOfBoundsException e) {
 			//System.out.println(e.toString());
 			LOGGER.warning(ExceptionUtils.getStackTrace(e));
-			closeAll();
+			/*
+			closeAll();*/
 			throw new CouldNotUseHoldConnectionException();
 		} catch (IOException e) {
 			throw new TimeoutException();

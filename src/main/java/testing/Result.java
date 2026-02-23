@@ -56,9 +56,9 @@ public class Result {
     }
 
     public String toCsvString(){
-        return ""+name+";"+domain+";"+average+";"+min+";"+max+";"+successful+";"+failed+";"+responseSize+"\n";
+        return name+";"+domain+";"+average+";"+min+";"+max+";"+successful+";"+failed+";"+responseSize+"\n";
     }
-
+    @SuppressWarnings("unchecked")
     public JSONObject toJsonObject(){
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("Name", name);

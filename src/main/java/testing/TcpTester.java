@@ -45,32 +45,13 @@ public class TcpTester extends Task<Void> {
     private RequestSettings requestSettings;
     private ConnectionSettings connectionSettings;
 
-
-    public TcpTester(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag, boolean holdConnection,
-                     Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,
-                     NetworkInterface netInterface,int duration, List<Result> results, long cooldown)
-    {
-        this.recursion = recursion;
-        this.adFlag = adFlag;
-        this.caFlag = caFlag;
-        this.doFlag = doFlag;
-        this.holdConnection = holdConnection;
-        this.cooldown = cooldown;
-        this.domain = domain;
-        this.types = types;
-        this.transport_protocol = transport_protocol;
-        this.application_protocol = application_protocol;
-        this.netInterface = netInterface;
-        this.duration = duration;
-        this.results = results;
-        LOGGER.info("Created TcpTester task");
-    }
     public TcpTester(RequestSettings requestSettings, ConnectionSettings connectionSettings, int duration, List<Result> results, long cooldown)
     {
         this.requestSettings = requestSettings;
         this.connectionSettings = connectionSettings;
         this.duration = duration;
         this.results = results;
+        this.cooldown = cooldown;
         LOGGER.info("Created TcpTester task");
     }
 

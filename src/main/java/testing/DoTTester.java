@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 @Data
 public class DoTTester extends Task<Void> {
 
-    private static final Logger LOGGER = Logger.getLogger(TcpTester.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DoTTester.class.getName());
 
     private List<Result> results;
     private int duration;

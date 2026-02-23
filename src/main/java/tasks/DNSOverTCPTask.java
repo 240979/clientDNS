@@ -36,7 +36,6 @@ public class DNSOverTCPTask extends DNSTaskBase {
 	/*
 	 * Body of method taken from Martin Biolek thesis and modified
 	 * */
-	@SuppressWarnings("ConstantConditions")
 	@Override
 	protected void sendData() throws TimeoutException, NotValidDomainNameException, NotValidIPException, UnsupportedEncodingException, InterruptedException, QueryIdNotMatchException, UnknownHostException {
 		try {
