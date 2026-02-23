@@ -15,19 +15,19 @@ import models.UInt16;
 public class DnsRecordOPT extends DnsRecord {
 
 	private ArrayList<UInt16> optionCode;
-	private ArrayList<UInt16> optionDataLenght;
+	private ArrayList<UInt16> optionDataLength;
 	private ArrayList<String> optionData;
 	private boolean isNull;
 	private static final String KEY_OPTION_CODE = "Option code";
-	private static final String KEY_DATA_LENGHT = "Data lenght";
+	private static final String KEY_DATA_LENGTH = "Data length";
 	private static final String KEY_DATA = "Data";
 	private static final String KEY_RETURN = "Option data";
 
 	public DnsRecordOPT(byte[] rawMessage, int length, int startIndex) {
 		super(rawMessage, length, startIndex);
-		optionCode = new ArrayList<UInt16>();
-		optionDataLenght = new ArrayList<UInt16>();
-		optionData = new ArrayList<String>();
+		optionCode = new ArrayList<>();
+		optionDataLength = new ArrayList<>();
+		optionData = new ArrayList<>();
 		isNull = true;
 		parse();
 	}
@@ -42,22 +42,22 @@ public class DnsRecordOPT extends DnsRecord {
 			while (length + startIndex > currentIndex) {
 				optionCode.add(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
 				currentIndex += 2;
-				UInt16 lenghtOption = new UInt16().loadFromBytes(rawMessage[currentIndex],
+				UInt16 lengthOption = new UInt16().loadFromBytes(rawMessage[currentIndex],
 						rawMessage[currentIndex + 1]);
-				optionDataLenght.add(lenghtOption);
+				optionDataLength.add(lengthOption);
 				currentIndex += 2;
-				String data = "";
-				for (int i = 0; i < lenghtOption.getValue(); i++) {
-					data += String.format("%02x", rawMessage[currentIndex + i]);
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < lengthOption.getValue(); i++) {
+					sb.append(String.format("%02x", rawMessage[currentIndex + i]));
 				}
-				currentIndex += lenghtOption.getValue();
-				optionData.add(data);
+				currentIndex += lengthOption.getValue();
+				optionData.add(sb.toString());
 				isNull = false;
 			}
 		} else {
 			optionCode = null;
 			optionData = null;
-			optionDataLenght = null;
+			optionDataLength = null;
 		}
 	}
 
@@ -66,13 +66,13 @@ public class DnsRecordOPT extends DnsRecord {
 	public JSONObject getAsJson() {
 
 		JSONArray jsonArray = new JSONArray();
-		if (optionCode.equals(null)) {
+		if (optionCode == null) {
 			return new JSONObject();
 		}
 		JSONObject jsonSupObject = new JSONObject();
 		for (int i = 0; i < optionCode.size(); i++) {
 			jsonSupObject.put(KEY_OPTION_CODE, optionCode.get(i).getValue());
-			jsonSupObject.put(KEY_DATA_LENGHT, optionDataLenght.get(i).getValue());
+			jsonSupObject.put(KEY_DATA_LENGTH, optionDataLength.get(i).getValue());
 			jsonSupObject.put(KEY_DATA, optionData.get(i));
 			jsonArray.add(jsonSupObject);
 		}

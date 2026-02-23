@@ -5,16 +5,19 @@
  * */
 package exceptions;
 
+import lombok.Getter;
+
+import java.io.Serial;
+
+@Getter
 public class HttpCodeException extends Exception {
+	@Serial
 	private static final long serialVersionUID = 1L;
-	private int code;
+	private final int code;
 
 	public HttpCodeException(int code) {
 		super("" + code);
 		this.code = code;
 	}
 
-	public int getCode() {
-		return code;
-	}
 }

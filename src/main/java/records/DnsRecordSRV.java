@@ -28,12 +28,12 @@ public class DnsRecordSRV extends DnsRecord {
 
 	private void parseRecord() {
 		priority = new UInt16().loadFromBytes(rawMessage[startIndex], rawMessage[startIndex + 1]);
-		int curentIndex = startIndex + 2;
-		weight = new UInt16().loadFromBytes(rawMessage[curentIndex], rawMessage[curentIndex + 1]);
-		curentIndex += 2;
-		port = new UInt16().loadFromBytes(rawMessage[curentIndex], rawMessage[curentIndex + 1]);
-		curentIndex += 2;
-		target = DomainConvert.decodeMDNS(rawMessage, curentIndex);
+		int currentIndex = startIndex + 2;
+		weight = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
+		currentIndex += 2;
+		port = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
+		currentIndex += 2;
+		target = DomainConvert.decodeMDNS(rawMessage, currentIndex);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -48,7 +48,7 @@ public class DnsRecordSRV extends DnsRecord {
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
         return new String[]{ KEY_PRIORITY + ": " + priority.getValue(), KEY_WEIGHT + ": " + weight.getValue(),
                 KEY_PORT + ": " + port.getValue(), KEY_TARGET + ": " + target };
 	}

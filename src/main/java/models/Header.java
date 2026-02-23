@@ -65,7 +65,7 @@ public class Header {
 		aa = AA.NON_AUTHORITATIVE;
 		tc = TC.NON_TRUNCATED;
 		rd = RD.getTypeByCode(recursion);
-		ra = RA.RECURSION_NON_AVAIBLE;
+		ra = RA.RECURSION_NON_AVAILABLE;
 		ad = AUTHENTICATE_DATA.getTypeByCode(dnssec);
 		cd = CHECKING_DISABLED.getTypeByCode(!dnssec);
 		rCode = R_CODE.NO_ERROR;

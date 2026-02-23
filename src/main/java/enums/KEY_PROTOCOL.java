@@ -8,9 +8,9 @@ package enums;
 public enum KEY_PROTOCOL {
 	VALID((byte) 0x03);
 
-	private byte code;
+	private final byte code;
 
-	private KEY_PROTOCOL(byte code) {
+	KEY_PROTOCOL(byte code) {
 		this.code = code;
 	}
 

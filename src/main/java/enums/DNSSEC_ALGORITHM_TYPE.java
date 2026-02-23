@@ -11,9 +11,9 @@ public enum DNSSEC_ALGORITHM_TYPE {
 	RESERVED3((byte) 0x09), RSA_SHA512((byte) 0x0a), ECC_GOST((byte) 0x0b), ECDSA_P256_SHA256((byte) 0x0c),
 	ECDSA_P384_SHA384((byte) 0x0d), ED25519((byte) 0x0e), ED448((byte) 0x0f);
 
-	private byte code;
+	private final byte code;
 
-	private DNSSEC_ALGORITHM_TYPE(byte code) {
+	DNSSEC_ALGORITHM_TYPE(byte code) {
 		this.code = code;
 	}
 

@@ -21,7 +21,7 @@ public class DnsRecordNSEC3PARAM extends DnsRecord {
 	private static final String KEY_FLAGS = "FLAGS";
 	private static final String KEY_ITERATION = "ITERATIONS";
 	private static final String KEY_SALT = "SALT";
-	private static final String KEY_SALT_LENGHT = "SALT_LENGHT";
+	private static final String KEY_SALT_LENGTH = "SALT_LENGTH";
 
 	public DnsRecordNSEC3PARAM(byte[] rawMessage, int length, int startIndex) {
 		super(rawMessage, length, startIndex);
@@ -33,14 +33,15 @@ public class DnsRecordNSEC3PARAM extends DnsRecord {
 		hash = DIGEST_TYPE.getTypeByCode(rawMessage[startIndex]);
 		flags = rawMessage[startIndex + 1];
 		int currentIndex = startIndex + 2;
-
+		StringBuilder sb = new StringBuilder();
 		iteration = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
 		currentIndex += 2;
-		saltLength = (int) rawMessage[currentIndex];
+		saltLength = rawMessage[currentIndex];
 		currentIndex += 1;
 		for (int i = currentIndex; i < currentIndex + saltLength; i++) {
-			salt += String.format("%02x", rawMessage[i]);
+			sb.append(String.format("%02x", rawMessage[i]));
 		}
+		salt = sb.toString();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -51,17 +52,16 @@ public class DnsRecordNSEC3PARAM extends DnsRecord {
 		object.put(KEY_FLAGS, (int) flags);
 		object.put(KEY_ITERATION, iteration.getValue());
 		object.put(KEY_SALT, salt);
-		object.put(KEY_SALT_LENGHT, saltLength);
+		object.put(KEY_SALT_LENGTH, saltLength);
 		return object;
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
-		String response[] = new String[] { KEY_HASH_TYPE + ": " + hash, KEY_FLAGS + ": " + flags,
-				KEY_ITERATION + ": " + iteration.getValue(), KEY_SALT + ": " + salt,
-				KEY_SALT_LENGHT + ": " + saltLength, };
+	public String[] getValuesForTreeItem() {
 
-		return response;
+        return new String[] { KEY_HASH_TYPE + ": " + hash, KEY_FLAGS + ": " + flags,
+                KEY_ITERATION + ": " + iteration.getValue(), KEY_SALT + ": " + salt,
+                KEY_SALT_LENGTH + ": " + saltLength, };
 	}
 
 	@Override

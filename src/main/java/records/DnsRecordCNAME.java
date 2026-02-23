@@ -20,7 +20,7 @@ public class DnsRecordCNAME extends DnsRecord {
 	}
 
 	private void parseRecord() {
-		// decode MDNS becase DNS is ascii and MDSN is utf-8
+		// decode MDNS because DNS is ascii and mDNS is utf-8
 		name = DomainConvert.decodeMDNS(rawMessage, startIndex);
 	}
 
@@ -38,7 +38,7 @@ public class DnsRecordCNAME extends DnsRecord {
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
         return new String[]{ KEY_CNAME + ": " + name };
 	}
 

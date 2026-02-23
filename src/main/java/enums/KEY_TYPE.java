@@ -8,9 +8,9 @@ package enums;
 public enum KEY_TYPE {
 	DNS_ZONE_KEY((byte) 0x01), NOT_DNS_ZONE_KEY((byte) 0x00);
 
-	public byte code;
+	public final byte code;
 
-	private KEY_TYPE(byte code) {
+	KEY_TYPE(byte code) {
 		this.code = code;
 	}
 

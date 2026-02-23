@@ -6,11 +6,11 @@
 package enums;
 
 public enum QR {
-	REQUEST((boolean) false), REPLY((boolean) true);
+	REQUEST(false), REPLY(true);
 
-	public boolean code;
+	public final boolean code;
 
-	private QR(boolean code) {
+	QR(boolean code) {
 		this.code = code;
 	}
 

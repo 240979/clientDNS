@@ -11,10 +11,10 @@ public enum CACHE {
 
 	NO_FLUSH_CACHE(false, 0), FLUSH_CACHE(true, 32768);
 
-	public boolean code;
-	public int value;
+	public final boolean code;
+	public final int value;
 
-	private CACHE(boolean code, int value) {
+	CACHE(boolean code, int value) {
 		this.code = code;
 		this.value = value;
 	}

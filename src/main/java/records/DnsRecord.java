@@ -24,7 +24,7 @@ public class DnsRecord {
 		return new JSONObject();
 	}
 
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
 		return null;
 	}
 
@@ -36,7 +36,7 @@ public class DnsRecord {
 		return "";
 	}
 
-    // Has to be overided in the children
+    // Has to be overridden in the children
 	public String getDataAsString() {
 		return null;
 	}

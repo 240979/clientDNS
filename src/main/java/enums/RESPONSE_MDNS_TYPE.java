@@ -9,10 +9,10 @@ public enum RESPONSE_MDNS_TYPE {
 
 	RESPONSE_MULTICAST(false, 0), RESPONSE_UNICAST(true, 32768);
 
-	public boolean code;
-	public int value;
+	public final boolean code;
+	public final int value;
 
-	private RESPONSE_MDNS_TYPE(boolean code, int value) {
+	RESPONSE_MDNS_TYPE(boolean code, int value) {
 		this.code = code;
 		this.value = value;
 	}

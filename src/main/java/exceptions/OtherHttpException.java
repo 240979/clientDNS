@@ -5,7 +5,10 @@
  * */
 package exceptions;
 
+import java.io.Serial;
+
 public class OtherHttpException extends Exception {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public OtherHttpException() {

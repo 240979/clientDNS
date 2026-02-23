@@ -19,7 +19,7 @@ public class DnsRecordSOA extends DnsRecord {
 	private int refresh;
 	private int retry;
 	private int expire;
-	private int minimun;
+	private int minimum;
 
 	private static final String KEY_MNAME = "Domain";
 	private static final String KEY_RNAME = "Responsible";
@@ -61,7 +61,7 @@ public class DnsRecordSOA extends DnsRecord {
 
 		byte[] dataBytes4 = { rawMessage[currentIndex], rawMessage[currentIndex + 1], rawMessage[currentIndex + 2],
 				rawMessage[currentIndex + 3] };
-		minimun = ByteBuffer.wrap(dataBytes4).getInt();
+		minimum = ByteBuffer.wrap(dataBytes4).getInt();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -73,15 +73,15 @@ public class DnsRecordSOA extends DnsRecord {
 		object.put(KEY_REFRESH, refresh);
 		object.put(KEY_RETRY, retry);
 		object.put(KEY_EXPIRY, expire);
-		object.put(KEY_MINIMUM, minimun);
+		object.put(KEY_MINIMUM, minimum);
 		return object;
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
         return new String[]{ KEY_MNAME + ": " + mname, KEY_RNAME + ": " + rname, KEY_SERIAL + ": " + serial,
                 KEY_REFRESH + ": " + refresh, KEY_RETRY + ": " + retry, KEY_EXPIRY + ": " + expire,
-                KEY_MINIMUM + ": " + minimun };
+                KEY_MINIMUM + ": " + minimum};
 	}
 
 	@Override

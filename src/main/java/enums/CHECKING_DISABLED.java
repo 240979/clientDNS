@@ -6,11 +6,11 @@
 package enums;
 
 public enum CHECKING_DISABLED {
-	DATA_NOT_CHECKED((boolean) true), DATA_CHECKED((boolean) false);
+	DATA_NOT_CHECKED(true), DATA_CHECKED(false);
 
-	public boolean code;
+	public final boolean code;
 
-	private CHECKING_DISABLED(boolean code) {
+	CHECKING_DISABLED(boolean code) {
 		this.code = code;
 	}
 

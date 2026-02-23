@@ -8,12 +8,10 @@ package application;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import models.Ip;
 import models.Language;
 import models.LoggerInitializer;
@@ -21,11 +19,9 @@ import models.Settings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import ui.GeneralController;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class App extends Application {
 
@@ -53,7 +49,7 @@ public class App extends Application {
 			// detect screens and choose the right one, first option can be load from settings, second as fallback use primary screen
 			// to settings is saved hash of the screen and at the start of app all screens hash codes are compared if saved
 			// hash is equal to any screen
-			Screen screen = null;
+			Screen screen;
 			if (settings.getScreensHash().isEmpty()) {
 				screen = Screen.getPrimary();
 			} else {
@@ -66,7 +62,7 @@ public class App extends Application {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_STAGE_FXML_FILE),GeneralController.getLanguage().getLanguageBundle());
 			Stage newStage = new Stage();
 			newStage.getIcons().add(new Image(ICON_URI));
-			newStage.setScene(new Scene((Parent) loader.load()));
+			newStage.setScene(new Scene(loader.load()));
 			newStage.setTitle(GeneralController.APP_TITTLE + " " + GeneralController.APP_TITTLE);
 			// calculate coordinates to start app in the middle of screen
 			double minX = screen.getVisualBounds().getMinX();
@@ -80,7 +76,7 @@ public class App extends Application {
 			newStage.setX(x);
 			newStage.setY(y);
 			// pass objects
-			GeneralController controller = (GeneralController) loader.getController();
+			GeneralController controller = loader.getController();
 			controller.setSettings(settings);
 			controller.setLabels();
 			controller.setIpDns(ip);

@@ -6,11 +6,11 @@
 package enums;
 
 public enum RA {
-	RECURSION_AVAIBLE((boolean) true), RECURSION_NON_AVAIBLE((boolean) false);
+	RECURSION_AVAILABLE(true), RECURSION_NON_AVAILABLE(false);
 
-	public boolean code;
+	public final boolean code;
 
-	private RA(boolean code) {
+	RA(boolean code) {
 		this.code = code;
 	}
 

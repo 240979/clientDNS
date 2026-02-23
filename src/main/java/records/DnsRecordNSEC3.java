@@ -15,7 +15,7 @@ public class DnsRecordNSEC3 extends DnsRecordNSEC {
 	private DIGEST_TYPE hash;
 	private byte flags;
 	private UInt16 iteration;
-	private int saltLenght;
+	private int saltLength;
 	private String salt;
 	private int hashLength;
 	private String name;
@@ -23,8 +23,8 @@ public class DnsRecordNSEC3 extends DnsRecordNSEC {
 	private static final String KEY_FLAGS = "FLAGS";
 	private static final String KEY_ITERATION = "ITERATIONS";
 	private static final String KEY_SALT = "SALT";
-	private static final String KEY_SALT_LENGHT = "SALT_LENGHT";
-	private static final String KEY_HASH_LENGHT = "HASH_LENGHT";
+	private static final String KEY_SALT_LENGTH = "SALT_LENGTH";
+	private static final String KEY_HASH_LENGTH = "HASH_LENGTH";
 	private static final String KEY_NEXT_OWNER_HASH = "NEXT_DOMAIN_HASH";
 
 	public DnsRecordNSEC3(byte[] rawMessage, int length, int startIndex) {
@@ -41,18 +41,21 @@ public class DnsRecordNSEC3 extends DnsRecordNSEC {
 
 		iteration = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
 		currentIndex += 2;
-		saltLenght = (int) rawMessage[currentIndex];
+		saltLength = rawMessage[currentIndex];
 		currentIndex += 1;
-		for (int i = currentIndex; i < currentIndex + saltLenght; i++) {
-			salt += String.format("%02x", rawMessage[i]);
+		StringBuilder sb = new StringBuilder();
+		for (int i = currentIndex; i < currentIndex + saltLength; i++) {
+			sb.append(String.format("%02x", rawMessage[i]));
 		}
-
-		currentIndex += saltLenght;
-		hashLength = (int) rawMessage[currentIndex];
+		salt = sb.toString();
+		sb.setLength(0);
+		currentIndex += saltLength;
+		hashLength = rawMessage[currentIndex];
 		currentIndex += 1;
 		for (int i = currentIndex; i < currentIndex + hashLength; i++) {
-			name += String.format("%02x", rawMessage[i]);
+			sb.append(String.format("%02x", rawMessage[i]));
 		}
+		name = sb.toString();
 		currentIndex = currentIndex + hashLength;
 		parseTypeBits(currentIndex);
 
@@ -77,23 +80,23 @@ public class DnsRecordNSEC3 extends DnsRecordNSEC {
 		object.put(KEY_FLAGS, (int) flags);
 		object.put(KEY_ITERATION, iteration.getValue());
 		object.put(KEY_SALT, salt);
-		object.put(KEY_SALT_LENGHT, saltLenght);
-		object.put(KEY_HASH_LENGHT, hashLength);
+		object.put(KEY_SALT_LENGTH, saltLength);
+		object.put(KEY_HASH_LENGTH, hashLength);
 		object.put(KEY_NEXT_OWNER_HASH, name);
 		object.put(KEY_TYPE_BITS, recordsTypes);
 		return object;
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
 		String[] response = new String[recordsTypes.size() + 7];
 
 		response[0] = KEY_HASH_TYPE + ": " + hash;
 		response[1] = KEY_FLAGS + ": " + flags;
 		response[2] = KEY_ITERATION + ": " + iteration.getValue();
 		response[3] = KEY_SALT + ": " + salt;
-		response[4] = KEY_SALT_LENGHT + ": " + saltLenght;
-		response[5] = KEY_HASH_LENGHT + ": " + hashLength;
+		response[4] = KEY_SALT_LENGTH + ": " + saltLength;
+		response[5] = KEY_HASH_LENGTH + ": " + hashLength;
 		response[6] = KEY_NEXT_OWNER_HASH + ": " + name;
 		int i = 7;
 		for (Q_COUNT count : recordsTypes) {

@@ -6,11 +6,11 @@
 package enums;
 
 public enum AUTHENTICATE_DATA {
-	NON_AUTHENTICATED_ACCEPTED((boolean) true), NON_AUTHENTICATED_NOT_ACCEPTED((boolean) false);
+	NON_AUTHENTICATED_ACCEPTED(true), NON_AUTHENTICATED_NOT_ACCEPTED(false);
 
-	public boolean code;
+	public final boolean code;
 
-	private AUTHENTICATE_DATA(boolean code) {
+	AUTHENTICATE_DATA(boolean code) {
 		this.code = code;
 	}
 

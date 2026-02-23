@@ -7,11 +7,11 @@ package enums;
 
 public enum TC
 {
-    TRUNCATED((boolean) true), NON_TRUNCATED((boolean) false);
+    TRUNCATED(true), NON_TRUNCATED(false);
 
-    public boolean code;
+    public final boolean code;
 
-    private TC(boolean code)
+    TC(boolean code)
     {
         this.code = code;
     }

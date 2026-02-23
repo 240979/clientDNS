@@ -7,7 +7,7 @@ public enum C {
 
     NOT_CONFLICT(false), CONFLICT(true);
 
-    public boolean code;
+    public final boolean code;
 
     C(boolean code) {
         this.code = code;

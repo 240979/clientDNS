@@ -38,9 +38,11 @@ public class DnsRecordDNSKEY extends DnsRecord {
 		keyProtocol = KEY_PROTOCOL.getTypeByCode(rawMessage[startIndex + 2]);
 		dnssecAlgorithmType = DNSSEC_ALGORITHM_TYPE.getTypeByCode(rawMessage[startIndex + 3]);
 		int currentIndex = startIndex + 4;
+		StringBuilder sb = new StringBuilder();
 		for (int i = currentIndex; i < length; i++) {
-			key += String.format("%02x", rawMessage[i]);
+			sb.append(String.format("%02x", rawMessage[i]));
 		}
+		key = sb.toString();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -56,7 +58,7 @@ public class DnsRecordDNSKEY extends DnsRecord {
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
         return new String[]{ JSON_KEY_TYPE + ": " + keyType, JSON_KEY_USAGE + ": " + keyUsage,
                 JSON_KEY_PROTOCOL + ": " + keyProtocol, JSON_KEY_ALGORITHM_TYPE + ": " + dnssecAlgorithmType,
                 JSON_PUBLIC_KEY + ": " + key };

@@ -10,13 +10,9 @@ import models.UInt16;
 public enum Q_TYPE {
 	IN(1);
 
-	public UInt16 code;
+	public final UInt16 code;
 
-	private Q_TYPE(UInt16 code) {
-		this.code = code;
-	}
-
-	private Q_TYPE(int code) {
+	Q_TYPE(int code) {
 		this.code = new UInt16(code);
 	}
 

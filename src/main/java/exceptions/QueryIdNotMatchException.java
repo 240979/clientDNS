@@ -5,8 +5,11 @@
  * */
 package exceptions;
 
+import java.io.Serial;
+
 public class QueryIdNotMatchException extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public QueryIdNotMatchException() {

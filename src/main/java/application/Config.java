@@ -3,11 +3,8 @@ package application;
  * Author - Patricia Ramosova
  * Link - https://github.com/xramos00/DNS_client
  * */
-//import com.fasterxml.jackson.core.type.TypeReference;
-//import com.fasterxml.jackson.databind.ObjectMapper;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
-import com.sun.javafx.collections.NonIterableChange;
 import javafx.scene.input.KeyCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -68,26 +65,25 @@ public class Config {
         return Config.conf;
     }
 
-    @SuppressWarnings("unchecked")
     public static void loadConfiguration() throws ConfigurationException, IOException, ParseException {
         ObjectMapper objectMapper = new ObjectMapper();
         List<NameServer> rootNameServerList = objectMapper.readValue(
-                new File(Config.getConfProperties().getString(ROOTSERVERSDOMAINNAMES)), new TypeReference<List<NameServer>>() {
+                new File(Config.getConfProperties().getString(ROOTSERVERSDOMAINNAMES)), new TypeReference<>() {
                 });
         rootNameServerList.forEach(nameServer -> nameServer.setKeyCode(Config.keyCodeFromDomainName(nameServer.getDomainName())));
         Config.setRootNameServers(rootNameServerList);
 
         List<NameServer> nameServerList = objectMapper.readValue(
-                new File(Config.getConfProperties().getString(SERVERSDOMAINNAMES)), new TypeReference<List<NameServer>>() {
+                new File(Config.getConfProperties().getString(SERVERSDOMAINNAMES)), new TypeReference<>() {
                 });
         Config.setNameServers(nameServerList);
 
         LoadTestConfig loadTestConfig = objectMapper.readValue(
-                new File(Config.getConfProperties().getString(LOADTESTCONFIG)), new TypeReference<LoadTestConfig>() {
+                new File(Config.getConfProperties().getString(LOADTESTCONFIG)), new TypeReference<>() {
                 });
         Config.setLoadTestConfig(loadTestConfig);
         GeneralConfig generalConfig = objectMapper.readValue(
-                new File(Config.getConfProperties().getString(GENERALCONFIG)), new TypeReference<GeneralConfig>() {
+                new File(Config.getConfProperties().getString(GENERALCONFIG)), new TypeReference<>() {
                 });
         Config.setGeneralConfig(generalConfig);
 
@@ -99,7 +95,7 @@ public class Config {
     * */
     public static KeyCode keyCodeFromDomainName(String domain) {
         domain = domain.toUpperCase();
-        String parts[] = domain.split("\\.");
+        String[] parts = domain.split("\\.");
         if (Array.getLength(parts) > 0) {
             return KeyCode.getKeyCode(parts[0]);
         }

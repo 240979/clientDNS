@@ -11,13 +11,9 @@ public enum Q_COUNT {
 	A(1), AAAA(28), CNAME(5), DNSKEY(48), DS(43), PTR(12), SOA(6), MX(15), RRSIG(46), SIG(24), TXT(16), CAA(257),
 	CERT(37), OPT(41), NS(2), NSEC3(50), NSEC(47), NSEC3PARAM(51), ANY(255), SRV(33), CDS(59), CDNSKEY(60), SVCB(64), HTTPS (65);
 
-	public UInt16 code;
+	public final UInt16 code;
 
-	private Q_COUNT(UInt16 code) {
-		this.code = code;
-	}
-
-	private Q_COUNT(int code) {
+	Q_COUNT(int code) {
 		this.code = new UInt16(code);
 	}
 

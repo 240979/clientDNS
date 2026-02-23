@@ -51,7 +51,7 @@ public class DnsRecordA extends DnsRecord {
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
         return new String[]{ toString() };
 	}
 

@@ -8,6 +8,7 @@ import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import javafx.concurrent.Task;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -24,6 +25,7 @@ import java.util.logging.Logger;
  * Sequentially for each domain task is started after previous has finished
  * */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class TcpTester extends Task<Void> {
 
     private boolean recursion;

@@ -6,6 +6,8 @@
 package records;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+
 import org.json.simple.JSONObject;
 
 public class DnsRecordTXT extends DnsRecord {
@@ -25,8 +27,8 @@ public class DnsRecordTXT extends DnsRecord {
 			textByte[j] = rawMessage[i];
 			j++;
 		}
-		// haS TO BE REAPAIRED
-		stringText = new String(textByte, "UTF-8");
+		// Has to be repaired
+		stringText = new String(textByte, StandardCharsets.UTF_8);
 
 	}
 
@@ -44,7 +46,7 @@ public class DnsRecordTXT extends DnsRecord {
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
         return new String[]{ KEY_TEXT + ": " + stringText };
 	}
 

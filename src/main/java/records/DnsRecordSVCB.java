@@ -138,7 +138,7 @@ public class DnsRecordSVCB extends DnsRecord{
         return priority + " " + targetName + (alpn.isEmpty() ? "" : " [" + alpn + "]");
     }
     @Override
-    public String[] getValesForTreeItem() {
+    public String[] getValuesForTreeItem() {
         java.util.ArrayList<String> items = new java.util.ArrayList<>();
         items.add(KEY_PRIORITY + ": " + priority);
         items.add(KEY_TARGET + ": " + targetName);

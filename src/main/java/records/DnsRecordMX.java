@@ -33,7 +33,7 @@ public class DnsRecordMX extends DnsRecord {
 	@Override
 	public String getDataAsString() {
 
-		return ("" + priority.getValue() + "	" + nameServer);
+		return (priority.getValue() + "	" + nameServer);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -46,7 +46,7 @@ public class DnsRecordMX extends DnsRecord {
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
         return new String[]{ KEY_PRIORITY + ": " + priority.getValue(), KEY_MAIL_EXCHANGE + ": " + nameServer };
 	}
 

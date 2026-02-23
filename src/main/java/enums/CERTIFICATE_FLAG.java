@@ -8,9 +8,9 @@ package enums;
 public enum CERTIFICATE_FLAG {
 	ISSUER((byte) 0x80);
 
-	private byte code;
+	private final byte code;
 
-	private CERTIFICATE_FLAG(byte code) {
+	CERTIFICATE_FLAG(byte code) {
 		this.code = code;
 	}
 

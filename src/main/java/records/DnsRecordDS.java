@@ -36,9 +36,11 @@ public class DnsRecordDS extends DnsRecord {
 		currentIndex++;
 		digestType = DIGEST_TYPE.getTypeByCode(rawMessage[currentIndex]);
 		currentIndex++;
+		StringBuilder sb = new StringBuilder();
 		for (int i = currentIndex; i < startIndex + length; i++) {
-			hash += String.format("%02x", rawMessage[i]);
+			sb.append(String.format("%02x", rawMessage[i]));
 		}
+		hash = sb.toString();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -53,10 +55,9 @@ public class DnsRecordDS extends DnsRecord {
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
-		String[] pole = { KEY_TAG + ": " + keyTag.getValue(), KEY_ALGORITHM_TYPE + ": " + algorithmType,
-				KEY_DIGEST_TYPE + ": " + digestType, KEY_HASH + ": " + hash };
-		return pole;
+	public String[] getValuesForTreeItem() {
+        return new String[]{ KEY_TAG + ": " + keyTag.getValue(), KEY_ALGORITHM_TYPE + ": " + algorithmType,
+                KEY_DIGEST_TYPE + ": " + digestType, KEY_HASH + ": " + hash };
 	}
 
 	@Override

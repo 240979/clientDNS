@@ -6,11 +6,11 @@
 package enums;
 
 public enum AA {
-	AUTHORITATIVE((boolean) true), NON_AUTHORITATIVE((boolean) false);
+	AUTHORITATIVE(true), NON_AUTHORITATIVE(false);
 
-	public boolean code;
+	public final boolean code;
 
-	private AA(boolean code) {
+	AA(boolean code) {
 		this.code = code;
 	}
 

@@ -6,9 +6,9 @@
 package enums;
 
 public enum RD {
-	RECURSIVE((boolean) true), ITERATIVE((boolean) false);
+	RECURSIVE(true), ITERATIVE(false);
 
-	public boolean code;
+	public final boolean code;
 
 	private RD(boolean code) {
 		this.code = code;

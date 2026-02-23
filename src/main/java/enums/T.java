@@ -7,7 +7,7 @@ public enum T {
 
     NOT_TENTATIVE(false), TENTATIVE(true);
 
-    public boolean code;
+    public final boolean code;
 
     T(boolean code) {
         this.code = code;

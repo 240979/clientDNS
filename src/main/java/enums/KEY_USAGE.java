@@ -8,9 +8,9 @@ package enums;
 public enum KEY_USAGE {
 	KEY_SIGNING_KEY((byte) 0x01), NOT_KEY_SIGNING_KEY((byte) 0x00);
 
-	public byte code;
+	public final byte code;
 
-	private KEY_USAGE(byte code) {
+	KEY_USAGE(byte code) {
 		this.code = code;
 	}
 

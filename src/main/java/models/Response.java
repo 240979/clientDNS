@@ -240,7 +240,7 @@ public class Response {
 		if (qcount.code != Q_COUNT.OPT.code) {
 			main.getChildren().add(new TreeItem<>(TTL_KEY + ": " + ttl));
 			main.getChildren().add(new TreeItem<>(CLASS_KEY + ": " + qtype));
-			for (String item : rdata.getValesForTreeItem()) {
+			for (String item : rdata.getValuesForTreeItem()) {
 				main.getChildren().add(new TreeItem<>(item));
 			}
 		} else {

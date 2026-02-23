@@ -21,15 +21,15 @@ public class DnsRecordNSEC extends DnsRecord {
 	protected static final String KEY_TYPE_BIT = "RECORD_IN_DOMAIN";
 	protected static final String KEY_TYPE_BITS = "RECORDS_IN_DOMAIN";
 
-	public DnsRecordNSEC(byte[] rawMessage, int lenght, int startIndex) {
-		super(rawMessage, lenght, startIndex);
-		recordsTypes = new ArrayList<Q_COUNT>();
+	public DnsRecordNSEC(byte[] rawMessage, int length, int startIndex) {
+		super(rawMessage, length, startIndex);
+		recordsTypes = new ArrayList<>();
 		parseRecord();
 	}
 
 	public DnsRecordNSEC(byte[] rawMessage, int length, int startIndex, boolean nsec3) {
 		super(rawMessage, length, startIndex);
-		recordsTypes = new ArrayList<Q_COUNT>();
+		recordsTypes = new ArrayList<>();
 	}
 
 	private void parseRecord() {
@@ -46,15 +46,14 @@ public class DnsRecordNSEC extends DnsRecord {
 				currentIndex = parseBits(currentIndex + 1, 256);
 			}
 		}
-		// System.out.println(recordsTypes.toString());
 	}
 
 	protected int parseBits(int currentIndex, int startValue) {
-		int length = (int) rawMessage[currentIndex];
+		int length = rawMessage[currentIndex];
 		currentIndex++;
 		int value = startValue;
 		for (int i = currentIndex; i < currentIndex + (length); i++) {
-			boolean bits[] = DataTypesConverter.byteToBoolArr(rawMessage[i], 8);
+			boolean[] bits = DataTypesConverter.byteToBoolArr(rawMessage[i], 8);
 			for (int j = bits.length - 1; j >= 0; j--) {
 				if (bits[j]) {
 					recordsTypes.add(Q_COUNT.getTypeByCode(new UInt16(value)));
@@ -75,7 +74,7 @@ public class DnsRecordNSEC extends DnsRecord {
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
 		String[] response = new String[recordsTypes.size() + 1];
 
 		response[0] = (KEY_NAME + ": " + name);

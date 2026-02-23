@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 
 public class DnsRecordNS extends DnsRecordCNAME {
 
-	private static String KEY_NAMESERVER = "NameServer";
+	private static final String KEY_NAMESERVER = "NameServer";
 
 	public DnsRecordNS(byte[] rawMessage, int length, int startIndex) {
 		super(rawMessage, length, startIndex);
@@ -24,7 +24,7 @@ public class DnsRecordNS extends DnsRecordCNAME {
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
         return new String[]{ KEY_NAMESERVER + ": " + name, };
 	}
 

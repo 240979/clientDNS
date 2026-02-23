@@ -55,7 +55,7 @@ public class DnsRecordRRSIG extends DnsRecord {
 		algorithmType = DNSSEC_ALGORITHM_TYPE.getTypeByCode(rawMessage[currentIndex]);
 		currentIndex += 1;
 
-		label = (int) currentIndex;
+		label = currentIndex;
 		currentIndex += 1;
 
 		originalTTL = ByteBuffer.wrap(get4bytes(currentIndex)).getInt();
@@ -72,11 +72,11 @@ public class DnsRecordRRSIG extends DnsRecord {
 
 		name = DomainConvert.decodeDNS(rawMessage, currentIndex);
 		currentIndex = DomainConvert.getIndexOfLastByteOfName(rawMessage, currentIndex) + 1;
-
+		StringBuilder sb = new StringBuilder();
 		for (int i = currentIndex; i < startIndex + length; i++) {
-			signature += String.format("%02x", rawMessage[i]);
+			sb.append(String.format("%02x", rawMessage[i]));
 		}
-
+		signature = sb.toString();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -96,7 +96,7 @@ public class DnsRecordRRSIG extends DnsRecord {
 	}
 
 	@Override
-	public String[] getValesForTreeItem() {
+	public String[] getValuesForTreeItem() {
 		DateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
         return new String[]{ KEY_QCOUNT + ": " + qcount, KEY_ALGORITHM + ": " + algorithmType, KEY_LABEL + ": " + label,
                 KEY_TTL + ": " + originalTTL, KEY_EXPIRATION + ": " + dateFormat.format(signatureExpiration),
