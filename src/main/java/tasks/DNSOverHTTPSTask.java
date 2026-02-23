@@ -12,8 +12,8 @@ import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBu
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
-import org.apache.hc.core5.http.protocol.BasicHttpContext;
 import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.http.protocol.HttpCoreContext;
 import org.apache.hc.core5.http2.config.H2Config;
 import org.apache.hc.core5.reactor.IOReactorConfig;
 import org.apache.hc.core5.util.Timeout;
@@ -76,7 +76,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         String hostname = isDomainNameUsed ? serverDomainName + "/" + path : resolver + "/" + path;
         String uri;
         if(isReqJsonFormat){
-            uri = addParamsToUriAsJson(hostname, httpRequestParamsName, values);
+            uri = addParamsToUriAsJson(hostname, values);
         }else if (isGet){
             uri = addParamsToUriAsBase64Url(hostname);
         }else{
@@ -152,18 +152,14 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         TreeItem<String> item = new TreeItem<>();
         if (json instanceof JSONObject object) {
             item.setValue(name);
-            ((Set<Map.Entry>) object.entrySet()).forEach(entry -> {
-                String childName = (String) entry.getKey();
-                Object childJson = entry.getValue();
-                TreeItem<String> child = parseJSON(childName, childJson);
+            ((Set<Map.Entry<String, Object>>) object.entrySet()).forEach(entry -> {
+                TreeItem<String> child = parseJSON(entry.getKey(), entry.getValue());
                 item.getChildren().add(child);
             });
         } else if (json instanceof JSONArray array) {
             item.setValue(name);
             for (int i = 0; i < array.size(); i++) {
-                String childName = String.valueOf(i);
-                Object childJson = array.get(i);
-                TreeItem<String> child = parseJSON(childName, childJson);
+                TreeItem<String> child = parseJSON(String.valueOf(i), array.get(i));
                 item.getChildren().add(child);
             }
         } else {
@@ -172,7 +168,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         return item;
     }
 
-    private String addParamsToUriAsJson(String uri, String[] paramNames, String[] values) {
+    private String addParamsToUriAsJson(String uri, String[] values) {
         String[] split = uri.split("/");
         if (Ip.isIpv6Address(split[0])) {
             uri = "[" + split[0] + "]";
@@ -185,12 +181,12 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
                 .append("?");
         for (int i = 0; i < values.length; i++) {
             if (i == 0) {
-                sb.append(paramNames[i])
+                sb.append(DNSOverHTTPSTask.httpRequestParamsName[i])
                         .append("=")
                         .append(values[i]);
             } else {
                 sb.append("&")
-                        .append(paramNames[i])
+                        .append(DNSOverHTTPSTask.httpRequestParamsName[i])
                         .append("=")
                         .append(values[i]);
             }
@@ -267,7 +263,8 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
 
         httpRequestAsString(request);
 
-        HttpContext context = new BasicHttpContext();
+        // HttpContext context = new BasicHttpContext();
+        HttpContext context = HttpCoreContext.create();
         if (localAddress != null) {
             context.setAttribute("http.local-address", new InetSocketAddress(localAddress, 0));
         }

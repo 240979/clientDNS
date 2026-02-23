@@ -1,3 +1,7 @@
+/*
+   Created by 240979
+   This class is used for handling text area used for separate log window.
+ */
 package models;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;

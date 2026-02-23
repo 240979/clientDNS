@@ -38,6 +38,7 @@ public class DNSOverUDPTask extends DNSTaskBase{
     /*
     * Body of method taken from Martin Biolek thesis and modified
     * */
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void sendData() throws TimeoutException, MessageTooBigForUDPException, InterfaceDoesNotHaveIPAddressException, NotValidDomainNameException, NotValidIPException, UnsupportedEncodingException, InterruptedException, QueryIdNotMatchException, UnknownHostException {
         if (getSize() > MAX_UDP_SIZE){

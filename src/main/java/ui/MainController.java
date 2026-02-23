@@ -239,6 +239,11 @@ public class MainController extends GeneralController
 
     private void loadBackup(String prop){
         URL inputUrl = getClass().getResource(defaultFilePaths.get(prop));
+        if (inputUrl == null) {
+            showAlert("fileCopyError");
+            LOGGER.severe("Resource not found: " + defaultFilePaths.get(prop));
+            return;
+        }
         File dest = new File(defaultPropertyValues.get(prop));
         try {
             FileUtils.copyURLToFile(inputUrl, dest);

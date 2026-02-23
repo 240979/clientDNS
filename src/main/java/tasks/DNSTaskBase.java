@@ -42,6 +42,7 @@ import java.util.logging.Logger;
  */
 @Getter
 @Setter
+@SuppressWarnings("unchecked")
 public abstract class DNSTaskBase extends Task<Void> {
 
     protected Header header;
@@ -71,7 +72,6 @@ public abstract class DNSTaskBase extends Task<Void> {
     protected NetworkInterface interfaceToSend;
     protected boolean wasSend;
     protected ProgressBar progressBar;
-    public static final int MAX_MESSAGES_SENT = 3;
     public static final int TIME_OUT_MILLIS = 2000;
     public static final int MAX_UDP_SIZE = 1232;
     public static final int MDNS_PORT = 5353;
@@ -98,9 +98,6 @@ public abstract class DNSTaskBase extends Task<Void> {
     private SimpleIntegerProperty querySizeProperty = new SimpleIntegerProperty();
     private SimpleIntegerProperty responseSizeProperty = new SimpleIntegerProperty();
 
-    public int getQuerySizeProperty() {
-        return querySizeProperty.get();
-    }
 
     public SimpleIntegerProperty querySizeProperty() {
         return querySizeProperty;
@@ -110,9 +107,6 @@ public abstract class DNSTaskBase extends Task<Void> {
         this.querySizeProperty.set(querySizeProperty);
     }
 
-    public int getResponseSizeProperty() {
-        return responseSizeProperty.get();
-    }
 
     public SimpleIntegerProperty responseSizeProperty() {
         return responseSizeProperty;
@@ -128,10 +122,6 @@ public abstract class DNSTaskBase extends Task<Void> {
     private TreeItem<String> request;
     private TreeItem<String> response;
 
-    public int getMessagesSentProperty() {
-        return messagesSentProperty.get();
-    }
-
     public void setMessagesSentProperty(int messagesSentProperty) {
         this.messagesSentProperty.set(messagesSentProperty);
     }
@@ -140,9 +130,6 @@ public abstract class DNSTaskBase extends Task<Void> {
         return messagesSentProperty;
     }
 
-    public double getDurationProperty() {
-        return durationProperty.get();
-    }
 
     public void setDurationProperty(double durationProperty) {
         this.durationProperty.set(durationProperty);
@@ -215,7 +202,7 @@ public abstract class DNSTaskBase extends Task<Void> {
      */
     public static void terminateAllTcpConnections() {
         if (DNSTaskBase.tcp != null) {
-            DNSTaskBase.tcp.forEach((s, tcpConnection) -> {
+            DNSTaskBase.tcp.forEach((_, tcpConnection) -> {
                 try {
                     tcpConnection.closeAll();
                 } catch (IOException e) {
@@ -249,7 +236,7 @@ public abstract class DNSTaskBase extends Task<Void> {
         LOGGER.info("Resolver IP: " + connectionSettings.getResolverIP());
         this.receiveReply = new byte[1232];
         this.doFlag = requestSettings.isDoFlag();
-        this.adFlag = requestSettings.isAdFlag();;
+        this.adFlag = requestSettings.isAdFlag();
         this.qcountTypes = requestSettings.getTypes();
         this.domainAsString = requestSettings.getDomain();
         setMessagesSentProperty(0);
@@ -314,14 +301,14 @@ public abstract class DNSTaskBase extends Task<Void> {
         }
 
         byte[] head = header.getHeaderAsBytes();
-        for (int i = 0; i < head.length; i++) {
-            this.messageAsBytes[curentIndex] = head[i];
+        for (byte b : head) {
+            this.messageAsBytes[curentIndex] = b;
             curentIndex++;
         }
         for (Request r : requests) {
             byte[] requestBytes = r.getRequestAsBytes();
-            for (int i = 0; i < requestBytes.length; i++) {
-                this.messageAsBytes[curentIndex] = requestBytes[i];
+            for (byte requestByte : requestBytes) {
+                this.messageAsBytes[curentIndex] = requestByte;
                 curentIndex++;
             }
         }
@@ -344,26 +331,26 @@ public abstract class DNSTaskBase extends Task<Void> {
      * Method from Martin Biolek thesis
      * */
     public TreeItem<String> getAsTreeItem() {
-        root = new TreeItem<String>(KEY_REQUEST);
+        root = new TreeItem<>(KEY_REQUEST);
         root.getChildren().add(header.getAsTreeItem());
         addRequestToTreeItem(); //11111111
         // OPT in DNS
         if (doFlag && mdnsType == null) {
-            TreeItem<String> optRecord = new TreeItem<String>(MessageParser.KEY_ADDITIONAL_RECORDS);
+            TreeItem<String> optRecord = new TreeItem<>(MessageParser.KEY_ADDITIONAL_RECORDS);
             optRecord.getChildren().add(Response.getOptAsTreeItem(true, false));
             root.getChildren().add(optRecord);
         }
         if (mdnsType != null) {
-            TreeItem<String> optRecord = new TreeItem<String>(MessageParser.KEY_ADDITIONAL_RECORDS);
+            TreeItem<String> optRecord = new TreeItem<>(MessageParser.KEY_ADDITIONAL_RECORDS);
             if (doFlag){
                 optRecord.getChildren().add(Response.getOptAsTreeItem(doFlag, true));
                 root.getChildren().add(optRecord);
             }
         }
-         https://www.rfc-editor.org/rfc/rfc9250#section-4.2 -- DoQ, map exactly as TCP
+         // https://www.rfc-editor.org/rfc/rfc9250#section-4.2 -- DoQ, map exactly as TCP
         if (transport_protocol == TRANSPORT_PROTOCOL.TCP && application_protocol != APPLICATION_PROTOCOL.DOH || application_protocol == APPLICATION_PROTOCOL.DOQ) {
-            TreeItem<String> tcpTreeItem = new TreeItem<String>("");
-            tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGTH + ": " + (byteSizeQuery - 2)));
+            TreeItem<String> tcpTreeItem = new TreeItem<>("");
+            tcpTreeItem.getChildren().add(new TreeItem<>(KEY_LENGTH + ": " + (byteSizeQuery - 2)));
             tcpTreeItem.getChildren().add(root);
             return tcpTreeItem;
 
@@ -375,7 +362,7 @@ public abstract class DNSTaskBase extends Task<Void> {
      * Method from Martin Biolek thesis
      * */
     private void addRequestToTreeItem() {
-        TreeItem<String> subRequest = new TreeItem<String>(KEY_QUERY);
+        TreeItem<String> subRequest = new TreeItem<>(KEY_QUERY);
         if (!requests.isEmpty()) {
             for (Request request : requests) {
                 subRequest.getChildren().add(request.getAsTreeItem());

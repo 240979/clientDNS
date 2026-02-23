@@ -22,7 +22,7 @@ public class TCPConnection {
 	private InetAddress destinationIp;
 	private Socket socket;
 	private OutputStream outputStream;
-	private NetworkInterface netIntreface;
+	private NetworkInterface netInterface;
 	private InputStream inputStream;
 	private static final int DNS_PORT = 53;
 	private byte[] responseMessage;
@@ -36,8 +36,8 @@ public class TCPConnection {
 	public byte[] send(byte[] messagesAsBytes, InetAddress ip, boolean closeConnection, NetworkInterface netInterface)
 			throws TimeoutException, IndexOutOfBoundsException, IOException, CouldNotUseHoldConnectionException,
 			InterfaceDoesNotHaveIPAddressException {
-		this.netIntreface = netInterface;
-		System.out.println(socket==null?"empty socket slot":socket.toString());
+		this.netInterface = netInterface;
+		LOGGER.info("Socket:" + (socket==null ? "empty socket slot" : socket.toString()));
 		if (socket == null) {
 			connect();
 		}
@@ -50,17 +50,23 @@ public class TCPConnection {
 			socket = null;
 			connect();
 		}
-		sendAndRecieve(messagesAsBytes);
-		/*if (closeConnection)
-			closeAll();*/
+		try {
+			sendAndReceive(messagesAsBytes);
+		} catch (CouldNotUseHoldConnectionException e) {
+			// server closed the connection on its side, reconnect and retry once
+			connect();
+			sendAndReceive(messagesAsBytes);
+		}
+		if (closeConnection)
+			closeAll();
 		return responseMessage;
 	}
 
 	private void connect() throws IOException, InterfaceDoesNotHaveIPAddressException {
 		try {
-			System.out.println(netIntreface.getDisplayName());
+			LOGGER.info("Net Interface: " + netInterface.getDisplayName());
 			socket = new Socket(destinationIp, DNS_PORT,
-					Ip.getIpAddressFromInterface(netIntreface, destinationIp.getHostAddress()), 0);
+					Ip.getIpAddressFromInterface(netInterface, destinationIp.getHostAddress()), 0);
 			outputStream = socket.getOutputStream();
 			inputStream = socket.getInputStream();
 		} catch (IndexOutOfBoundsException e) {
@@ -70,7 +76,7 @@ public class TCPConnection {
 
 	public void closeAll() throws IOException {
 		if (socket.isConnected() || !socket.isClosed()) {
-			System.out.println("Closing sockets");
+			LOGGER.info("Closing sockets");
 			inputStream.close();
 			outputStream.close();
 			socket.close();
@@ -85,20 +91,20 @@ public class TCPConnection {
 		return socket.isClosed();
 	}
 
-	private void sendAndRecieve(byte[] messagesAsBytes)
+	private void sendAndReceive(byte[] messagesAsBytes)
 			throws CouldNotUseHoldConnectionException, TimeoutException, IOException {
 		try {
 			outputStream.write(messagesAsBytes);
 			// dns message has first two bytes which is the length of the rest of the
 			// message
-			byte[] sizeRicieve = inputStream.readNBytes(2);
+			byte[] sizeReceive = inputStream.readNBytes(2);
 
-			UInt16 messageSize = new UInt16().loadFromBytes(sizeRicieve[0], sizeRicieve[1]);
+			UInt16 messageSize = new UInt16().loadFromBytes(sizeReceive[0], sizeReceive[1]);
 			// based on size get the dns message itself
 			responseMessage = inputStream.readNBytes(messageSize.getValue());
 		} catch (ArrayIndexOutOfBoundsException e) {
 			//System.out.println(e.toString());
-			LOGGER.severe(ExceptionUtils.getStackTrace(e));
+			LOGGER.warning(ExceptionUtils.getStackTrace(e));
 			closeAll();
 			throw new CouldNotUseHoldConnectionException();
 		} catch (IOException e) {

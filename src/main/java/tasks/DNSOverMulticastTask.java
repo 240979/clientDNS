@@ -43,7 +43,7 @@ public class DNSOverMulticastTask extends DNSTaskBase {
         int curentIndex = 0;
         size += Response.getDnssecAsBytesMDNS(isDoFlag()).length;
         this.messageAsBytes = new byte[size];
-        byte head[] = header.getHeaderAsBytes();
+        byte[] head = header.getHeaderAsBytes();
         for (int i = 0; i < head.length; i++) {
             this.messageAsBytes[curentIndex] = head[i];
             curentIndex++;
@@ -69,7 +69,7 @@ public class DNSOverMulticastTask extends DNSTaskBase {
      * */
     @Override
     protected void addRequests(Q_COUNT[] types, String domain)
-            throws NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException {
+            throws NotValidIPException {
         for (Q_COUNT qcount : types) {
             Request r = new Request(domain, qcount,mdnsType);
             requests.add(r);

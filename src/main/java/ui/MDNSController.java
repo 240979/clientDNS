@@ -4,16 +4,11 @@ import enums.*;
 import exceptions.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+
+import lombok.extern.slf4j.Slf4j;
 import models.*;
 import tasks.DNSOverMulticastTask;
 
@@ -23,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+@Slf4j
 public class MDNSController extends GeneralController {
 
     public static final String FXML_FILE_NAME = "/fxml/MDNS_small.fxml";
@@ -34,10 +30,6 @@ public class MDNSController extends GeneralController {
     // text fields
     @FXML
     protected TextField domainNameTextField;
-    @FXML
-    protected RadioButton multicastRadioButton;
-    @FXML
-    protected RadioButton unicasttRadioButton;
     // checkboxes
     @FXML
     protected CheckBox aCheckBox;
@@ -63,7 +55,7 @@ public class MDNSController extends GeneralController {
     @FXML
     protected TitledPane responseTitledPane;
     @FXML
-    protected ComboBox<String> savedDomainNamesChoiseBox;
+    protected ComboBox<String> savedDomainNamesChoiceBox;
     @FXML
     protected TreeView<String> requestTreeView;
     @FXML
@@ -77,10 +69,6 @@ public class MDNSController extends GeneralController {
     // titledpane
     @FXML
     CheckBox checkingDisabledCheckBox;
-    @FXML
-    private VBox vboxRoot;
-    @FXML
-    private MenuItem deleteMDNSDomainNameHistory;
     // radio buttons
     @FXML
     private RadioButton ipv4RadioButton = new RadioButton();
@@ -97,8 +85,6 @@ public class MDNSController extends GeneralController {
     @FXML
     @Translation
     protected TitledPane multicastResponseTitledPane;
-    // toogleGroup
-    private ToggleGroup ipToggleGroup;
     private ToggleGroup multicastResponseToggleGroup;
 
     public MDNSController() {
@@ -125,17 +111,14 @@ public class MDNSController extends GeneralController {
     }
 
     public void initialize() {
-        //ipv4RadioButton = new RadioButton();
-        //ipv6RadioButton = new RadioButton();
         super.initialize();
-        ipToggleGroup = new ToggleGroup();
+        // toogleGroup
+        ToggleGroup ipToggleGroup = new ToggleGroup();
         IPv4RadioButton.setToggleGroup(ipToggleGroup);
         IPv6RadioButton.setToggleGroup(ipToggleGroup);
         ipv4RadioButton.setSelected(true);
 
         multicastResponseToggleGroup = new ToggleGroup();
-        //multicastResponseRadioButton = new RadioButton();
-        //unicastResponseRadioButton = new RadioButton();
         multicastResponseRadioButton.setUserData(RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
         unicastResponseRadioButton.setUserData(RESPONSE_MDNS_TYPE.RESPONSE_UNICAST);
         multicastResponseRadioButton.setToggleGroup(multicastResponseToggleGroup);
@@ -171,12 +154,12 @@ public class MDNSController extends GeneralController {
     }
 
     protected Q_COUNT[] getRecordTypes() throws MoreRecordsTypesWithPTRException, NonRecordSelectedException {
-        ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
+        ArrayList<Q_COUNT> list = new ArrayList<>();
         CheckBox[] checkBoxArray = {aCheckBox, aaaaCheckBox, ptrCheckBox, txtCheckBox, nsecCheckBox, srvCheckBox,
                 anyCheckBox};
-        for (int i = 0; i < checkBoxArray.length; i++) {
-            if (checkBoxArray[i].isSelected()) {
-                list.add((Q_COUNT) checkBoxArray[i].getUserData());
+        for (CheckBox checkBox : checkBoxArray) {
+            if (checkBox.isSelected()) {
+                list.add((Q_COUNT) checkBox.getUserData());
             }
         }
         if (list.contains(Q_COUNT.PTR) && list.size() > 1) {
@@ -223,21 +206,21 @@ public class MDNSController extends GeneralController {
     }
 
     @FXML
-    private void onDomainNameMDNSChoiseBoxFired(Event event) {
-        savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
-        savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesMDNS());
+    private void onDomainNameMDNSChoiceBoxFired() {
+        savedDomainNamesChoiceBox.getItems().removeAll(savedDomainNamesChoiceBox.getItems());
+        savedDomainNamesChoiceBox.getItems().addAll(settings.getDomainNamesMDNS());
     }
 
     public void loadDataFromSettings() {
-        savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesMDNS());
+        savedDomainNamesChoiceBox.getItems().addAll(settings.getDomainNamesMDNS());
     }
 
     @FXML
-    private void onDomainNameMDNSChoiseBoxAction(Event event) {
+    private void onDomainNameMDNSChoiceBoxAction() {
         try {
-            if (!savedDomainNamesChoiseBox.getValue().equals(null)
-                    && !savedDomainNamesChoiseBox.getValue().isEmpty()) {
-                domainNameTextField.setText(savedDomainNamesChoiseBox.getValue());
+            if (savedDomainNamesChoiceBox.getValue() != null
+                    && !savedDomainNamesChoiceBox.getValue().isEmpty()) {
+                domainNameTextField.setText(savedDomainNamesChoiceBox.getValue());
             }
         } catch (Exception e) {
             LOGGER.warning(e.toString());
@@ -245,39 +228,43 @@ public class MDNSController extends GeneralController {
     }
 
     @FXML
-    protected void czechSelected(ActionEvent event) {
+    protected void czechSelected() {
         language.changeLanguageBundle(true);
         setLabels();
     }
 
     @FXML
-    protected void englishSelected(ActionEvent event) {
+    protected void englishSelected() {
         language.changeLanguageBundle(false);
         setLabels();
     }
 
     private void logAction(Q_COUNT[] records, String domain, boolean dnssec, IP_PROTOCOL networkProtocol,
                            RESPONSE_MDNS_TYPE mdnsType) {
-        String res = "";
-        res += "Domain: " + domain + "\n";
-        res += "DNSSEC: " + dnssec + "\n";
-        res += "IP: " + networkProtocol.toString() + "\n";
-        res += "MDNS response: " + mdnsType.toString() + "\n";
-        res += "Records: \n";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Domain: ")
+                .append(domain)
+                .append("DNSSEC: ")
+                .append(dnssec)
+                .append("\n")
+                .append("IP: ")
+                .append(networkProtocol.toString())
+                .append("\n")
+                .append("MDNS response: ")
+                .append(mdnsType.toString())
+                .append("\n")
+                .append("Records: ")
+                .append("\n");
 
         for (Q_COUNT q_COUNT : records) {
-            res += "\t" + q_COUNT.toString() + "\n";
+            sb.append("\t")
+                    .append(q_COUNT.toString())
+                    .append("\n");
         }
-        LOGGER.info(res);
+        LOGGER.info(sb.toString());
 
     }
 
-    protected void showAllertStringContent(String content) {
-        Alert alert = new Alert(AlertType.ERROR, content);
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.initOwner((Stage) sendButton.getScene().getWindow());
-        alert.show();
-    }
 
     @Override
     protected String getDnsServerIp() {
@@ -298,8 +285,6 @@ public class MDNSController extends GeneralController {
             Q_COUNT[] records = getRecordTypes();
             String domain = getDomain();
             boolean multicast = unicastResponseRadioButton.isSelected();
-            boolean caFlag = checkingDisabledCheckBox.isSelected();
-            boolean adFlag = authenticateDataCheckBox.isSelected();
             boolean doFlag = DNSSECOkCheckBox.isSelected();
             RESPONSE_MDNS_TYPE mdnsType = (RESPONSE_MDNS_TYPE) multicastResponseToggleGroup.getSelectedToggle()
                     .getUserData();
@@ -317,11 +302,6 @@ public class MDNSController extends GeneralController {
                     .resolverIP(getDnsServerIp())
                     .netInterface(getInterface())
                     .build();
-            /*
-            task = new DNSOverMulticastTask(multicast, adFlag, caFlag, doFlag, getDomain(),
-                    records, TRANSPORT_PROTOCOL.UDP, APPLICATION_PROTOCOL.MDNS, getDnsServerIp(), getInterface(),
-                    IPv4RadioButton.isSelected(), (RESPONSE_MDNS_TYPE) multicastResponseToggleGroup.getSelectedToggle().getUserData());
-             */
             task = new DNSOverMulticastTask(rs, cs, multicast, IPv4RadioButton.isSelected(), (RESPONSE_MDNS_TYPE) multicastResponseToggleGroup.getSelectedToggle().getUserData());
             task.setController(this);
 
@@ -344,49 +324,20 @@ public class MDNSController extends GeneralController {
                 sendButton.setText(getButtonText());
                 progressBar.setProgress(0);
             });
-            //e.printStackTrace();
-            //String fullClassName = e.getClass().getSimpleName();
-            //showAlert(fullClassName);
             showAlert(e);
         } catch (Exception e) {
             Platform.runLater(()->{
                 sendButton.setText(getButtonText());
                 progressBar.setProgress(0);
             });
-            //LOGGER.warning(e.toString());
-            //showAlert("Exception");
+            LOGGER.warning("Catch-all triggered! ");
             showAlert(e);
         }
     }
-    /*
-    protected void setRequestAfterNotRieciveResponse() {
-        requestTreeView.setRoot(sender.getAsTreeItem());
-        queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
-                + sender.getByteSizeQuery() + " B)");
-        expandAll(requestTreeView);
-        responseTreeView.setRoot(null);
-        responseTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()));
-        copyRequestJsonButton.setDisable(false);
-        copyResponseJsonButton.setDisable(true);
-        responseTimeValueLabel.setText("0");
-    }
-    */
-    protected void copyDataToClipBoard(String data) {
-        final Clipboard clipboard = Clipboard.getSystemClipboard();
-        final ClipboardContent content = new ClipboardContent();
-        content.putString(data);
-        clipboard.setContent(content);
-    }
 
-    protected void informWindow(String textToShow) {
-        Alert alert = new Alert(AlertType.INFORMATION, textToShow);
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.initOwner((Stage) sendButton.getScene().getWindow());
-        alert.show();
-    }
 
     protected List<String> autobindingsStringsArray(String textToFind, List<String> arrayToCompare) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (String string : arrayToCompare) {
             if (string.contains(textToFind))
                 result.add(string);
@@ -395,45 +346,40 @@ public class MDNSController extends GeneralController {
         return result;
     }
 
-    protected void autobinging(String textFromField, List<String> fullArray, ComboBox<String> box) {
+    protected void autobinding(String textFromField, List<String> fullArray, ComboBox<String> box) {
         List<String> result = autobindingsStringsArray(textFromField, fullArray);
         if (result.isEmpty()) {
             box.hide();
             box.getItems().removeAll(box.getItems());
             box.getItems().addAll(settings.getDomainNamesDNS());
         } else {
-            box.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+            box.getItems().removeAll(savedDomainNamesChoiceBox.getItems());
             box.getItems().setAll(result);
             box.show();
         }
     }
 
     @FXML
-    private void deleteMDNSDomainNameHistoryFired(Event event) {
+    private void deleteMDNSDomainNameHistoryFired() {
         settings.eraseMDNSDomainNames();
-        savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+        savedDomainNamesChoiceBox.getItems().removeAll(savedDomainNamesChoiceBox.getItems());
     }
 
     @FXML
-    protected void expandAllRequestOnClick(Event event) {
+    protected void expandAllRequestOnClick() {
         expandAll(requestTreeView);
     }
 
     @FXML
-    protected void expandAllResponseOnClick(Event event) {
+    protected void expandAllResponseOnClick() {
         expandAll(responseTreeView);
     }
 
     @FXML
     private void domainNameKeyPressed(KeyEvent event) {
         controlKeys(event, domainNameTextField);
-        autobinging(domainNameTextField.getText(), settings.getDomainNamesMDNS(), savedDomainNamesChoiseBox);
+        autobinding(domainNameTextField.getText(), settings.getDomainNamesMDNS(), savedDomainNamesChoiceBox);
     }
-    /*
-     * @FXML private void treeViewclicked(Event event) {
-     *
-     * }
-     */
 
     protected void controlKeys(KeyEvent e, TextField text) {
         byte b = e.getCharacter().getBytes()[0];
@@ -466,8 +412,8 @@ public class MDNSController extends GeneralController {
     }
 
     @FXML
-    private void deleteDomainNameHistoryFired(Event event) {
+    private void deleteDomainNameHistoryFired() {
         settings.eraseMDNSDomainNames();
-        savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+        savedDomainNamesChoiceBox.getItems().removeAll(savedDomainNamesChoiceBox.getItems());
     }
 }

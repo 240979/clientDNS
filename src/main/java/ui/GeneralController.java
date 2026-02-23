@@ -533,6 +533,7 @@ public abstract class GeneralController {
     }
 
     @FXML
+    @SuppressWarnings("unchecked")
     protected void treeViewClicked(MouseEvent event)
     {
         if (event.getClickCount() == 2)

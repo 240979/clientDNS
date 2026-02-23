@@ -20,7 +20,7 @@ import tasks.runnables.RequestResultsUpdateRunnable;
 public class DNSOverTCPTask extends DNSTaskBase {
 
 	protected boolean holdConnection;
-
+	@SuppressWarnings("ConstantConditions")
 	public DNSOverTCPTask(RequestSettings requestSettings, ConnectionSettings connectionSettings) throws IOException, NotValidDomainNameException, NotValidIPException {
 		super(requestSettings, connectionSettings, null);
 		this.holdConnection = connectionSettings.isHoldConnection();
@@ -36,6 +36,7 @@ public class DNSOverTCPTask extends DNSTaskBase {
 	/*
 	 * Body of method taken from Martin Biolek thesis and modified
 	 * */
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	protected void sendData() throws TimeoutException, NotValidDomainNameException, NotValidIPException, UnsupportedEncodingException, InterruptedException, QueryIdNotMatchException, UnknownHostException {
 		try {

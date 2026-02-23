@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @Data
+@SuppressWarnings("unchecked")
 public class TesterController extends GeneralController {
 
     public static final String FXML_FILE_NAME = "/fxml/Tester.fxml";
@@ -337,7 +338,7 @@ public class TesterController extends GeneralController {
 
         numberOfRequests.textProperty().addListener((_, oldValue, newValue) -> {
             try{
-                if (!numberOfRequests.equals("") && Long.parseLong(newValue) <= 1000000 && Long.parseLong(newValue) > 0) {
+                if (!numberOfRequests.getText().isEmpty() && Long.parseLong(newValue) <= 1000000 && Long.parseLong(newValue) > 0) {
                     numberOfRequests.setText(newValue);
                 } else {
                     numberOfRequests.setText(oldValue);
@@ -348,7 +349,7 @@ public class TesterController extends GeneralController {
         });
         cooldownTextField.textProperty().addListener((_, oldValue, newValue) -> {
             try{
-                if (!cooldownTextField.equals("") && Long.parseLong(newValue) <= 1000000 && Long.parseLong(newValue) >= 10) {
+                if (!cooldownTextField.getText().isEmpty() && Long.parseLong(newValue) <= 1000000 && Long.parseLong(newValue) >= 10) {
                     cooldownTextField.setText(newValue);
                 } else {
                     cooldownTextField.setText(oldValue);
@@ -582,6 +583,7 @@ public class TesterController extends GeneralController {
                 sendButton.setText(getButtonText());
                 progressBar.setProgress(0);
             });
+            LOGGER.warning("Catch-all triggered!");
             showAlert(e);
         }
     }

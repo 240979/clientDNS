@@ -83,10 +83,10 @@ public DNSOverLinkLocal(RequestSettings requestSettings, ConnectionSettings conn
                     throw new InterruptedException();
                 }
                 if (getMessagesSent() < 3) {
-                    setMessagesSent(getMessagesSent()+1);;
+                    setMessagesSent(getMessagesSent()+1);
                     updateProgressUI();
                 } else {
-                    setMessagesSent(getMessagesSent());;
+                    setMessagesSent(getMessagesSent());
                     stopTime = System.nanoTime();
                     setStopTime(stopTime);
                     setDuration(9999);

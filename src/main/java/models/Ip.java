@@ -55,9 +55,10 @@ public class Ip {
 	private void parseDnsServersIp() throws IOException {
 		Process process;
         if(IS_WINDOWS){
-            process = Runtime.getRuntime().exec(PS_COMMAND);
+            // process = Runtime.getRuntime().exec(PS_COMMAND);
+			process = new ProcessBuilder(PS_COMMAND.split(" ")).start();
         } else {
-            process = Runtime.getRuntime().exec(BASH_COMMAND);
+			process = new ProcessBuilder(BASH_COMMAND).start();
         }
 		process.getOutputStream().close();
         try (BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -73,14 +74,14 @@ public class Ip {
         } // Auto-closes stdout with try-with-resources
 	}
 
-	public static String getIpV6OfDomainName(String domainName) throws UnknownHostException
-	{
+	public static String getIpV6OfDomainName(String domainName) throws UnknownHostException {
 		InetAddress[] addresses = InetAddress.getAllByName(domainName);
-		if (returnFirstInet6Address(addresses) == null)
+		InetAddress address = returnFirstInet6Address(addresses);
+		if (address == null)
 		{
 			return null;
 		}
-		return returnFirstInet6Address(addresses).getHostAddress();
+		return address.getHostAddress();
 	}
 
 	private static Inet6Address returnFirstInet6Address(InetAddress[] addresses)
@@ -98,11 +99,12 @@ public class Ip {
 	public static String getIpV4OfDomainName(String domainName) throws UnknownHostException
 	{
 		InetAddress[] addresses = InetAddress.getAllByName(domainName);
-		if (returnFirstInet4Address(addresses) == null)
+		InetAddress address = returnFirstInet4Address(addresses);
+		if (address == null)
 		{
 			return null;
 		}
-		return returnFirstInet4Address(addresses).getHostAddress();
+		return address.getHostAddress();
 	}
 
 	private static InetAddress returnFirstInet4Address(InetAddress[] addresses)
@@ -169,9 +171,9 @@ public class Ip {
 
 	public static InetAddress getIpAddressFromInterface(NetworkInterface interfaceToSend, String resolverIP)
 			throws InterfaceDoesNotHaveIPAddressException {
-		//ArrayList<InterfaceAddress> ipAdrresses = (ArrayList<InterfaceAddress>) interfaceToSend.getInterfaceAddresses();
-		List<InterfaceAddress> ipAdrresses = interfaceToSend.getInterfaceAddresses();
-		for (InterfaceAddress sourceIp : ipAdrresses) {
+		//ArrayList<InterfaceAddress> ipAddresses = (ArrayList<InterfaceAddress>) interfaceToSend.getInterfaceAddresses();
+		List<InterfaceAddress> ipAddresses = interfaceToSend.getInterfaceAddresses();
+		for (InterfaceAddress sourceIp : ipAddresses) {
 			String sourceIpString = sourceIp.getAddress().getHostAddress();
 			//System.out.println("IP addr: " + sourceIp.getAddress());
 			if (Ip.isIpv6Address(resolverIP) && Ip.isIpv6Address(sourceIpString)) {
