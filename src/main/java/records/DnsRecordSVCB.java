@@ -114,8 +114,9 @@ public class DnsRecordSVCB extends DnsRecord{
                     if (i > offset) sb.append(", ");
                     for (int j = 0; j < 16; j += 2) {
                         if (j > 0) sb.append(":");
-                        sb.append(String.format("%02x%02x",
-                                rawMessage[i+j] & 0xFF, rawMessage[i+j+1] & 0xFF));
+                        int value = ((rawMessage[i+j] & 0xFF) << 8)
+                                | (rawMessage[i+j+1] & 0xFF);
+                        sb.append(Integer.toHexString(value));
                     }
                 }
                 ipv6hint = sb.toString();
