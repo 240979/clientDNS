@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
@@ -70,6 +71,12 @@ public class NameServerVBox extends VBox {
                 ((IPToggleButton)IPv6ToggleButtonsHBox.getChildren().getFirst()).setSelected(true);
             }
         });
+        IPv4radioButton.setWrapText(true);
+        IPv4radioButton.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(IPv4radioButton, Priority.ALWAYS);
+        IPv6radioButton.setWrapText(true);
+        IPv6radioButton.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(IPv6radioButton, Priority.ALWAYS);
         addressGroup = new ToggleGroup();
         // assign IPv4/6 radio buttons to same toggle group
         IPv4radioButton.setToggleGroup(toggleGroup);
@@ -92,6 +99,8 @@ public class NameServerVBox extends VBox {
         copyIPv4Btn.opacityProperty().bind(
                 Bindings.when(IPv4radioButton.selectedProperty()).then(1.0).otherwise(0.3)
         );
+        HBox.setHgrow(copyIPv4Btn, Priority.NEVER);
+        copyIPv4Btn.setAlignment(Pos.TOP_RIGHT);
         IPv4HBox.getChildren().addAll(IPv4radioButton, copyIPv4Btn);
         // Same procedure for IPv6
         StackPane copyIPv6Btn = getIpv6CopyBtnStackPane(controller);
@@ -99,6 +108,8 @@ public class NameServerVBox extends VBox {
         copyIPv6Btn.opacityProperty().bind(
                 Bindings.when(IPv6radioButton.selectedProperty()).then(1.0).otherwise(0.3)
         );
+        HBox.setHgrow(copyIPv6Btn, Priority.NEVER);
+        copyIPv6Btn.setAlignment(Pos.TOP_RIGHT);
         IPv6HBox.getChildren().addAll(IPv6radioButton, copyIPv6Btn);
 
         // create buttons and toggle groups for every IP
