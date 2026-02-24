@@ -6,6 +6,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.hc.client5.http.async.methods.*;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
@@ -265,7 +266,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
 
         // HttpContext context = new BasicHttpContext();
         HttpContext context = HttpCoreContext.create();
-        if (localAddress != null) {
+        if (localAddress != null && !isDomainNameUsed) {
             context.setAttribute("http.local-address", new InetSocketAddress(localAddress, 0));
         }
 
@@ -280,14 +281,17 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
 
         PoolingAsyncClientConnectionManager connectionManager = PoolingAsyncClientConnectionManagerBuilder.create()
                 .build();
-
-        httpClient = HttpAsyncClients.custom()
+        HttpAsyncClientBuilder builder = HttpAsyncClients.custom()
                 .setConnectionManager(connectionManager)
                 .setIOReactorConfig(ioReactorConfig)
                 .setDefaultRequestConfig(getRequestConfig())
-                .setH2Config(h2Config)
-                .setRoutePlanner(new LocalAddressRoutePlanner(localAddress))
-                .build();
+                .setH2Config(h2Config);
+        if (!isDomainNameUsed) {
+            // This should let the app decide the net interface if the URI is used
+            // or if IP is used it should plan the route through selected net interface
+            builder.setRoutePlanner(new LocalAddressRoutePlanner(localAddress));
+        }
+        httpClient = builder.build();
 
         httpClient.start();
 
