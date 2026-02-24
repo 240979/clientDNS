@@ -23,12 +23,14 @@ import lombok.Getter;
 import lombok.Setter;
 import models.ConnectionSettings;
 import models.DoTClientInitializer;
+import models.Ip;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.runnables.RequestResultsUpdateRunnable;
 
 import javax.net.ssl.SSLException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -57,7 +59,7 @@ public class DNSOverTLS extends DNSTaskBase{
     }
 
     @Override
-    protected void sendData() throws TimeoutException, SSLException, InterruptedException {
+    protected void sendData() throws TimeoutException, SSLException, InterruptedException, InterfaceDoesNotHaveIPAddressException {
         setStartTime(System.nanoTime());
         OpenSsl.ensureAvailability();
         String target = useResolverDomainName ? resolverDomainName : resolver;
@@ -91,7 +93,10 @@ public class DNSOverTLS extends DNSTaskBase{
                     }
                 })
                 .handler(new DoTClientInitializer(sslCtx, target, this));
-
+        if(!useResolverDomainName){
+            InetSocketAddress localAddress = new InetSocketAddress(Ip.getIpAddressFromInterface(interfaceToSend, resolver), 0);
+            bootstrap.localAddress(localAddress);
+        }
         channel = bootstrap.connect(target, 853).sync().channel();
         channel.config().setConnectTimeoutMillis(3000);
         channel.writeAndFlush(Unpooled.wrappedBuffer(getMessageAsBytes())).sync();

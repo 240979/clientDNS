@@ -60,7 +60,14 @@ public class DnsDotTask extends DNSOverTLS {
                 updateResultUI();
                 Platform.runLater(()->((TesterController) controller).getResultsTableView().refresh());
                 Thread.sleep(cooldown);
-                } catch (NotValidIPException | UnsupportedEncodingException | NotValidDomainNameException | TimeoutException | SSLException | QueryIdNotMatchException | UnknownHostException e){
+                } catch (NotValidIPException
+                         | UnsupportedEncodingException
+                         | NotValidDomainNameException
+                         | TimeoutException
+                         | SSLException
+                         | QueryIdNotMatchException
+                         | UnknownHostException
+                         | InterfaceDoesNotHaveIPAddressException e){
                     result.getExceptions().add(e);
                     result.getSuccess().add(false);
                 }
