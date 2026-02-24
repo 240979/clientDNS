@@ -171,21 +171,31 @@ public class Ip {
 
 	public static InetAddress getIpAddressFromInterface(NetworkInterface interfaceToSend, String resolverIP)
 			throws InterfaceDoesNotHaveIPAddressException {
-		//ArrayList<InterfaceAddress> ipAddresses = (ArrayList<InterfaceAddress>) interfaceToSend.getInterfaceAddresses();
+
 		List<InterfaceAddress> ipAddresses = interfaceToSend.getInterfaceAddresses();
-		LOGGER.info("Available IP addresses: ");
+		LOGGER.info("Available IP addresses: " + ipAddresses.toString());
+		InetAddress fallbackLLA = null;
+
 		for (InterfaceAddress sourceIp : ipAddresses) {
 			String sourceIpString = sourceIp.getAddress().getHostAddress();
-			LOGGER.info(sourceIpString);
-			//System.out.println("IP addr: " + sourceIp.getAddress());
+			LOGGER.info("Current address:" + sourceIpString);
 			if (Ip.isIpv6Address(resolverIP) && Ip.isIpv6Address(sourceIpString)) {
-				LOGGER.info("Selected address: " + sourceIp.getAddress());
-				return sourceIp.getAddress();
+				if (sourceIp.getAddress().isLinkLocalAddress()) {
+					LOGGER.info("Found link-local fallback: " + sourceIpString);
+					fallbackLLA = sourceIp.getAddress();
+				} else {
+					LOGGER.info("Selected address: " + sourceIpString);
+					return sourceIp.getAddress();
+				}
 			}
 			if (Ip.isIPv4Address(resolverIP) && Ip.isIPv4Address(sourceIpString)) {
-				LOGGER.info("Selected address: " + sourceIp.getAddress());
+				LOGGER.info("Selected address: " + sourceIpString);
 				return sourceIp.getAddress();
 			}
+		}
+		if (fallbackLLA != null) {
+			LOGGER.info("No global IPv6 address found, falling back to link-local: " + fallbackLLA.getHostAddress());
+			return fallbackLLA;
 		}
 		throw new InterfaceDoesNotHaveIPAddressException();
 	}
