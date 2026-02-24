@@ -157,7 +157,7 @@ public class Ip {
 	public static boolean isIpValid(String stringAddress) {
 		boolean a = Ip.isIPv4Address(stringAddress);
 		boolean b = Ip.isIpv6Address(stringAddress);
-		LOGGER.info("is IP :" + stringAddress + "valid-> " + ((a || b)));
+		LOGGER.info("Is IP: " + stringAddress + " valid-> " + ((a || b)));
 		return (a || b);
 	}
 
@@ -173,13 +173,17 @@ public class Ip {
 			throws InterfaceDoesNotHaveIPAddressException {
 		//ArrayList<InterfaceAddress> ipAddresses = (ArrayList<InterfaceAddress>) interfaceToSend.getInterfaceAddresses();
 		List<InterfaceAddress> ipAddresses = interfaceToSend.getInterfaceAddresses();
+		LOGGER.info("Available IP addresses: ");
 		for (InterfaceAddress sourceIp : ipAddresses) {
 			String sourceIpString = sourceIp.getAddress().getHostAddress();
+			LOGGER.info(sourceIpString);
 			//System.out.println("IP addr: " + sourceIp.getAddress());
 			if (Ip.isIpv6Address(resolverIP) && Ip.isIpv6Address(sourceIpString)) {
+				LOGGER.info("Selected address: " + sourceIp.getAddress());
 				return sourceIp.getAddress();
 			}
 			if (Ip.isIPv4Address(resolverIP) && Ip.isIPv4Address(sourceIpString)) {
+				LOGGER.info("Selected address: " + sourceIp.getAddress());
 				return sourceIp.getAddress();
 			}
 		}
