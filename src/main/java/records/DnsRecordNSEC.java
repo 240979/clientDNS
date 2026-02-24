@@ -6,6 +6,7 @@
 package records;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.json.simple.JSONObject;
 
@@ -61,6 +62,7 @@ public class DnsRecordNSEC extends DnsRecord {
 				value++;
 			}
 		}
+		recordsTypes.removeAll(Collections.singleton(null));
 		return currentIndex + length;
 	}
 
@@ -80,7 +82,8 @@ public class DnsRecordNSEC extends DnsRecord {
 		response[0] = (KEY_NAME + ": " + name);
 		int i = 1;
 		for (Q_COUNT count : recordsTypes) {
-			response[i] = (KEY_TYPE_BIT + ": " + count.toString());
+			if(count == null) response[i] = (KEY_TYPE_BIT + ": null");
+			else response[i] = (KEY_TYPE_BIT + ": " + count);
 			i++;
 		}
 		return response;
@@ -90,5 +93,6 @@ public class DnsRecordNSEC extends DnsRecord {
 	public String getDataForTreeViewName() {
 		return name + " ...";
 	}
+
 
 }
