@@ -168,7 +168,7 @@ public class DNSOverMulticastTask extends DNSTaskBase {
                         setMessagesSent(getMessagesSent());
                         stopTime = System.nanoTime();
                         setStopTime(stopTime);
-                        setDuration(9999);
+                        setDuration(0);
                         updateProgressUI();
                         throw new TimeoutException();
                     }

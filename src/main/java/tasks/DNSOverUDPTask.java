@@ -104,7 +104,7 @@ public class DNSOverUDPTask extends DNSTaskBase{
             if (timeout)
             {
                 timeout = false;
-                setDuration(9999);
+                setDuration(0);
             }
             else
             {
