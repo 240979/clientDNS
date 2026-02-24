@@ -71,7 +71,6 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
             IOException, InterruptedException, ParseException, HttpCodeException, OtherHttpException,
             NotValidDomainNameException, NotValidIPException, QueryIdNotMatchException, ExecutionException {
 
-        String httpsDomain = resolver;
         String[] values = new String[]{domainAsString, qcountAsString(), "" + doFlag, "" + cdFlag};
         setMessagesSent(1);
         String hostname = isDomainNameUsed ? serverDomainName + "/" + path : resolver + "/" + path;
@@ -83,9 +82,9 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         }else{
             uri = createUri(hostname);
         }
+        if (!isDomainNameUsed) determineLocalAddress(resolver);
         updateProgressUI();
-
-        SimpleHttpResponse response = sendAndReceiveDoH(uri, httpsDomain, isGet, isReqJsonFormat);
+        SimpleHttpResponse response = sendAndReceiveDoH(uri, isGet, isReqJsonFormat);
         setDuration(calculateDuration());
         this.responseCode = response.getCode();
         if (response.getCode() == 200 && isReqJsonFormat) {
@@ -237,11 +236,9 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         return sb.toString();
     }
 
-    private SimpleHttpResponse sendAndReceiveDoH(String uri, String host, boolean httpGet, boolean isJson)
+    private SimpleHttpResponse sendAndReceiveDoH(String uri, boolean httpGet, boolean isJson)
             throws IOException, InterfaceDoesNotHaveIPAddressException, InterruptedException, ExecutionException {
         LOGGER.info("URI used: " + uri);
-        determineLocalAddress(host);
-
         SimpleHttpRequest request;
         if (httpGet) {
             request = SimpleRequestBuilder.get(uri).build();
@@ -252,19 +249,12 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
             }
         }
 
-
         if (isJson) request.addHeader("Accept", "application/dns-json");
         else request.addHeader("Accept", "application/dns-message");
         request.addHeader("Accept-Encoding", "gzip, deflate, br");
         request.addHeader("User-Agent", "Client-DNS");
-
-        if (!Ip.isIpValid(host)) {
-            request.addHeader("Host", host);
-        }
-
         httpRequestAsString(request);
 
-        // HttpContext context = new BasicHttpContext();
         HttpContext context = HttpCoreContext.create();
         if (localAddress != null && !isDomainNameUsed) {
             context.setAttribute("http.local-address", new InetSocketAddress(localAddress, 0));
