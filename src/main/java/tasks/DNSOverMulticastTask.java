@@ -15,6 +15,9 @@ import tasks.runnables.RequestResultsUpdateRunnable;
 
 import java.io.UnsupportedEncodingException;
 import java.net.*;
+
+import static java.lang.Double.NaN;
+
 /**
  * Class representing protocol multicast DNS
  */
@@ -168,7 +171,7 @@ public class DNSOverMulticastTask extends DNSTaskBase {
                         setMessagesSent(getMessagesSent());
                         stopTime = System.nanoTime();
                         setStopTime(stopTime);
-                        setDuration(0);
+                        setDuration(NaN);
                         updateProgressUI();
                         throw new TimeoutException();
                     }

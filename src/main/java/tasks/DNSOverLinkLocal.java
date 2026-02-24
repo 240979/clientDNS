@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 
+import static java.lang.Double.NaN;
+
 /**
  * Class representing protocol Link-Local Multicast Name Resolution
  */
@@ -89,7 +91,7 @@ public DNSOverLinkLocal(RequestSettings requestSettings, ConnectionSettings conn
                     setMessagesSent(getMessagesSent());
                     stopTime = System.nanoTime();
                     setStopTime(stopTime);
-                    setDuration(0);
+                    setDuration(NaN);
                     updateProgressUI();
                     if (socket!= null){
                         socket.close();

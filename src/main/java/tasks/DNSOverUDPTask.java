@@ -21,6 +21,8 @@ import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 
+import static java.lang.Double.NaN;
+
 /**
  * Class representing protocol DNS using UDP connection
  */
@@ -104,7 +106,7 @@ public class DNSOverUDPTask extends DNSTaskBase{
             if (timeout)
             {
                 timeout = false;
-                setDuration(0);
+                setDuration(NaN);
             }
             else
             {
