@@ -68,7 +68,8 @@ public class DNSOverQUICTask  extends DNSTaskBase{
                 .build();
 
         EventLoopGroup group = new NioEventLoopGroup();
-        InetSocketAddress localAddress = new InetSocketAddress(Ip.getIpAddressFromInterface(interfaceToSend, resolver), 0);
+        // 0 should automatically choose
+        InetSocketAddress localAddress = useResolverDomainName ? new InetSocketAddress(0) : new InetSocketAddress(Ip.getIpAddressFromInterface(interfaceToSend, resolver), 0);
         ChannelHandler codec = new QuicClientCodecBuilder()
                 .sslContext(context)
                 .maxIdleTimeout(5, TimeUnit.SECONDS) // https://github.com/netty/netty-incubator-codec-quic/blob/main/codec-native-quic/src/test/java/io/netty/incubator/codec/quic/example/QuicClientExample.java
