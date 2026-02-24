@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class RequestResultsUpdateRunnable implements Runnable {
 
-    DNSTaskBase dnsTaskBase = null;
+    DNSTaskBase dnsTaskBase;
     protected Logger LOGGER = Logger.getLogger(RequestResultsUpdateRunnable.class.getName());
 
     public RequestResultsUpdateRunnable(DNSTaskBase dnsTaskBase)
@@ -24,7 +24,7 @@ public class RequestResultsUpdateRunnable implements Runnable {
 
     protected void expandAll(TreeItem<String> t) {
         try {
-            if(t.getChildren().size() == 0)
+            if(t.getChildren().isEmpty())
             {
                 t.setExpanded(true);
                 return;
