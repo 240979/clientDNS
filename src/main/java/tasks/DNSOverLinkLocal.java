@@ -91,7 +91,7 @@ public DNSOverLinkLocal(RequestSettings requestSettings, ConnectionSettings conn
                     setMessagesSent(getMessagesSent());
                     stopTime = System.nanoTime();
                     setStopTime(stopTime);
-                    setDuration(NaN);
+                    setDuration(0);
                     updateProgressUI();
                     if (socket!= null){
                         socket.close();
