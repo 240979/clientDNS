@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 
-import static java.lang.Double.NaN;
-
 /**
  * Class representing protocol Link-Local Multicast Name Resolution
  */

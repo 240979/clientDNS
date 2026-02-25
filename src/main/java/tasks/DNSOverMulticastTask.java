@@ -16,8 +16,6 @@ import tasks.runnables.RequestResultsUpdateRunnable;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 
-import static java.lang.Double.NaN;
-
 /**
  * Class representing protocol multicast DNS
  */

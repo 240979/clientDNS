@@ -21,8 +21,6 @@ import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 
-import static java.lang.Double.NaN;
-
 /**
  * Class representing protocol DNS using UDP connection
  */
