@@ -8,19 +8,14 @@ import exceptions.*;
 import javafx.application.Platform;
 import lombok.Getter;
 import lombok.Setter;
-import models.ConnectionSettings;
-import models.Header;
-import models.RequestSettings;
-import models.UInt16;
+import models.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.DNSOverTCPTask;
-import tasks.DNSTaskBase;
 import testing.Result;
 import ui.TesterController;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.UnknownHostException;
+import java.net.InetAddress;
 import java.util.logging.Logger;
 
 /**
@@ -34,6 +29,7 @@ public class DnsTcpTask extends DNSOverTCPTask {
     private int numberOfRequests;
     private long cooldown;
     private int i;
+    private TCPConnection localConnection;
     public static Logger LOGGER = Logger.getLogger(DnsTcpTask.class.getName());
 
     public DnsTcpTask(RequestSettings requestSettings, ConnectionSettings connectionSettings,
@@ -42,8 +38,7 @@ public class DnsTcpTask extends DNSOverTCPTask {
         this.result = result;
         this.numberOfRequests = numberOfRequests;
         this.cooldown = cooldown;
-
-        LOGGER.info("Created DnsUdpTask for "+connectionSettings.getResolverIP());
+        LOGGER.info("Created DnsUdpTask for " + connectionSettings.getResolverIP());
     }
 
     @Override
@@ -57,9 +52,19 @@ public class DnsTcpTask extends DNSOverTCPTask {
                     header.setId(generator.generateRandom());
                     setSize(Header.getSize());
                     addRequests(qcountTypes, checkAndStripFullyQualifyName(domainAsString));
-                    super.sendData();
+                    messageToBytes();
+
+                    // use local connection instead of shared static map
+                    if (localConnection == null || localConnection.isClosed()) {
+                        localConnection = new TCPConnection(InetAddress.getByName(resolver));
+                    }
+                    setStartTime(System.nanoTime());
+                    setReceiveReply(localConnection.send(getMessageAsBytes(), getIp(), false, getInterfaceToSend()));
+                    setStopTime(System.nanoTime());
+                    setWasSend(true);
+
                     parser = parseResponse();
-                    result.setResponseSize((parser.getByteSizeResponse()));
+                    result.setResponseSize(parser.getByteSizeResponse());
                     if (parser.getHeader().getAnCount().getValue() == 0 || parser.getHeader().getRCode() != R_CODE.NO_ERROR) {
                         result.getSuccess().add(false);
                     } else {
@@ -67,49 +72,38 @@ public class DnsTcpTask extends DNSOverTCPTask {
                         result.getSuccess().add(true);
                     }
                     updateResultUI();
-                    if (!holdConnection) {
-                        if (DNSTaskBase.getTcpConnectionForServer(resolver) != null) {
-                            try {
-                                DNSTaskBase.getTcpConnectionForServer(resolver).closeAll();
-                            } catch (IOException e) {
-                                //e.printStackTrace();
-                                LOGGER.severe(ExceptionUtils.getStackTrace(e));
-                            }
-                            DNSTaskBase.getTcp().remove(resolver);
-                        }
-                    }
                     Platform.runLater(() -> ((TesterController) controller).getResultsTableView().refresh());
                     Thread.sleep(cooldown);
-                } catch (NotValidIPException | UnsupportedEncodingException |
-                        NotValidDomainNameException | TimeoutException |
-                        QueryIdNotMatchException | UnknownHostException e){
+                } catch (NotValidIPException
+                         | NotValidDomainNameException
+                         | TimeoutException
+                         | QueryIdNotMatchException
+                         | InterfaceDoesNotHaveIPAddressException
+                         | CouldNotUseHoldConnectionException
+                         | IOException e) {
                     result.getExceptions().add(e);
                     result.getSuccess().add(false);
                 }
             }
-            if (DNSTaskBase.getTcpConnectionForServer(resolver) != null) {
+        } catch (InterruptedException e) {
+            LOGGER.info("DnsTcpTask interrupted");
+        } finally {
+            // always close the local connection when done
+            if (localConnection != null && !localConnection.isClosed()) {
                 try {
-                    DNSTaskBase.getTcpConnectionForServer(resolver).closeAll();
+                    localConnection.closeAll();
                 } catch (IOException e) {
-                    //e.printStackTrace();
                     LOGGER.severe(ExceptionUtils.getStackTrace(e));
                 }
-                DNSTaskBase.getTcp().remove(resolver);
             }
-        } catch (InterruptedException e){
-            DNSTaskBase.terminateAllTcpConnections();
-            LOGGER.info("DnsTcpTask interrupted");
         }
     }
 
     @Override
-    protected void updateProgressUI() {
-    }
-
-    @Override
     protected void updateResultUI() {
-        LOGGER.info("Calculated duration to be stored " + calculateDuration());
-        result.getDurations().add(calculateDuration());
+        double duration = calculateDuration();
+        LOGGER.info("Calculated duration to be stored " + duration);
+        result.getDurations().add(duration);
         LOGGER.info("Finished run of DnsTcpTask for " + getResolver() + " with duration " + result.getDurations().getLast());
     }
 }
