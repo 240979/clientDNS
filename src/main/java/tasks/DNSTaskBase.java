@@ -408,23 +408,22 @@ public abstract class DNSTaskBase extends Task<Void> {
             // method will be specified in the implementation of method
             sendData();
 
-            LOGGER.info("Taskbase " + receiveReply.length);
-            setTaskProgress(0.8);
-            parser = parseResponse();
-            // parse received message
-            GeneralController.requestResponseMap.put("response", parser.getAsJsonString());
-            GeneralController.requestResponseMap.put("request", getAsJsonString());
-            // store request and response as TreeItem<String> so it can be passed to GUI
-            setRequestAndResponse(parser);
-
-            setByteSizeResponse(parser.getByteSizeResponse());
-            double h = (System.nanoTime() - start) / 1000000.00;
-            h = Math.round(h * 100) / 100.0;
-            if (h < 1000) {
-                Thread.sleep((long) ((1000 - duration)));
+            if (!massTesting) {
+                LOGGER.info("Taskbase " + receiveReply.length);
+                setTaskProgress(0.8);
+                parser = parseResponse();
+                GeneralController.requestResponseMap.put("response", parser.getAsJsonString());
+                GeneralController.requestResponseMap.put("request", getAsJsonString());
+                setRequestAndResponse(parser);
+                setByteSizeResponse(parser.getByteSizeResponse());
+                double h = (System.nanoTime() - start) / 1000000.00;
+                h = Math.round(h * 100) / 100.0;
+                if (h < 1000) {
+                    Thread.sleep((long) ((1000 - h)));  // use `h` not `duration`!
+                }
+                updateResultUI();
             }
-            // update UI with results
-            updateResultUI();
+
         } catch (InterruptedException e) {
             if(!massTesting)
             {

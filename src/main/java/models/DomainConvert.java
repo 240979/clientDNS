@@ -8,6 +8,8 @@ package models;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HexFormat;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 
@@ -16,6 +18,7 @@ public class DomainConvert {
 	private static final String DOMAIN_NAME_PATTERN = "^((?!-)[_A-Za-z0-9][A-Za-z0-9-]{0,62}(?<!-)\\.)+[A-Za-z]{2,63}\\.?$";
 	private static final int COMPRESS_CONSTANT_NUMBER = 49152;
 	private static final byte[] ROOT = { (byte) 0x00 };
+    protected static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 	static {
 		pDomainNameOnly = Pattern.compile(DOMAIN_NAME_PATTERN);
 	}
@@ -140,9 +143,9 @@ public class DomainConvert {
 	}
 
 	private static boolean isDnsNameCompressed(byte[] rawMessage, int currentPosition) {
-		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[currentPosition], rawMessage[currentPosition + 1]);
-        return firstTwoBytes.getValue() >= COMPRESS_CONSTANT_NUMBER;
-
+//		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[currentPosition], rawMessage[currentPosition + 1]);
+//        return firstTwoBytes.getValue() >= COMPRESS_CONSTANT_NUMBER;
+        return (rawMessage[currentPosition] & 0xC0) == 0xC0;
 	}
 
 	private static String getCompressedName(byte[] rawMessage, int currentPosition) {
@@ -157,23 +160,31 @@ public class DomainConvert {
 		return DomainConvert.decodeMDNS(rawMessage, nameStartByte.getValue());
 	}
 
-	public static int getIndexOfLastByteOfName(byte[] wholeAnswerSection, int start) {
-		int position = start;
-		while (true) {
-			if ((int) wholeAnswerSection[position] == 0) {
-				return position;
-			} else {
-				if ((int) wholeAnswerSection[position] != 1) {
-					if (isDnsNameCompressed(wholeAnswerSection, position)) {
-						return position + 1;
-					}
-
-                }
-                position += (int) wholeAnswerSection[position] + 1;
-
+    public static int getIndexOfLastByteOfName(byte[] wholeAnswerSection, int start) {
+        int position = start;
+        LOGGER.info("Whole answer section: ");
+        HexFormat hex = HexFormat.ofDelimiter(" ").withUpperCase();
+        LOGGER.info(hex.formatHex(wholeAnswerSection));
+        while (position < wholeAnswerSection.length) {
+            int labelLength = wholeAnswerSection[position] & 0xFF;
+            if (labelLength == 0) {
+                return position; // end of name
             }
-		}
-	}
+            if (isDnsNameCompressed(wholeAnswerSection, position)) {
+                // compression pointer is always 2 bytes; return the second byte's index
+                return position + 1;
+            }
+            // label length byte + that many character bytes
+            position += labelLength + 1;
+        }
+        LOGGER.warning( "Malformed DNS name: ran off end of buffer starting at index " + start
+                + " (buffer length " + wholeAnswerSection.length + ")");
+//        throw new IllegalArgumentException(
+//                "Malformed DNS name: ran off end of buffer starting at index " + start
+//                        + " (buffer length " + wholeAnswerSection.length + ")"
+//        );
+        return 0;
+    }
 
 	private static boolean isUTF8Domain(String domain) {
 		try {

@@ -11,12 +11,15 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
+import java.util.HexFormat;
 import java.util.logging.Logger;
 
 import exceptions.CouldNotUseHoldConnectionException;
 import exceptions.InterfaceDoesNotHaveIPAddressException;
 import exceptions.TimeoutException;
 import org.apache.commons.lang.exception.ExceptionUtils;
+
+import static tasks.DNSTaskBase.TIME_OUT_MILLIS;
 
 public class TCPConnection {
 	private InetAddress destinationIp;
@@ -67,6 +70,7 @@ public class TCPConnection {
 			LOGGER.info("Net Interface: " + netInterface.getDisplayName());
 			socket = new Socket(destinationIp, DNS_PORT,
 					Ip.getIpAddressFromInterface(netInterface, destinationIp.getHostAddress()), 0);
+            socket.setSoTimeout(TIME_OUT_MILLIS);
 			outputStream = socket.getOutputStream();
 			inputStream = socket.getInputStream();
 		} catch (IndexOutOfBoundsException e) {
@@ -92,16 +96,22 @@ public class TCPConnection {
 	}
 
 	private void sendAndReceive(byte[] messagesAsBytes)
-			throws CouldNotUseHoldConnectionException, TimeoutException, IOException {
+			throws CouldNotUseHoldConnectionException, TimeoutException {
 		try {
 			outputStream.write(messagesAsBytes);
 			// dns message has first two bytes which is the length of the rest of the
 			// message
-			byte[] sizeReceive = inputStream.readNBytes(2);
-
-			UInt16 messageSize = new UInt16().loadFromBytes(sizeReceive[0], sizeReceive[1]);
+			byte[] sizeReceived = inputStream.readNBytes(2);
+            HexFormat hex = HexFormat.ofDelimiter(" ").withUpperCase();
+            LOGGER.info(hex.formatHex(messagesAsBytes));
+            if (sizeReceived.length < 2) {
+                LOGGER.warning("Received size is not 16 bits");
+                throw new CouldNotUseHoldConnectionException(); // connection closed prematurely
+            }
+			UInt16 messageSize = new UInt16().loadFromBytes(sizeReceived[0], sizeReceived[1]);
 			// based on size get the dns message itself
 			responseMessage = inputStream.readNBytes(messageSize.getValue());
+            LOGGER.info("Expected: " + messageSize.getValue() + " got: " + responseMessage.length);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			//System.out.println(e.toString());
 			LOGGER.warning(ExceptionUtils.getStackTrace(e));
