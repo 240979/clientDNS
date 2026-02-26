@@ -24,7 +24,6 @@ import java.net.*;
  */
 public class DNSOverLinkLocal extends DNSTaskBase{
 
-    private int messagesSent;
     private boolean run=true;
     MulticastSocket socket;
 

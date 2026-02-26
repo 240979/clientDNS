@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 public class DomainConvert {
 	private static final Pattern pDomainNameOnly;
-	private static final String DOMAIN_NAME_PATTERN = "^((?!-)[_A-Za-z0-9][A-Za-z0-9-]{0,62}(?<!-)\\.)+[A-Za-z]{2,63}\\.?$";
+	private static final String DOMAIN_NAME_PATTERN = "^((?!-)[_A-Za-z0-9][A-Za-z0-9_-]{0,62}(?<!-)\\.)+[A-Za-z]{2,63}\\.?$";
 	private static final int COMPRESS_CONSTANT_NUMBER = 49152;
 	private static final byte[] ROOT = { (byte) 0x00 };
     protected static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());

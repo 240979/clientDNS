@@ -24,7 +24,7 @@ public class DNSOverMulticastTask extends DNSTaskBase {
     private static final String IPv6_MDNS = "ff02::fb";
     //private int messagesSent;
     private boolean multicast;
-    private boolean isIPv4;
+    private final boolean isIPv4;
     private boolean run=true;
     MulticastSocket socket;
 
@@ -45,18 +45,18 @@ public class DNSOverMulticastTask extends DNSTaskBase {
         size += Response.getDnssecAsBytesMDNS(isDoFlag()).length;
         this.messageAsBytes = new byte[size];
         byte[] head = header.getHeaderAsBytes();
-        for (int i = 0; i < head.length; i++) {
-            this.messageAsBytes[curentIndex] = head[i];
+        for (byte b : head) {
+            this.messageAsBytes[curentIndex] = b;
             curentIndex++;
         }
         for (Request r : requests) {
             byte[] requestBytes = r.getRequestAsBytes();
-            for (int i = 0; i < requestBytes.length; i++) {
-                this.messageAsBytes[curentIndex] = requestBytes[i];
+            for (byte requestByte : requestBytes) {
+                this.messageAsBytes[curentIndex] = requestByte;
                 curentIndex++;
             }
         }
-        byte[] opt = new Response().getDnssecAsBytesMDNS(doFlag);
+        byte[] opt = Response.getDnssecAsBytesMDNS(doFlag);
         int j = 0;
         for (int i = curentIndex; i < size; i++) {
             this.messageAsBytes[i] = opt[j];

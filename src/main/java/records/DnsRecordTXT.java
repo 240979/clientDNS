@@ -21,15 +21,18 @@ public class DnsRecordTXT extends DnsRecord {
 	}
 
 	public void parse() throws UnsupportedEncodingException {
-		byte[] textByte = new byte[length - 1];
-		int j = 0;
-		for (int i = startIndex + 1; i < startIndex + length; i++) {
-			textByte[j] = rawMessage[i];
-			j++;
+		byte[] textByte;
+		if(length > 0){
+			textByte = new byte[length - 1];
+			int j = 0;
+			for (int i = startIndex + 1; i < startIndex + length; i++) {
+				textByte[j] = rawMessage[i];
+				j++;
+			}
+			stringText = new String(textByte, StandardCharsets.UTF_8);
 		}
+		else stringText = "";
 		// Has to be repaired
-		stringText = new String(textByte, StandardCharsets.UTF_8);
-
 	}
 
 	@Override
