@@ -33,6 +33,7 @@ public class ConnectionSettings {
     @Setter
     boolean isDomainNameUsed;
     @Getter
+    @Setter
     int resolverPort;
     @Getter
     boolean holdConnection;

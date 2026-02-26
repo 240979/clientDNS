@@ -23,6 +23,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import models.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -35,6 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @SuppressWarnings("unchecked")
 public class TesterController extends GeneralController {
@@ -87,6 +89,9 @@ public class TesterController extends GeneralController {
 
     @FXML
     private RadioButton dnsDotButton;
+
+    @FXML
+    private RadioButton dnsDoqButton;
 
     @FXML
     @Translation
@@ -244,6 +249,7 @@ public class TesterController extends GeneralController {
         dnsTcpButton.setToggleGroup(dnsProtocolToggleGroup);
         dnsUdpButton.setToggleGroup(dnsProtocolToggleGroup);
         dnsDotButton.setToggleGroup(dnsProtocolToggleGroup);
+        dnsDoqButton.setToggleGroup(dnsProtocolToggleGroup);
         holdConnectionCheckbox.setDisable(true);
 
         iterativeToggleGroup = new ToggleGroup();
@@ -292,7 +298,7 @@ public class TesterController extends GeneralController {
         dnsUdpButton.setOnMouseClicked(_ -> enableDnsServers());
         dnsTcpButton.setOnMouseClicked(_ -> enableDnsServers());
         dnsDotButton.setOnMouseClicked(_ -> enableDoTServers());
-
+        dnsDoqButton.setOnMouseClicked(_ -> enableDoqServers());
         LoadTestConfig loadTestConfig = Config.getLoadTestConfig();
         numberOfRequests.setText(loadTestConfig.getDuration());
         IPv4RadioButton.setSelected(loadTestConfig.isIpv4());
@@ -360,7 +366,6 @@ public class TesterController extends GeneralController {
         });
 
         setLanguageRadioButton();
-        // TODO add option for custom DNS server
     }
 
     public void loadDataFromSettings() {
@@ -379,6 +384,13 @@ public class TesterController extends GeneralController {
         otherDNSVbox.getChildren().forEach(node -> {
             NameServerVBox nameServerVBox = (NameServerVBox) node;
             nameServerVBox.setDisable(!nameServerVBox.getNameServer().isDot());
+        });
+        setDisabledDOH(true);
+    }
+    protected void enableDoqServers() {
+        otherDNSVbox.getChildren().forEach(node -> {
+            NameServerVBox nameServerVBox = (NameServerVBox) node;
+            nameServerVBox.setDisable(!nameServerVBox.getNameServer().isDoq());
         });
         setDisabledDOH(true);
     }
@@ -543,6 +555,9 @@ public class TesterController extends GeneralController {
                 application_protocol = APPLICATION_PROTOCOL.DOH;
             } else if (dnsDotButton.isSelected()) {
                 application_protocol = APPLICATION_PROTOCOL.DOT;
+            } else if(dnsDoqButton.isSelected()){
+                application_protocol = APPLICATION_PROTOCOL.DOQ;
+                transport_protocol = TRANSPORT_PROTOCOL.UDP;
             }
             // start progress bar and start tester task
             Platform.runLater(()->progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS));

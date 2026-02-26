@@ -10,8 +10,8 @@ import java.util.logging.Logger;
  * Class extends Runnable and is used to stop progress bar after encountering error
  */
 public class StopProgressBar implements Runnable{
-    DNSTaskBase dnsTaskBase = null;
-    private String reason;
+    DNSTaskBase dnsTaskBase;
+    private final String reason;
     protected Logger LOGGER = Logger.getLogger(ProgressUpdateRunnable.class.getName());
 
     public StopProgressBar(DNSTaskBase dnsTaskBase, String reason)

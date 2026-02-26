@@ -143,6 +143,7 @@
                      </CheckBox>
                      <RadioButton fx:id="dnsDohButton" mnemonicParsing="false" text="DoH"/>
                      <RadioButton fx:id="dnsDotButton" mnemonicParsing="false" text="DoT"/>
+                     <RadioButton fx:id="dnsDoqButton" mnemonicParsing="false" text="DoQ"/>
                   </VBox>
                </TitledPane>
                <TitledPane fx:id="requestFormatTitledPane" expanded="false" maxWidth="1.7976931348623157E308"

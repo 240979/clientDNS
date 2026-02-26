@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  */
 public class ProgressUpdateRunnable implements Runnable
 {
-    DNSTaskBase dnsTaskBase = null;
+    DNSTaskBase dnsTaskBase;
     protected Logger LOGGER = Logger.getLogger(ProgressUpdateRunnable.class.getName());
 
     public ProgressUpdateRunnable(DNSTaskBase dnsTaskBase)
@@ -23,7 +23,7 @@ public class ProgressUpdateRunnable implements Runnable
 
     protected void expandAll(TreeItem<String> t) {
         try {
-            if(t.getChildren().size() == 0)
+            if(t.getChildren().isEmpty())
             {
                 t.setExpanded(true);
                 return;

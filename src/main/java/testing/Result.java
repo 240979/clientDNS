@@ -23,6 +23,7 @@ public class Result {
     private boolean complete;
     private String ip;
     private NameServer ns;
+    private int port;
     private Double max;
     private Double min;
     private Long successful;
@@ -53,6 +54,7 @@ public class Result {
         this(ns.getName(), ip, domain);
         this.ns = ns;
         this.domain = domain;
+        this.port = ns.getPort();
     }
 
     public String toCsvString(){

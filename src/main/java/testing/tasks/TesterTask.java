@@ -8,6 +8,7 @@ import enums.TRANSPORT_PROTOCOL;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -22,12 +23,12 @@ import java.util.logging.Logger;
 /**
 * Main Mass Testing task, which starts protocol specific tasks also preparing data structure for storing of results,
 * after start of protocol specific task waits until the end of all requests, calculate results on fly and display them
-*
 * */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class TesterTask extends Task<Void> {
 
-    List<Task> tasks = new LinkedList<>();
+    List<Task<Void>> tasks = new LinkedList<>();
     private int duration;
     private List<List<Result>> observableList;
     private long cooldown;
@@ -46,22 +47,24 @@ public class TesterTask extends Task<Void> {
     }
 
     @Override
-    protected Void call() throws Exception {
+    protected Void call() {
         // start thread for testing each server
         List<Thread> threads = null;
         try {
             LOGGER.info("Main mass testing thread started");
             threads = new LinkedList<>();
-            List<Task> tasks = new LinkedList<>();
             // create tasks, threads and pass result data structure to task
             for (List<Result> result : observableList) {
-                Task task;
+                Task<Void> task;
                 if (connectionSettings.getApplication_protocol() == APPLICATION_PROTOCOL.DOH) {
                     task = new DoHTester(requestSettings, connectionSettings, duration, result, cooldown);
                     ((DoHTester) task).setController(controller);
                 } else if (connectionSettings.getApplication_protocol() == APPLICATION_PROTOCOL.DOT) {
                     task = new DoTTester(requestSettings, connectionSettings, duration, result, cooldown);
                     ((DoTTester) task).setController(controller);
+                } else if (connectionSettings.getApplication_protocol() == APPLICATION_PROTOCOL.DOQ){
+                    task = new DoqTester(requestSettings,connectionSettings, duration, result, cooldown);
+                    ((DoqTester) task).setController(controller);
                 } else if (connectionSettings.getTransport_protocol() == TRANSPORT_PROTOCOL.UDP) {
                     task = new UdpTester(requestSettings, connectionSettings, duration, result, cooldown);
                     ((UdpTester) task).setController(controller);

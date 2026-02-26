@@ -116,6 +116,9 @@ public class DNSOverQUICTask  extends DNSTaskBase{
         quicChannel.closeFuture();
         channel.close();
         group.shutdownGracefully();
+        if (!massTesting) {
+            Platform.runLater(() -> controller.getSendButton().setText(controller.getButtonText()));
+        }
     }
 
     @Override
