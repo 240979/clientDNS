@@ -358,7 +358,7 @@ public class Response {
 
 	public static byte[] getDnssecAsBytesMDNS(boolean dnssecSignatures) {
 		if (!dnssecSignatures) {
-			return new byte[0];  // ← no OPT record at all
+			return new byte[0];  // no OPT record at all
 		}
 		ArrayList<Byte> bytes = new ArrayList<>();
 		bytes.add((byte) 0x00);
