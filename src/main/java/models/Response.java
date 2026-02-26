@@ -357,6 +357,9 @@ public class Response {
 	}
 
 	public static byte[] getDnssecAsBytesMDNS(boolean dnssecSignatures) {
+		if (!dnssecSignatures) {
+			return new byte[0];  // ← no OPT record at all
+		}
 		ArrayList<Byte> bytes = new ArrayList<>();
 		bytes.add((byte) 0x00);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[1]);
@@ -365,13 +368,8 @@ public class Response {
 		bytes.add(new UInt16(MAX_UDP_SIZE).getAsBytes()[0]);
 		bytes.add((byte) 0x00);
 		bytes.add((byte) 0x00);
-		if (dnssecSignatures) {
-			bytes.add( new UInt16(DO_BIT_VALUE).getAsBytes()[1]);
-			bytes.add( new UInt16(DO_BIT_VALUE).getAsBytes()[0]);
-		} else {
-			bytes.add(new UInt16(0).getAsBytes()[1]);
-			bytes.add(new UInt16(0).getAsBytes()[0]);
-		}
+		bytes.add( new UInt16(DO_BIT_VALUE).getAsBytes()[1]);
+		bytes.add( new UInt16(DO_BIT_VALUE).getAsBytes()[0]);
 		bytes.add((byte) 0x00);
 		bytes.add((byte) 0x00);
 
