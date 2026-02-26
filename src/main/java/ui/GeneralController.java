@@ -9,6 +9,7 @@ import application.App;
 import application.Config;
 import enums.Q_COUNT;
 import exceptions.*;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,6 +25,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import lombok.Data;
 import models.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -722,6 +724,12 @@ public abstract class GeneralController {
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.initOwner(sendButton.getScene().getWindow());
         alert.show();
+
+        if(alertType == Alert.AlertType.INFORMATION){
+            PauseTransition delay = new PauseTransition(Duration.seconds(1));
+            delay.setOnFinished(_ -> alert.close());
+            delay.play();
+        }
     }
 
     public void showAlertMultipleExceptions(List<Exception> exceptions){
