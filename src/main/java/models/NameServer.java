@@ -56,6 +56,10 @@ public class NameServer {
     @JsonProperty(value = "doq")
     private boolean doq = false;
 
+    @JsonProperty(value = "doqOnly")
+    private boolean doqOnly = false;
+
+
     @JsonProperty(value = "port")
     private int port = 53;
 

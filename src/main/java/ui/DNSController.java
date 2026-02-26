@@ -165,7 +165,7 @@ public class DNSController extends GeneralController {
 
         Config.getNameServers().add(new NameServer("System DNS", "System DNS", ip.getIpv4DnsServers(),
                 ip.getIpv6DnsServers()));
-        Config.getNameServers().stream().filter(nameServer1 -> !nameServer1.isDohOnly() && !nameServer1.isDotOnly())
+        Config.getNameServers().stream().filter(nameServer1 -> !nameServer1.isDohOnly() && !nameServer1.isDotOnly()  && !nameServer1.isDoqOnly())
                 .forEach(ns -> otherDNSVbox.getChildren().add(new NameServerVBox(ns, dnsserverToggleGroup, this)));
         NameServerVBox nsVBox = ((NameServerVBox)otherDNSVbox.getChildren().getLast());
         nsVBox.selectFirst();

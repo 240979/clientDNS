@@ -402,7 +402,7 @@ public class TesterController extends GeneralController {
     protected void enableDnsServers() {
         otherDNSVbox.getChildren().forEach(node -> {
             NameServerVBox nameServerVBox = (NameServerVBox) node;
-            nameServerVBox.setDisable(nameServerVBox.getNameServer().isDotOnly() || nameServerVBox.getNameServer().isDohOnly());
+            nameServerVBox.setDisable(nameServerVBox.getNameServer().isDotOnly() || nameServerVBox.getNameServer().isDohOnly() || nameServerVBox.getNameServer().isDoqOnly());
         });
         setDisabledDOH(true);
         setWiresharkMenuItems();
