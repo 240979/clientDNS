@@ -8,9 +8,7 @@ import application.Config;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
-import exceptions.MoreRecordsTypesWithPTRException;
-import exceptions.NonRecordSelectedException;
-import exceptions.NotValidDomainNameException;
+import exceptions.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,9 +29,7 @@ import testing.Result;
 import testing.tasks.TesterTask;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 @EqualsAndHashCode(callSuper = true)
@@ -328,6 +324,11 @@ public class TesterController extends GeneralController {
                 enableDoTServers();
                 break;
             }
+            case "DOQ": {
+                dnsDoqButton.setSelected(true);
+                enableDoqServers();
+                break;
+            }
         }
         domainNameTextField.setText(loadTestConfig.getDomain());
         List<String> rrCodes = Arrays.stream(loadTestConfig.getRecord().split(",")).toList();
@@ -378,6 +379,7 @@ public class TesterController extends GeneralController {
             nameServerVBox.setDisable(!nameServerVBox.getNameServer().isDoh());
         });
         setDisabledDOH(false);
+        setWiresharkMenuItems();
     }
 
     protected void enableDoTServers() {
@@ -386,6 +388,7 @@ public class TesterController extends GeneralController {
             nameServerVBox.setDisable(!nameServerVBox.getNameServer().isDot());
         });
         setDisabledDOH(true);
+        setWiresharkMenuItems();
     }
     protected void enableDoqServers() {
         otherDNSVbox.getChildren().forEach(node -> {
@@ -393,6 +396,7 @@ public class TesterController extends GeneralController {
             nameServerVBox.setDisable(!nameServerVBox.getNameServer().isDoq());
         });
         setDisabledDOH(true);
+        setWiresharkMenuItems();
     }
 
     protected void enableDnsServers() {
@@ -401,6 +405,7 @@ public class TesterController extends GeneralController {
             nameServerVBox.setDisable(nameServerVBox.getNameServer().isDotOnly() || nameServerVBox.getNameServer().isDohOnly());
         });
         setDisabledDOH(true);
+        setWiresharkMenuItems();
     }
 
     @Override
@@ -466,21 +471,55 @@ public class TesterController extends GeneralController {
         checkBoxArray.add(httpsCheckBox);
     }
 
-
     @Override
     protected void updateCustomParameters() {
+
         if (dnsDohButton.isSelected()){
             parameters.put(WiresharkFilter.Parameters.TCPPORT, "443");
-            parameters.put(WiresharkFilter.Parameters.UDPPORT, "443");
         } else if (dnsDotButton.isSelected()){
             parameters.put(WiresharkFilter.Parameters.TCPPORT, "853");
-            parameters.put(WiresharkFilter.Parameters.UDPPORT, "853");
-        } else {
+        } else if (dnsDoqButton.isSelected()){
+            try {
+                parameters.put(WiresharkFilter.Parameters.UDPPORT, Integer.toString(nameServer.getPort()));
+            } catch (NullPointerException e ) {
+                parameters.put(WiresharkFilter.Parameters.UDPPORT, "853");
+            }
+        }
+        else {
             parameters.put(WiresharkFilter.Parameters.TCPPORT, "53");
             parameters.put(WiresharkFilter.Parameters.UDPPORT, "53");
         }
     }
-
+    @Override
+    protected void setWiresharkMenuItems(){
+        parameters = new HashMap<>();
+        parameters.put("prefix", "ipv4");
+        parameters.put("ip", null);
+        parameters.put("tcpPort", null);
+        parameters.put("udpPort", null);
+        wiresharkMenu.getItems().clear();
+        filters = new ArrayList<>();
+        filters.add(new WiresharkFilter("IP", "${ip}"));
+        filters.add(new WiresharkFilter("IP filter", "${prefix}.addr == ${ip}"));
+        if (dnsDohButton.isSelected()){
+            filters.add(new WiresharkFilter("IP & TCP", "${prefix}.addr == ${ip} && tcp.port == ${tcpPort}"));
+        } else if (dnsDotButton.isSelected()){
+            filters.add(new WiresharkFilter("IP & TCP", "${prefix}.addr == ${ip} && tcp.port == ${tcpPort}"));
+        } else if (dnsDoqButton.isSelected()){
+            filters.add(new WiresharkFilter("IP & UDP", "${prefix}.addr == ${ip} && udp.port == ${udpPort}"));
+        } else {
+            filters.add(new WiresharkFilter("IP & TCP & UDP", "${prefix}.addr == ${ip} && (tcp.port == ${tcpPort} || udp" +
+                    ".port == ${udpPort})"));
+        }
+        for (WiresharkFilter filter : filters) {
+            RadioMenuItem menuItem;
+            menuItem = new RadioMenuItem(filter.getName());
+            menuItem.setUserData(filter);
+            menuItem.setToggleGroup(wiresharkFilterToggleGroup);
+            wiresharkMenu.getItems().add(menuItem);
+        }
+        wiresharkFilterToggleGroup.selectToggle(null);
+    }
 
     @Override
     public String getProtocol() {

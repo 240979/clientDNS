@@ -209,6 +209,7 @@ public class NameServerVBox extends VBox {
             // Block clicking on not selected NS
             if (!IPv6radioButton.isSelected()) return;
             LOGGER.fine("copying filter");
+            controller.setNameServer(nameServer);
             controller.copyWiresharkFilter(getSelectedIP(false));
         }));
         return copyIPv6Btn;
@@ -225,6 +226,7 @@ public class NameServerVBox extends VBox {
             // Block clicking on not selected
             if (!IPv4radioButton.isSelected()) return;
             LOGGER.fine("copying filter");
+            controller.setNameServer(nameServer);
             controller.copyWiresharkFilter(getSelectedIP(true));
         }));
         return copyIPv4Btn;

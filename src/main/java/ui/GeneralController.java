@@ -52,7 +52,7 @@ public abstract class GeneralController {
     protected static Logger LOGGER = Logger.getLogger(GeneralController.class.getName());
     protected Ip ipDns;
 
-    protected ToggleGroup wiresharkFilterToogleGroup = new ToggleGroup();
+    protected ToggleGroup wiresharkFilterToggleGroup = new ToggleGroup();
     protected List<WiresharkFilter> filters;
 
     protected Map<String, String> parameters;
@@ -472,13 +472,12 @@ public abstract class GeneralController {
      * Method creates basic wireshark filters and respective buttons in menu
      */
     protected void setWiresharkMenuItems() {
-        // wiresharkFilterToogleGroup = new ToggleGroup();
         parameters = new HashMap<>();
         parameters.put("prefix", "ipv4");
         parameters.put("ip", null);
         parameters.put("tcpPort", null);
         parameters.put("udpPort", null);
-        wiresharkMenu.getItems().removeAll();
+        wiresharkMenu.getItems().clear();
         filters = new LinkedList<>();
         filters.add(new WiresharkFilter("IP", "${ip}"));
         filters.add(new WiresharkFilter("IP filter", "${prefix}.addr == ${ip}"));
@@ -496,7 +495,7 @@ public abstract class GeneralController {
                 menuItem = new RadioMenuItem(filter.getName());
             }
             menuItem.setUserData(filter);
-            menuItem.setToggleGroup(wiresharkFilterToogleGroup);
+            menuItem.setToggleGroup(wiresharkFilterToggleGroup);
             wiresharkMenu.getItems().add(menuItem);
         }
     }
@@ -852,15 +851,15 @@ public abstract class GeneralController {
         parameters.put("prefix", prefix);
         updateCustomParameters();
 
-        if (wiresharkFilterToogleGroup.getSelectedToggle() == null) {
+        if (wiresharkFilterToggleGroup.getSelectedToggle() == null) {
 //            showAlert("chooseFilter");
 //            return;
             //  I don't see the reason why harass user with the alert? Choose 1st instead...
-            wiresharkFilterToogleGroup.getToggles()
+            wiresharkFilterToggleGroup.getToggles()
                     .getFirst()
                     .setSelected(true);
         }
-        String out = ((WiresharkFilter) wiresharkFilterToogleGroup
+        String out = ((WiresharkFilter) wiresharkFilterToggleGroup
                 .getSelectedToggle()
                 .getUserData())
                 .generateQuery(parameters);

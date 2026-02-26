@@ -324,7 +324,7 @@ public class DoTController extends GeneralController {
         parameters.put("prefix", "ipv4");
         parameters.put("ip", null);
         parameters.put("tcpPort", null);
-        wiresharkMenu.getItems().removeAll();
+        wiresharkMenu.getItems().clear();
         filters = new LinkedList<>();
         filters.add(new WiresharkFilter("IP", "${ip}"));
         filters.add(new WiresharkFilter("IP filter", "${prefix}.addr == ${ip}"));
@@ -332,7 +332,7 @@ public class DoTController extends GeneralController {
         for (WiresharkFilter filter : filters) {
             RadioMenuItem menuItem = new RadioMenuItem(filter.getName());
             menuItem.setUserData(filter);
-            menuItem.setToggleGroup(wiresharkFilterToogleGroup);
+            menuItem.setToggleGroup(wiresharkFilterToggleGroup);
             wiresharkMenu.getItems().add(menuItem);
         }
     }
