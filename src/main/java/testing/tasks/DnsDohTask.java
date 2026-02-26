@@ -53,38 +53,25 @@ public class DnsDohTask extends DNSOverHTTPSTask {
                     // send request via super class method sendData()
                     super.sendData();
                     result.setResponseSize((byteSizeResponseDoHDecompressed));
-                    /*
-                    parser = new MessageParser(httpResponse);
-                    long status = (long) httpResponse.get("Status");
-                    JSONArray answers = (JSONArray) httpResponse.get("Answer");
-                    if (answers == null || answers.isEmpty() || status != 0) {
-                        exc = new Exception();
-                    }*/
                     JSONArray answers = null;
-                    if(httpResponse != null){
+                    // Select parser -- Wire format, standard parsing, JSOn format Json parsing
+                    if (httpResponse != null) {
                         parser = new MessageParser(httpResponse);
                         answers = (JSONArray) httpResponse.get("Answer");
-                    }else {
+                    } else {
                         parser = parseResponse();
-                        result.getResponses().add(parser.getAncountResponses());
-                        result.getSuccess().add(true);
                     }
-                    if(responseCode != 200){
-                        exc = new Exception();
-                    }
-
-                    LOGGER.info("Calculated duration to be stored " + calculateDuration());
-                    // store duration of request
                     result.getDurations().add(getDuration());
-                    if (exc != null) {
+                    if (responseCode != 200) {
                         result.getSuccess().add(false);
-                        result.getExceptions().add(exc);
-                    } else if (httpResponse != null){
+                        result.getExceptions().add(new Exception("HTTP " + responseCode));
+                    } else if (httpResponse != null) {
                         List<Response> tmp = new LinkedList<>();
                         tmp.add(new Response(answers));
                         result.getResponses().add(tmp);
                         result.getSuccess().add(true);
-                    } else{
+                    } else {
+                        result.getResponses().add(parser.getAncountResponses());
                         result.getSuccess().add(true);
                     }
                     Platform.runLater(() -> ((TesterController) controller).getResultsTableView().refresh());
