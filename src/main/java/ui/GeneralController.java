@@ -301,8 +301,9 @@ public abstract class GeneralController {
     private boolean filterInterfaces = true;
 
     private Stage mainStage;
-    private Stage helpStage = null;
-    private Stage logStage = null;
+    private static  Stage helpStage = null;
+    private static Stage logStage = null;
+    private static TextArea logTextArea = null;
 
     public GeneralController() {
         // this is set of DNS resource records that are common to all implemented protocols
@@ -1007,8 +1008,6 @@ public abstract class GeneralController {
             newStage.setScene(new Scene(loader.load()));
             GeneralController controller = loader.getController();
             controller.setSettings(settings);
-            newStage.initModality(Modality.APPLICATION_MODAL);
-
             Stage oldStage = (Stage) sendButton.getScene().getWindow();
             newStage.setX(oldStage.getX());
             newStage.setY(oldStage.getY());
@@ -1147,21 +1146,24 @@ public abstract class GeneralController {
         }
         ResourceBundle bundle = GeneralController.language.getLanguageBundle();
         logStage = new Stage();
-        logStage.initOwner(mainStage); // Set the main stage as owner
         logStage.setTitle("Log");
         logStage.getIcons().add(new Image(App.ICON_URI));
+        logStage.initModality(Modality.NONE);
 
-        TextArea textArea = new TextArea();
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
+        if (logTextArea == null) {
+            logTextArea = new TextArea();
+            logTextArea.setEditable(false);
+            logTextArea.setWrapText(true);
+        }
 
-        LoggerInitializer.getTextAreaHandler().setTextArea(textArea);
+
+        LoggerInitializer.getTextAreaHandler().setTextArea(logTextArea);
 
         Button clearButton = new Button(bundle.getString("clearLogs"));
-        clearButton.setOnAction(_ -> textArea.clear());
+        clearButton.setOnAction(_ -> logTextArea.clear());
 
-        VBox vbox = new VBox(5, clearButton, textArea); // 5 == 5px spacing
-        VBox.setVgrow(textArea, Priority.ALWAYS);
+        VBox vbox = new VBox(5, clearButton, logTextArea); // 5 == 5px spacing
+        VBox.setVgrow(logTextArea, Priority.ALWAYS);
         vbox.setPadding(new javafx.geometry.Insets(5));
 
         Scene scene = new Scene(vbox, 700, 500);
@@ -1173,6 +1175,13 @@ public abstract class GeneralController {
             logStage = null;
         });
         logStage.show();
+        Stage ownerStage = (Stage) sendButton.getScene().getWindow();
+        ownerStage.setOnCloseRequest(_ -> {
+            if (logStage != null && logStage.isShowing()) {
+                logStage.close();
+                logStage = null;
+            }
+        });
     }
     // 240979:
     protected boolean isDomainNameUsed(){

@@ -354,6 +354,7 @@ public class DoHController extends GeneralController {
         }
         ResourceBundle bundle = GeneralController.language.getLanguageBundle();
         helpStage = new Stage();
+        helpStage.initOwner(sendButton.getScene().getWindow());
         helpStage.getIcons().add(new Image(App.ICON_URI));
         helpStage.setTitle(bundle.getString("helpItem"));
         TextArea textArea = new TextArea();
