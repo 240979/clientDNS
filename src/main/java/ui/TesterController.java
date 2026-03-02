@@ -120,7 +120,6 @@ public class TesterController extends GeneralController {
     protected RadioButton wireFormat;
 
     @FXML
-    @Translation
     protected TitledPane getPostTitledPane;
     @FXML
     protected VBox getPostVBox;
