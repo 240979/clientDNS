@@ -74,7 +74,8 @@ public class DNSOverQUICTask  extends DNSTaskBase{
                 .sslContext(context)
                 .maxIdleTimeout(5, TimeUnit.SECONDS) // https://github.com/netty/netty-incubator-codec-quic/blob/main/codec-native-quic/src/test/java/io/netty/incubator/codec/quic/example/QuicClientExample.java
                 .initialMaxData(65535)
-                .initialMaxStreamDataBidirectionalLocal(1000000)
+                .initialMaxStreamDataBidirectionalLocal(65535)
+                .initialMaxStreamDataBidirectionalRemote(65535)
                 .build();
         Bootstrap udpBootstrap = new Bootstrap();
         Channel channel = udpBootstrap
@@ -113,6 +114,7 @@ public class DNSOverQUICTask  extends DNSTaskBase{
         setStopTime(System.nanoTime());
         setDuration(calculateDuration());
         setMessagesSent(1);
+        stream.closeFuture();
         quicChannel.closeFuture();
         channel.close();
         group.shutdownGracefully();
