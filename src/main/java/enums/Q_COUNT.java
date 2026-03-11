@@ -7,12 +7,14 @@ package enums;
 
 import models.UInt16;
 
+import java.util.logging.Logger;
+
 public enum Q_COUNT {
 	A(1), AAAA(28), CNAME(5), DNSKEY(48), DS(43), PTR(12), SOA(6), MX(15), RRSIG(46), SIG(24), TXT(16), CAA(257),
 	CERT(37), OPT(41), NS(2), NSEC3(50), NSEC(47), NSEC3PARAM(51), ANY(255), SRV(33), CDS(59), CDNSKEY(60), SVCB(64), HTTPS (65);
 
 	public final UInt16 code;
-
+	public static final Logger LOGGER = Logger.getLogger(Q_COUNT.class.getName());
 	Q_COUNT(int code) {
 		this.code = new UInt16(code);
 	}
@@ -22,6 +24,7 @@ public enum Q_COUNT {
 			if (type.code.equals(code))
 				return type;
 		}
+		LOGGER.info("Unknown code: " + code);
 		return null;
 	}
 

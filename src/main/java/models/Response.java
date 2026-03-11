@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import lombok.Data;
 import org.json.simple.JSONArray;
@@ -63,7 +64,7 @@ public class Response {
 	private static final String KEY_OPT_OPTIONS = "Options";
 	public static final String ROOT_DOMAIN = ". (ROOT)";
 
-
+	public static Logger LOGGER = Logger.getLogger(Response.class.getName());
 
 	public Response() {
 
@@ -81,7 +82,8 @@ public class Response {
 		this.qcount = Q_COUNT
 				.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
 		currentIndex += 2;
-        assert qcount != null;
+		if (qcount == null)
+			return this;
         if (qcount.equals(Q_COUNT.OPT)) {
 			parseAsOPT(currentIndex);
 			return this;
@@ -219,6 +221,12 @@ public class Response {
 	}
 
 	public TreeItem<String> getAsTreeItem() {
+		if (qcount == null) {
+			return new TreeItem<>(nameAsString + " UNKNOWN");
+		}
+		if (rdata == null) {
+			return new TreeItem<>(nameAsString + " " + qcount + " (unparsed record type)");
+		}
 		TreeItem<String> main = new TreeItem<>(
 				nameAsString + " " + qcount + " " + rdata.getDataForTreeViewName());
 		// check if type is SRV
@@ -288,6 +296,13 @@ public class Response {
 
 	@SuppressWarnings("unchecked")
 	public JSONObject getAsJson(APPLICATION_PROTOCOL applicationProtocol) {
+		if (qcount == null) {
+			// Unknown/unsupported record type
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put(TYPE_KEY, "UNKNOWN");
+			jsonObject.put(NAME_KEY, nameAsString);
+			return jsonObject;
+		}
 		boolean mdns = (applicationProtocol == APPLICATION_PROTOCOL.MDNS);
 		if (qcount.equals(Q_COUNT.OPT)) {
 			return getOPTAsJson(mdns);
