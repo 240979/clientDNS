@@ -3,7 +3,6 @@ package models;
 import enums.APPLICATION_PROTOCOL;
 import enums.TRANSPORT_PROTOCOL;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.net.NetworkInterface;
 
@@ -11,29 +10,22 @@ public class ConnectionSettings {
     @Getter
     String domain;
     @Getter
-    @Setter
     TRANSPORT_PROTOCOL transport_protocol;
     @Getter
     APPLICATION_PROTOCOL application_protocol;
     @Getter
-    @Setter
     String resolverIP;
     @Getter
     NetworkInterface netInterface;
     @Getter
-    @Setter
     String resolverUri;
     @Getter
-    @Setter
     String path;
     @Getter
-    @Setter
     boolean isReqJsonFormat;
     @Getter
-    @Setter
     boolean isDomainNameUsed;
     @Getter
-    @Setter
     int resolverPort;
     @Getter
     boolean holdConnection;
@@ -77,6 +69,18 @@ public class ConnectionSettings {
             this.path = null;
             this.resolverPort = 0;
             holdConnection=false;
+        }
+        public ConnectionSettingsBuilder(ConnectionSettings cs) {
+            this.transport_protocol = cs.transport_protocol;
+            this.application_protocol = cs.application_protocol;
+            this.resolverIP = cs.resolverIP;
+            this.netInterface = cs.netInterface;
+            this.resolverUri = cs.resolverUri;
+            this.isReqJsonFormat = cs.isReqJsonFormat;
+            this.isDomainNameUsed = cs.isDomainNameUsed;
+            this.path = cs.path;
+            this.resolverPort = cs.resolverPort;
+            this.holdConnection = cs.holdConnection;
         }
 
         public ConnectionSettings build(){

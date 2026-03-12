@@ -1,8 +1,8 @@
 package testing;
 
 import javafx.concurrent.Task;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -13,8 +13,8 @@ import ui.GeneralController;
 import java.util.List;
 import java.util.logging.Logger;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 public class DoqTester extends Task<Void> {
 
     private static final Logger LOGGER = Logger.getLogger(DoqTester.class.getName());
@@ -39,12 +39,17 @@ public class DoqTester extends Task<Void> {
         for (Result result : results) {
             LOGGER.info("DoqTester task started for " + result.getName());
             LOGGER.info("Starting DoqTester for " + result.getName());
-            this.connectionSettings.setResolverIP(result.getIp());
-            this.connectionSettings.setResolverPort(result.getPort());
-            this.requestSettings.setDomain(result.getDomain());
-            DNSTaskBase task = new DnsDoqTask(requestSettings, connectionSettings, result, numberOfRequests, cooldown);
+            ConnectionSettings cs = new ConnectionSettings.ConnectionSettingsBuilder(this.connectionSettings)
+                    .resolverIP(result.getIp())
+                    .resolverPort(result.getPort())
+                    .isDomainNameUsed(false)
+                    .build();
+            RequestSettings rs = new RequestSettings.RequestSettingsBuilder(this.requestSettings)
+                    .domain(result.getDomain())
+                    .build();
+            DNSTaskBase task = new DnsDoqTask(rs, cs, result, numberOfRequests, cooldown);
             LOGGER.info("Setting resolver IP: " + result.getIp());
-            LOGGER.info("Set resolver IP: " + this.connectionSettings.getResolverIP());
+            LOGGER.info("Set resolver IP: " + cs.getResolverIP());
             LOGGER.info("Setting port: " + result.getPort());
             task.setMassTesting(true);
             task.setController(controller);

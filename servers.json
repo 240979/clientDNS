@@ -83,7 +83,7 @@
     "port": 784
   },
   {
-    "name": "dns4eu (unfiltered)",
+    "name": "DNS4EU (unfiltered)",
     "domainName": "unfiltered.joindns4.eu",
     "ipv4":["86.54.11.100","86.54.11.200"],
     "ipv6":["2a13:1001::86:54:11:100", "2a13:1001::86:54:11:200"],
@@ -92,7 +92,7 @@
     "path": "dns-query"
   },
   {
-    "name": "dns4eu (protective)",
+    "name": "DNS4EU (protective)",
     "domainName": "protective.joindns4.eu",
     "ipv4":["86.54.11.1","86.54.11.201"],
     "ipv6":["2a13:1001::86:54:11:1","2a13:1001::86:54:11:201"],
@@ -101,7 +101,7 @@
     "path": "dns-query"
   },
   {
-    "name": "dns4eu (child protection)",
+    "name": "DNS4EU (child protection)",
     "domainName": "child.joindns4.eu",
     "ipv4":["86.54.11.12","86.54.11.212"],
     "ipv6":["2a13:1001::86:54:11:12", "2a13:1001::86:54:11:212"],
@@ -110,7 +110,7 @@
     "path": "dns-query"
   },
   {
-    "name": "dns4eu (Ad-blocking)",
+    "name": "DNS4EU (Ad-blocking)",
     "domainName": "noads.joindns4.eu",
     "ipv4":["86.54.11.13","86.54.11.213"],
     "ipv6":["2a13:1001::86:54:11:13", "2a13:1001::86:54:11:213"],
@@ -119,7 +119,7 @@
     "path": "dns-query"
   },
   {
-    "name": "dns4eu (Ad-blocking + Child protection)",
+    "name": "DNS4EU (Ad-blocking + Child protection)",
     "domainName": "child-noads.joindns4.eu",
     "ipv4":["86.54.11.11","86.54.11.211"],
     "ipv6":["2a13:1001::86:54:11:11", "2a13:1001::86:54:11:211"],

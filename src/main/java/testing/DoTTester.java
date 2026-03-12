@@ -4,7 +4,8 @@ package testing;
  * Link - https://github.com/xramos00/DNS_client
  * */
 import javafx.concurrent.Task;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -18,7 +19,8 @@ import java.util.logging.Logger;
  * Protocol specific task, which starts another task, which perform repeated querying on domain against given server
  * Sequentially for each domain task is started after previous has finished
  * */
-@Data
+@Getter
+@Setter
 public class DoTTester extends Task<Void> {
 
     private static final Logger LOGGER = Logger.getLogger(DoTTester.class.getName());
@@ -45,9 +47,14 @@ public class DoTTester extends Task<Void> {
             // create new thread, which will start given task, which runs DNS over TCP and returns duration of request
             // to given Double object which was passed inside
             LOGGER.info("Starting DotTester for "+result.getName());
-            this.connectionSettings.setResolverIP(result.getIp());
-            this.requestSettings.setDomain(result.getDomain());
-            DNSTaskBase task = new DnsDotTask(requestSettings, connectionSettings, result,duration, cooldown);
+            ConnectionSettings cs = new ConnectionSettings.ConnectionSettingsBuilder(this.connectionSettings)
+                    .resolverIP(result.getIp())
+                    .isDomainNameUsed(false)
+                    .build();
+            RequestSettings rs = new RequestSettings.RequestSettingsBuilder(this.requestSettings)
+                    .domain(result.getDomain())
+                    .build();
+            DNSTaskBase task = new DnsDotTask(rs, cs, result, duration, cooldown);
             LOGGER.info("Setting resolver IP: " + result.getIp());
             LOGGER.info("Set resolver IP: " + this.connectionSettings.getResolverIP());
             task.setMassTesting(true);

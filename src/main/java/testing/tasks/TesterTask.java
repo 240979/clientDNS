@@ -7,8 +7,8 @@ import enums.APPLICATION_PROTOCOL;
 import enums.TRANSPORT_PROTOCOL;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -24,8 +24,8 @@ import java.util.logging.Logger;
 * Main Mass Testing task, which starts protocol specific tasks also preparing data structure for storing of results,
 * after start of protocol specific task waits until the end of all requests, calculate results on fly and display them
 * */
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 public class TesterTask extends Task<Void> {
 
     List<Task<Void>> tasks = new LinkedList<>();

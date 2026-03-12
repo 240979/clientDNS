@@ -7,8 +7,8 @@ import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import javafx.concurrent.Task;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -24,8 +24,8 @@ import java.util.logging.Logger;
  * Protocol specific task, which starts another task, which perform repeated querying on domain against given server
  * Sequentially for each domain task is started after previous has finished
  * */
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public class TcpTester extends Task<Void> {
 
     private boolean recursion;
@@ -63,12 +63,13 @@ public class TcpTester extends Task<Void> {
         for (Result result : results) {
             // create new thread, which will start given task, which runs DNS over TCP and returns duration of request
             // to given Double object which was passed inside
-            LOGGER.info("StartingTcpTester for " + result.getName());
-            this.connectionSettings.setResolverIP(result.getIp());
-            this.requestSettings.setDomain(result.getDomain());
-            LOGGER.info("Setting resolver IP: " + result.getIp());
-            LOGGER.info("Set resolver IP: " + this.connectionSettings.getResolverIP());
-            DNSTaskBase task = new DnsTcpTask(requestSettings, connectionSettings, result, duration, cooldown);
+            ConnectionSettings cs = new ConnectionSettings.ConnectionSettingsBuilder(this.connectionSettings)
+                    .resolverIP(result.getIp())
+                    .build();
+            RequestSettings rs = new RequestSettings.RequestSettingsBuilder(this.requestSettings)
+                    .domain(result.getDomain())
+                    .build();
+            DNSTaskBase task = new DnsTcpTask(rs, cs, result, duration, cooldown);
             task.setMassTesting(true);
             task.setController(controller);
             Thread thread = new Thread(task);

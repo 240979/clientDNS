@@ -4,7 +4,8 @@ package testing;
  * Link - https://github.com/xramos00/DNS_client
  * */
 import javafx.concurrent.Task;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -18,7 +19,8 @@ import java.util.logging.Logger;
 * Protocol specific task, which starts another task, which perform repeated querying on domain against given server
 * Sequentially for each domain task is started after previous has finished
 * */
-@Data
+@Getter
+@Setter
 public class DoHTester extends Task<Void> {
 
     private int duration;
@@ -43,19 +45,27 @@ public class DoHTester extends Task<Void> {
     protected Void call() throws Exception {
         // for each domain
         for (Result result: results){
+            LOGGER.info("Result: " + result.getName() +
+                    " path=" + result.getNs().getPath() +
+                    " ip=" + result.getIp());
             LOGGER.info("DoHTester task started for "+result.getName());
             // create new thread, which will start given task, which runs DNS over HTTPS and stores durations of requests
             // in given Result data structure
             LOGGER.info("Starting DoHTester for "+result.getName());
 
             // This settings must be altered here, because these parameters are changing
-            this.connectionSettings.setResolverIP(result.getIp());
-            this.connectionSettings.setPath(result.getNs().getPath());
-            this.connectionSettings.setDomainNameUsed(false);
-            this.connectionSettings.setResolverUri(result.getNs().getDomainName());
+            ConnectionSettings cs = new ConnectionSettings.ConnectionSettingsBuilder(this.connectionSettings)
+                    .resolverIP(result.getIp())
+                    .path(result.getNs().getPath())
+                    .isDomainNameUsed(false)
+                    .resolverUri(result.getNs().getDomainName())
+                    .build();
 
-            this.requestSettings.setDomain(result.getDomain());
-             DNSTaskBase task = new DnsDohTask(this.requestSettings, this.connectionSettings, result,duration,cooldown);
+            RequestSettings rs = new RequestSettings.RequestSettingsBuilder(this.requestSettings)
+                    .domain(result.getDomain())
+                    .build();
+
+            DNSTaskBase task = new DnsDohTask(rs, cs, result, duration, cooldown);
 
             task.setMassTesting(true);
             task.setController(controller);

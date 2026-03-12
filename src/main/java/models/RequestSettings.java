@@ -2,7 +2,6 @@ package models;
 
 import enums.Q_COUNT;
 import lombok.Getter;
-import lombok.Setter;
 
 public class RequestSettings {
 
@@ -19,7 +18,6 @@ public class RequestSettings {
     boolean doFlag;
 
     @Getter
-    @Setter
     String domain;
 
     @Getter
@@ -58,6 +56,15 @@ public class RequestSettings {
             this.isGet = false;
             this.domain = null;
             this.types = null;
+        }
+        public RequestSettingsBuilder(RequestSettings rs) {
+            this.recursion = rs.recursion;
+            this.adFlag = rs.adFlag;
+            this.cdFlag = rs.cdFlag;
+            this.doFlag = rs.doFlag;
+            this.domain = rs.domain;
+            this.types = rs.types;
+            this.isGet = rs.isGet;
         }
 
         public RequestSettings build() {

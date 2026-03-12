@@ -54,7 +54,7 @@ public class DnsDohTask extends DNSOverHTTPSTask {
                     super.sendData();
                     result.setResponseSize((byteSizeResponseDoHDecompressed));
                     JSONArray answers = null;
-                    // Select parser -- Wire format, standard parsing, JSOn format Json parsing
+                    // Select parser -- Wire format, standard parsing, JSON format JSON parsing
                     if (httpResponse != null) {
                         parser = new MessageParser(httpResponse);
                         answers = (JSONArray) httpResponse.get("Answer");

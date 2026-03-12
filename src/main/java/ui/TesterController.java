@@ -276,8 +276,10 @@ public class TesterController extends GeneralController {
                 ip.getIpv6DnsServers()));
 
         nameServerVBoxes = new LinkedList<>();
-        Config.getNameServers().forEach(nameServer -> otherDNSVbox.getChildren()
-                .add(new NameServerVBox(nameServer, null, this)));
+        Config.getNameServers().forEach(nameServer -> {
+            NameServerVBox vbox = new NameServerVBox(nameServer, null, this);
+            otherDNSVbox.getChildren().add(vbox);
+        });
         enableDnsServers();
 
 
@@ -374,8 +376,13 @@ public class TesterController extends GeneralController {
 
     protected void enableDoHServers() {
         otherDNSVbox.getChildren().forEach(node -> {
-            NameServerVBox nameServerVBox = (NameServerVBox) node;
-            nameServerVBox.setDisable(!nameServerVBox.getNameServer().isDoh());
+            NameServerVBox nsVBox = (NameServerVBox) node;
+            boolean enabled = nsVBox.getNameServer().isDoh();
+            nsVBox.setDisable(!enabled);
+            if (!enabled) {
+                nsVBox.getIPv4radioButton().setSelected(false);  // clear selections on disable
+                nsVBox.getIPv6radioButton().setSelected(false);
+            }
         });
         setDisabledDOH(false);
         setWiresharkMenuItems();
@@ -383,16 +390,26 @@ public class TesterController extends GeneralController {
 
     protected void enableDoTServers() {
         otherDNSVbox.getChildren().forEach(node -> {
-            NameServerVBox nameServerVBox = (NameServerVBox) node;
-            nameServerVBox.setDisable(!nameServerVBox.getNameServer().isDot());
+            NameServerVBox nsVBox = (NameServerVBox) node;
+            boolean enabled = nsVBox.getNameServer().isDot();
+            nsVBox.setDisable(!enabled);
+            if (!enabled) {
+                nsVBox.getIPv4radioButton().setSelected(false);  // clear selections on disable
+                nsVBox.getIPv6radioButton().setSelected(false);
+            }
         });
         setDisabledDOH(true);
         setWiresharkMenuItems();
     }
     protected void enableDoqServers() {
         otherDNSVbox.getChildren().forEach(node -> {
-            NameServerVBox nameServerVBox = (NameServerVBox) node;
-            nameServerVBox.setDisable(!nameServerVBox.getNameServer().isDoq());
+            NameServerVBox nsVBox = (NameServerVBox) node;
+            boolean enabled = nsVBox.getNameServer().isDoq();
+            nsVBox.setDisable(!enabled);
+            if (!enabled) {
+                nsVBox.getIPv4radioButton().setSelected(false);  // clear selections on disable
+                nsVBox.getIPv6radioButton().setSelected(false);
+            }
         });
         setDisabledDOH(true);
         setWiresharkMenuItems();
@@ -401,7 +418,14 @@ public class TesterController extends GeneralController {
     protected void enableDnsServers() {
         otherDNSVbox.getChildren().forEach(node -> {
             NameServerVBox nameServerVBox = (NameServerVBox) node;
-            nameServerVBox.setDisable(nameServerVBox.getNameServer().isDotOnly() || nameServerVBox.getNameServer().isDohOnly() || nameServerVBox.getNameServer().isDoqOnly());
+            boolean disabled = nameServerVBox.getNameServer().isDotOnly()
+                    || nameServerVBox.getNameServer().isDohOnly()
+                    || nameServerVBox.getNameServer().isDoqOnly();
+            nameServerVBox.setDisable(disabled);
+            if (disabled) {
+                nameServerVBox.getIPv4radioButton().setSelected(false);
+                nameServerVBox.getIPv6radioButton().setSelected(false);
+            }
         });
         setDisabledDOH(true);
         setWiresharkMenuItems();
@@ -572,7 +596,10 @@ public class TesterController extends GeneralController {
             // collect all servers which user wants to test
             otherDNSVbox.getChildren().filtered(node -> !node.isDisabled()).forEach(node -> {
                 NameServerVBox nsVBox = (NameServerVBox) node;
-                if (nsVBox.getSelectedIP(isIPv4) != null) {
+                boolean radioSelected = isIPv4
+                        ? nsVBox.getIPv4radioButton().isSelected()
+                        : nsVBox.getIPv6radioButton().isSelected();
+                if (radioSelected  && nsVBox.getSelectedIP(isIPv4) != null) {
                     List<Result> aux = new LinkedList<>();
                     domains.forEach(s -> aux.add(new Result(nsVBox.getNameServer(), nsVBox.getSelectedIP(isIPv4), s)));
                     results.add(aux);
