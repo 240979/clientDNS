@@ -703,8 +703,10 @@ public abstract class GeneralController {
         try{
             message = GeneralController.getLanguage().getLanguageBundle().getString(exceptionName);
         }catch (NullPointerException | MissingResourceException | ClassCastException e) {
-            LOGGER.severe("Caught Exception: " + exceptionName + ". Message does not have a localization.");
-            message = GeneralController.getLanguage().getLanguageBundle().getString("otherException"); // Exception was not found, show alert telling that
+            LOGGER.severe("Caught Exception: " + exceptionName + ". Message does not have a localization.\n");
+            message = GeneralController.getLanguage().getLanguageBundle().getString("otherException")
+             + exceptionName; // Exception was not found, show alert telling that
+
         }
         Alert alert = new Alert(Alert.AlertType.ERROR, message);
         alert.initModality(Modality.APPLICATION_MODAL);
