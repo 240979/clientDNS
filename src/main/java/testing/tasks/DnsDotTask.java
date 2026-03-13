@@ -38,43 +38,49 @@ public class DnsDotTask extends DNSOverTLS {
     }
 
     @Override
+    @SuppressWarnings("BusyWait")
     protected void sendData() {
         try {
+            initConnection(resolver);
             UInt16 generator = new UInt16();
-            for (i = 0; i < duration; i++){
-                try{
-                requests.clear();
-                header.setId(generator.generateRandom());
-                setSize(Header.getSize());
-                addRequests(qcountTypes,checkAndStripFullyQualifyName(domainAsString));
-                messageToBytes();
-                super.sendData();
-                parser = parseResponse();
-                result.setResponseSize((parser.getByteSizeResponse()));
-                if (parser.getHeader().getAnCount().getValue() == 0 || parser.getHeader().getRCode() != R_CODE.NO_ERROR) {
-                    result.getSuccess().add(false);
-                } else {
-                    result.getResponses().add(parser.getAncountResponses());
-                    result.getSuccess().add(true);
-                }
-                updateResultUI();
-                Platform.runLater(()->((TesterController) controller).getResultsTableView().refresh());
-                Thread.sleep(cooldown);
+            for (i = 0; i < duration; i++) {
+                try {
+                    requests.clear();
+                    header.setId(generator.generateRandom());
+                    setSize(Header.getSize());
+                    addRequests(qcountTypes, checkAndStripFullyQualifyName(domainAsString));
+                    messageToBytes();
+                    setStartTime(System.nanoTime());
+                    sendSingleRequest();
+                    parser = parseResponse();
+                    result.setResponseSize(parser.getByteSizeResponse());
+                    if (parser.getHeader().getAnCount().getValue() == 0
+                            || parser.getHeader().getRCode() != R_CODE.NO_ERROR) {
+                        result.getSuccess().add(false);
+                    } else {
+                        result.getResponses().add(parser.getAncountResponses());
+                        result.getSuccess().add(true);
+                    }
+                    updateResultUI();
+                    Platform.runLater(() -> ((TesterController) controller).getResultsTableView().refresh());
+                    Thread.sleep(cooldown);
                 } catch (NotValidIPException
                          | UnsupportedEncodingException
                          | NotValidDomainNameException
                          | TimeoutException
-                         | SSLException
                          | QueryIdNotMatchException
-                         | UnknownHostException
-                         | InterfaceDoesNotHaveIPAddressException e){
+                         | UnknownHostException e) {
                     result.getExceptions().add(e);
                     result.getSuccess().add(false);
                 }
             }
-        } catch (InterruptedException e) {
-            getChannel().close();
+        }catch (InterruptedException e){
+            LOGGER.info("Interrupted!");
+        } catch ( SSLException
+                 | InterfaceDoesNotHaveIPAddressException e) {
             LOGGER.severe(ExceptionUtils.getStackTrace(e));
+        } finally {
+            closeConnection();
         }
     }
 

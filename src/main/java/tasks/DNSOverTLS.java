@@ -50,19 +50,15 @@ public class DNSOverTLS extends DNSTaskBase{
     private volatile Exception exc = null;
     private boolean useResolverDomainName;
     private String resolverDomainName;
-    private final CountDownLatch latch = new CountDownLatch(1);
+    private volatile CountDownLatch latch;
 
     public DNSOverTLS(RequestSettings rs, ConnectionSettings cs) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(rs, cs, null);
         this.useResolverDomainName = cs.isDomainNameUsed();
         this.resolverDomainName = cs.getResolverUri();
     }
-
-    @Override
-    protected void sendData() throws TimeoutException, SSLException, InterruptedException, InterfaceDoesNotHaveIPAddressException {
-        setStartTime(System.nanoTime());
+    protected void initConnection(String target) throws SSLException, InterruptedException, InterfaceDoesNotHaveIPAddressException {
         OpenSsl.ensureAvailability();
-        String target = useResolverDomainName ? resolverDomainName : resolver;
         LOGGER.info("Target used: " + target);
         sslCtx = SslContextBuilder.forClient()
                 .protocols("TLSv1.3")
@@ -99,8 +95,12 @@ public class DNSOverTLS extends DNSTaskBase{
         }
         channel = bootstrap.connect(target, 853).sync().channel();
         channel.config().setConnectTimeoutMillis(3000);
-        channel.writeAndFlush(Unpooled.wrappedBuffer(getMessageAsBytes())).sync();
+    }
 
+    protected void sendSingleRequest() throws TimeoutException, InterruptedException {
+        latch = new CountDownLatch(1);  // reset for each request
+        exc = null;                      // reset exception
+        channel.writeAndFlush(Unpooled.wrappedBuffer(getMessageAsBytes())).sync();
         boolean completed = latch.await(5, TimeUnit.SECONDS);
         if (!completed || exc != null) {
             throw new TimeoutException();
@@ -109,9 +109,21 @@ public class DNSOverTLS extends DNSTaskBase{
         setStopTime(System.nanoTime());
         setDuration(calculateDuration());
         setMessagesSent(1);
-        if (!massTesting) {
-            Platform.runLater(() -> controller.getSendButton().setText(controller.getButtonText()));
-        }
+    }
+    protected void closeConnection() {
+        if (channel != null) channel.close();
+        if (group != null) group.shutdownGracefully();
+    }
+
+
+    @Override
+    protected void sendData() throws TimeoutException, SSLException, InterruptedException, InterfaceDoesNotHaveIPAddressException {
+        setStartTime(System.nanoTime());
+        String target = useResolverDomainName ? resolverDomainName : resolver;
+        initConnection(target);
+        sendSingleRequest();
+        closeConnection();
+        Platform.runLater(() -> controller.getSendButton().setText(controller.getButtonText()));
     }
 
     @Override

@@ -35,12 +35,19 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
         task.setReceiveReply(pck);
 
         switch (task) {
-            case DNSOverTLS dnsOverTLS -> dnsOverTLS.getLatch().countDown();
-            case DNSOverQUICTask dnsOverQUICTask -> dnsOverQUICTask.getLatch().countDown();
+            case DNSOverTLS dnsOverTLS -> {
+                dnsOverTLS.getLatch().countDown();
+                if (!dnsOverTLS.isMassTesting()) {
+                    channelHandlerContext.close();
+                }
+            }
+            case DNSOverQUICTask dnsOverQUICTask ->{
+                dnsOverQUICTask.getLatch().countDown();
+                channelHandlerContext.close();
+            }
             default -> {
             }
         }
-        channelHandlerContext.close();
     }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
