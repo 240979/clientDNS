@@ -78,9 +78,11 @@
     "domainName":"dns.adguard-dns.com",
     "ipv4":["94.140.15.15","94.140.14.14"],
     "ipv6":["2a10:50c0::ad1:ff","2a10:50c0::ad2:ff"],
-    "doq":true,
+    "doh": true,
     "dot": true,
-    "port": 784
+    "doq":true,
+    "port": 784,
+    "path": "dns-query"
   },
   {
     "name": "DNS4EU (unfiltered)",
@@ -133,6 +135,9 @@
     "ipv4":["76.76.2.11"],
     "ipv6":["2606:1a40::11"],
     "doq":true,
+    "dot": true,
+    "doh": true,
+    "path":"p0",
     "port": 853
   },
   {
