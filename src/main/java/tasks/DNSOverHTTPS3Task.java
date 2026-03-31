@@ -31,7 +31,7 @@ import java.util.concurrent.*;
 public class DNSOverHTTPS3Task extends DNSOverHTTPSTask {
 
     @Getter
-    private final CountDownLatch latch = new CountDownLatch(1);
+    private CountDownLatch latch = new CountDownLatch(1);
 
 
     public DNSOverHTTPS3Task(RequestSettings rs, ConnectionSettings cs)
@@ -197,5 +197,8 @@ public class DNSOverHTTPS3Task extends DNSOverHTTPSTask {
         if (httpResponse != null) // JSON path
             return new MessageParser(httpResponse);
         return super.parseResponse(); // wire format path
+    }
+    public void resetLatch() {
+        latch = new CountDownLatch(1);
     }
 }

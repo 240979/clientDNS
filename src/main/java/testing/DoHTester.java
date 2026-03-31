@@ -3,6 +3,7 @@ package testing;
  * Author - Patricia Ramosova
  * Link - https://github.com/xramos00/DNS_client
  * */
+import enums.TRANSPORT_PROTOCOL;
 import javafx.concurrent.Task;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.DNSTaskBase;
+import testing.tasks.DnsDoh3Task;
 import testing.tasks.DnsDohTask;
 import ui.GeneralController;
 
@@ -64,8 +66,12 @@ public class DoHTester extends Task<Void> {
             RequestSettings rs = new RequestSettings.RequestSettingsBuilder(this.requestSettings)
                     .domain(result.getDomain())
                     .build();
-
-            DNSTaskBase task = new DnsDohTask(rs, cs, result, duration, cooldown);
+            DNSTaskBase task;
+            if(cs.getTransport_protocol() == TRANSPORT_PROTOCOL.UDP){
+                task = new DnsDoh3Task(rs,cs, result, duration, cooldown);
+            }else{
+                task  = new DnsDohTask(rs, cs, result, duration, cooldown);
+            }
 
             task.setMassTesting(true);
             task.setController(controller);

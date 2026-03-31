@@ -39,6 +39,7 @@ public class TesterController extends GeneralController {
 
     public static final String FXML_FILE_NAME = "/fxml/Tester.fxml";
 
+
     private ToggleGroup dnsProtocolToggleGroup;
 
     @FXML
@@ -158,7 +159,15 @@ public class TesterController extends GeneralController {
     @FXML
     @Translation
     protected MenuItem copyJsonResponses;
-
+    @FXML
+    private RadioButton http2RadioButton;
+    @FXML
+    private RadioButton http3RadioButton;
+    @FXML
+    protected ToggleGroup httpVersionToggleGroup;
+    @FXML
+    @Translation
+    public TitledPane httpVersionTitledPane;
 
     private List<NameServerVBox> nameServerVBoxes;
 
@@ -254,19 +263,23 @@ public class TesterController extends GeneralController {
 
         requestFormatToggleGroup = new ToggleGroup();
         requestFormatVBox = new VBox();
-        requestFormatTitledPane = new TitledPane();
+        //requestFormatTitledPane = new TitledPane();
 
         jsonFormat.setToggleGroup(requestFormatToggleGroup);
         wireFormat.setToggleGroup(requestFormatToggleGroup);
 
         getPostToggleGroup = new ToggleGroup();
         getPostVBox = new VBox();
-        getPostTitledPane = new TitledPane();
+        //getPostTitledPane = new TitledPane();
 
         get.setToggleGroup(getPostToggleGroup);
         post.setToggleGroup(getPostToggleGroup);
-        setDisabledDOH(true);
 
+        httpVersionToggleGroup = new ToggleGroup();
+        http2RadioButton.setToggleGroup(httpVersionToggleGroup);
+        http3RadioButton.setToggleGroup(httpVersionToggleGroup);
+
+        setDisabledDOH(true);
 
         dnsTcpButton.selectedProperty().addListener((_, _, newValue) ->
                 holdConnectionCheckbox.setDisable(!newValue));
@@ -616,6 +629,9 @@ public class TesterController extends GeneralController {
             APPLICATION_PROTOCOL application_protocol = APPLICATION_PROTOCOL.DNS;
             if (dnsUdpButton.isSelected()) {
                 transport_protocol = TRANSPORT_PROTOCOL.UDP;
+            } else if (dnsDohButton.isSelected() && http3RadioButton.isSelected()) {
+                application_protocol = APPLICATION_PROTOCOL.DOH;
+                transport_protocol = TRANSPORT_PROTOCOL.UDP;
             } else if (dnsDohButton.isSelected()) {
                 application_protocol = APPLICATION_PROTOCOL.DOH;
             } else if (dnsDotButton.isSelected()) {
@@ -765,6 +781,9 @@ public class TesterController extends GeneralController {
         get.setDisable(disabled);
         post.setDisable(disabled);
         getPostTitledPane.setDisable(disabled);
+        http3RadioButton.setDisable(disabled);
+        http2RadioButton.setDisable(disabled);
+        httpVersionTitledPane.setDisable(disabled);
     }
 
 }
