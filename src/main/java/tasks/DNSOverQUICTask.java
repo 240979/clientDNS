@@ -1,5 +1,6 @@
 /*
 * Created by 240979
+* With respect to: https://github.com/netty/netty-incubator-codec-quic/blob/main/codec-native-quic/src/test/java/io/netty/incubator/codec/quic/example/QuicClientExample.java
 * */
 package tasks;
 

@@ -1,7 +1,7 @@
 /*
     Created by 240979.
-    This was created using knowledge from DoQ module and with respect tO:
-
+    This was created using knowledge from DoQ module and with respect to:
+    https://github.com/netty/netty-incubator-codec-http3/blob/main/src/test/java/io/netty/incubator/codec/http3/example/Http3ClientExample.java
 */
 package tasks;
 
