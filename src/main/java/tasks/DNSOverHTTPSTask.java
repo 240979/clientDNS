@@ -1,6 +1,8 @@
 package tasks;
 
 import exceptions.*;
+import lombok.Getter;
+import lombok.Setter;
 import models.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.hc.client5.http.async.methods.*;
@@ -33,6 +35,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Set;
@@ -42,17 +46,21 @@ import java.util.concurrent.ExecutionException;
 public class DNSOverHTTPSTask extends DNSTaskBase {
     public static final String[] httpRequestParamsName = new String[]{"name", "type", "do", "cd"};
     protected String httpRequest;
+    @Getter
+    @Setter
     protected JSONObject httpResponse;
+    @Setter
     protected int byteSizeResponseDoHDecompressed;
 
-    private final boolean cdFlag;
-    private final boolean isGet;
-    private final String serverDomainName;
-    private CloseableHttpAsyncClient httpClient;
-    private InetAddress localAddress;
-    private final boolean isReqJsonFormat;
-    private final boolean isDomainNameUsed;
-    private final String path;
+    protected final boolean cdFlag;
+    protected final boolean isGet;
+    protected final String serverDomainName;
+    protected CloseableHttpAsyncClient httpClient;
+    protected InetAddress localAddress;
+    protected final boolean isReqJsonFormat;
+    protected final boolean isDomainNameUsed;
+    protected final String path;
+    @Setter
     protected int responseCode;
 
     public DNSOverHTTPSTask(RequestSettings requestSettings, ConnectionSettings connectionSettings)
@@ -69,7 +77,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
     @Override
     protected void sendData() throws TimeoutException, MessageTooBigForUDPException, InterfaceDoesNotHaveIPAddressException,
             IOException, InterruptedException, ParseException, HttpCodeException, OtherHttpException,
-            NotValidDomainNameException, NotValidIPException, QueryIdNotMatchException, ExecutionException {
+            NotValidDomainNameException, NotValidIPException, QueryIdNotMatchException, ExecutionException, NoSuchAlgorithmException, KeyStoreException {
 
         String[] values = new String[]{domainAsString, qcountAsString(), "" + doFlag, "" + cdFlag};
         setMessagesSent(1);
@@ -87,7 +95,11 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         SimpleHttpResponse response = sendAndReceiveDoH(uri, isGet, isReqJsonFormat);
         setDuration(calculateDuration());
         this.responseCode = response.getCode();
-        if (response.getCode() == 200 && isReqJsonFormat) {
+        // Because ControlD accepted json and returned Wire, I have to check manually what format is given back
+        String contentType = response.getFirstHeader("content-type") != null
+                ? response.getFirstHeader("content-type").getValue() : "";
+
+        if (response.getCode() == 200 && contentType.contains("application/dns-json")) {
             String content = response.getBodyText();
             JSONParser parser = new JSONParser();
             this.httpResponse = (JSONObject) parser.parse(content);
@@ -168,7 +180,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         return item;
     }
 
-    private String addParamsToUriAsJson(String uri, String[] values) {
+    protected String addParamsToUriAsJson(String uri, String[] values) {
         String[] split = uri.split("/");
         if (Ip.isIpv6Address(split[0])) {
             uri = "[" + split[0] + "]";
@@ -193,7 +205,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         }
         return sb.toString();
     }
-    private String addParamsToUriAsBase64Url(String uri) {
+    protected String addParamsToUriAsBase64Url(String uri) {
 
         String[] split = uri.split("/");
         if (Ip.isIpv6Address(split[0])) {
@@ -224,7 +236,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
     }
 
 
-    private String qcountAsString() {
+    protected String qcountAsString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < qcountTypes.length; i++) {
             if (i == 0) {
@@ -251,7 +263,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
 
         if (isJson) request.addHeader("Accept", "application/dns-json");
         else request.addHeader("Accept", "application/dns-message");
-        request.addHeader("Accept-Encoding", "gzip, deflate, br");
+        // request.addHeader("Accept-Encoding", "gzip, deflate, br");
         request.addHeader("User-Agent", "Client-DNS");
         httpRequestAsString(request);
 

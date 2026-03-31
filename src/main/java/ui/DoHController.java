@@ -20,6 +20,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import models.*;
+import tasks.DNSOverHTTPS3Task;
 import tasks.DNSOverHTTPSTask;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -29,6 +30,7 @@ import java.util.LinkedList;
 import java.util.ResourceBundle;
 
 public class DoHController extends GeneralController {
+
     @FXML
     @Translation
     protected RadioButton jsonFormat;
@@ -48,6 +50,13 @@ public class DoHController extends GeneralController {
     protected RadioButton post;
     @FXML
     protected ToggleGroup getPostToggleGroup;
+    @FXML
+    private RadioButton http2RadioButton;
+    @FXML
+    private RadioButton http3RadioButton;
+    @FXML
+    @Translation
+    public TitledPane httpVersionTitledPane;
 
     private Stage helpStage = null;
 
@@ -88,6 +97,9 @@ public class DoHController extends GeneralController {
         post.setToggleGroup(getPostToggleGroup);
         post.setOnMouseClicked(_ -> disableGetOnlyServers(true));
         get.setOnMouseClicked(_ -> disableGetOnlyServers(false));
+        ToggleGroup httpVersionToggleGroup = new ToggleGroup();
+        http2RadioButton.setToggleGroup(httpVersionToggleGroup);
+        http3RadioButton.setToggleGroup(httpVersionToggleGroup);
 
         Config.getNameServers().stream().filter(NameServer::isDoh).forEach(nameServer -> otherDNSVbox.getChildren()
                 .add(new NameServerVBox(nameServer, dnsserverToggleGroup, this)));
@@ -189,7 +201,11 @@ public class DoHController extends GeneralController {
                     .isDomainNameUsed(isDomainNameUsed())
                     .path(path)
                     .build();
-            task = new DNSOverHTTPSTask(requestSettings, connectionSettings);
+            if (http3RadioButton.isSelected()) {
+                task = new DNSOverHTTPS3Task(requestSettings, connectionSettings);
+            } else {
+                task = new DNSOverHTTPSTask(requestSettings, connectionSettings);
+            }
 
             numberOfMessagesValueLabel.textProperty().bind(task.messagesSentPropertyProperty().asString());
             responseTimeValueLabel.textProperty().bind(task.durationPropertyProperty().asString());

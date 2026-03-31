@@ -54,6 +54,12 @@
             <artifactId>httpcore5-h2</artifactId>
             <version>5.4</version>
         </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/io.netty.incubator/netty-incubator-codec-http3 -->
+        <dependency>
+            <groupId>io.netty.incubator</groupId>
+            <artifactId>netty-incubator-codec-http3</artifactId>
+            <version>0.0.30.Final</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>

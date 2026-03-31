@@ -145,6 +145,12 @@
                      <RadioButton fx:id="post" mnemonicParsing="false" text="POST"/>
                   </VBox>
                </TitledPane>
+               <TitledPane fx:id="httpVersionTitledPane" expanded="false" maxWidth="1.7976931348623157E308" text="%httpVersionTitledPane">
+                  <VBox>
+                     <RadioButton fx:id="http2RadioButton" mnemonicParsing="false" selected="true" text="HTTP/2"/>
+                     <RadioButton fx:id="http3RadioButton" mnemonicParsing="false" text="HTTP/3"/>
+                  </VBox>
+               </TitledPane>
                <TitledPane fx:id="networkTitledPane" expanded="false" text="%networkTitledPane">
                   <VBox alignment="CENTER_LEFT">
                      <RadioButton fx:id="IPv4RadioButton" mnemonicParsing="false"
