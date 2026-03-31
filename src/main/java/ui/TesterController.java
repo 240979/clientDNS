@@ -398,7 +398,7 @@ public class TesterController extends GeneralController {
             }
         });
         setDisabledDOH(false);
-        setWiresharkMenuItems();
+        // setWiresharkMenuItems();
     }
 
     protected void enableDoTServers() {
@@ -412,7 +412,7 @@ public class TesterController extends GeneralController {
             }
         });
         setDisabledDOH(true);
-        setWiresharkMenuItems();
+        // setWiresharkMenuItems();
     }
     protected void enableDoqServers() {
         otherDNSVbox.getChildren().forEach(node -> {
@@ -425,7 +425,7 @@ public class TesterController extends GeneralController {
             }
         });
         setDisabledDOH(true);
-        setWiresharkMenuItems();
+        // setWiresharkMenuItems();
     }
 
     protected void enableDnsServers() {
@@ -441,7 +441,7 @@ public class TesterController extends GeneralController {
             }
         });
         setDisabledDOH(true);
-        setWiresharkMenuItems();
+        // setWiresharkMenuItems();
     }
 
     @Override
@@ -509,9 +509,9 @@ public class TesterController extends GeneralController {
 
     @Override
     protected void updateCustomParameters() {
-
         if (dnsDohButton.isSelected()){
             parameters.put(WiresharkFilter.Parameters.TCPPORT, "443");
+            parameters.put(WiresharkFilter.Parameters.UDPPORT, "443");
         } else if (dnsDotButton.isSelected()){
             parameters.put(WiresharkFilter.Parameters.TCPPORT, "853");
         } else if (dnsDoqButton.isSelected()){
@@ -537,16 +537,9 @@ public class TesterController extends GeneralController {
         filters = new ArrayList<>();
         filters.add(new WiresharkFilter("IP", "${ip}"));
         filters.add(new WiresharkFilter("IP filter", "${prefix}.addr == ${ip}"));
-        if (dnsDohButton.isSelected()){
-            filters.add(new WiresharkFilter("IP & TCP", "${prefix}.addr == ${ip} && tcp.port == ${tcpPort}"));
-        } else if (dnsDotButton.isSelected()){
-            filters.add(new WiresharkFilter("IP & TCP", "${prefix}.addr == ${ip} && tcp.port == ${tcpPort}"));
-        } else if (dnsDoqButton.isSelected()){
-            filters.add(new WiresharkFilter("IP & UDP", "${prefix}.addr == ${ip} && udp.port == ${udpPort}"));
-        } else {
-            filters.add(new WiresharkFilter("IP & TCP & UDP", "${prefix}.addr == ${ip} && (tcp.port == ${tcpPort} || udp" +
-                    ".port == ${udpPort})"));
-        }
+        filters.add(new WiresharkFilter("IP & TCP", "${prefix}.addr == ${ip} && tcp.port == ${tcpPort}"));
+        filters.add(new WiresharkFilter("IP & UDP", "${prefix}.addr == ${ip} && udp.port == ${udpPort}"));
+        filters.add(new WiresharkFilter("IP & TCP & UDP", "${prefix}.addr == ${ip} && (tcp.port == ${tcpPort} || udp.port == ${udpPort})"));
         for (WiresharkFilter filter : filters) {
             RadioMenuItem menuItem;
             menuItem = new RadioMenuItem(filter.getName());
@@ -554,7 +547,7 @@ public class TesterController extends GeneralController {
             menuItem.setToggleGroup(wiresharkFilterToggleGroup);
             wiresharkMenu.getItems().add(menuItem);
         }
-        wiresharkFilterToggleGroup.selectToggle(null);
+        //wiresharkFilterToggleGroup.selectToggle(null);
     }
 
     @Override
