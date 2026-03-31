@@ -25,8 +25,6 @@ import tasks.DNSOverHTTPSTask;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.ResourceBundle;
 
 public class DoHController extends GeneralController {
@@ -331,25 +329,6 @@ public class DoHController extends GeneralController {
     private void deleteDomainNameHistoryFired() {
         settings.eraseDomainNames();
         savedDomainNamesChoiceBox.getItems().removeAll(savedDomainNamesChoiceBox.getItems());
-    }
-
-    @Override
-    protected void setWiresharkMenuItems() {
-        parameters = new HashMap<>();
-        parameters.put("prefix", "ipv4");
-        parameters.put("ip", null);
-        parameters.put("tcpPort", null);
-        wiresharkMenu.getItems().clear();
-        filters = new LinkedList<>();
-        filters.add(new WiresharkFilter("IP", "${ip}"));
-        filters.add(new WiresharkFilter("IP filter", "${prefix}.addr == ${ip}"));
-        filters.add(new WiresharkFilter("IP & TCP", "${prefix}.addr == ${ip} && tcp.port == ${tcpPort}"));
-        for (WiresharkFilter filter : filters) {
-            RadioMenuItem menuItem = new RadioMenuItem(filter.getName());
-            menuItem.setUserData(filter);
-            menuItem.setToggleGroup(wiresharkFilterToggleGroup);
-            wiresharkMenu.getItems().add(menuItem);
-        }
     }
 
     protected boolean isRequestJson(){
