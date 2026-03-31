@@ -1,8 +1,14 @@
+/*
+    Created by 240979.
+    This was created using knowledge from DoQ module and with respect tO:
+
+*/
 package tasks;
 
 import exceptions.*;
 import exceptions.TimeoutException;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
@@ -86,18 +92,12 @@ public class DNSOverHTTPS3Task extends DNSOverHTTPSTask {
             LOGGER.info("DoH3 target: " + target + ":" + 443);
 
             QuicChannel quicChannel = QuicChannel.newBootstrap(channel)
-                    .handler(new ChannelInitializer<QuicChannel>() {
-                        @Override
-                        protected void initChannel(QuicChannel ch) {
-                            ch.pipeline().addLast(new Http3ClientConnectionHandler());
-                        }
-                    })
-                    .streamHandler(new SharableInboundHandlerAdapter())
+                    .handler(new Http3ClientConnectionHandler())
                     .remoteAddress(new InetSocketAddress(target, 443))
                     .connect()
                     .get();
 
-            // Open H3 request stream with codec + our handler wired in
+            // Open H3 request stream with codec
             QuicStreamChannel stream = Http3.newRequestStreamBootstrap(quicChannel, new DoH3ClientInitializer(this))
                     .create()
                     .sync()
@@ -111,23 +111,56 @@ public class DNSOverHTTPS3Task extends DNSOverHTTPSTask {
                 uri = addParamsToUriAsBase64Url(target + "/" + path);
             }
             LOGGER.info("Uri used: " + uri);
+            Http3Headers headers;
             String withoutScheme = uri.substring("https://".length());
             String host = withoutScheme.split("/")[0];
             String fullPath = withoutScheme.substring(host.length());
+            if(isGet){
+                LOGGER.info("Method used: GET");
+                // GET and both JSON or WIRE
+                headers = new DefaultHttp3Headers()
+                        .method("GET")
+                        .scheme("https")
+                        .authority(host)
+                        .path(fullPath)
+                        .add("accept", isReqJsonFormat ? "application/dns-json" : "application/dns-message");
+                setMessagesSent(1);
+                startTime = System.nanoTime();
 
-            Http3Headers headers = new DefaultHttp3Headers()
-                    .method("GET")
-                    .scheme("https")
-                    .authority(host)
-                    .path(fullPath)
-                    .add("accept", isReqJsonFormat ? "application/dns-json" : "application/dns-message");
+                stream.writeAndFlush(new DefaultHttp3HeadersFrame(headers))
+                        .addListener(QuicStreamChannel.SHUTDOWN_OUTPUT);
+            }else if(isReqJsonFormat){
+                // POST and JSON means do it as GET JSON, but with POST -- req. in URL
+                LOGGER.info("Method used: POST and JSON");
+                headers = new DefaultHttp3Headers()
+                        .method("POST")
+                        .scheme("https")
+                        .authority(host)
+                        .path(fullPath)
+                        .add("accept", "application/dns-json");
+                setMessagesSent(1);
+                startTime = System.nanoTime();
 
-
-            setMessagesSent(1);
-            startTime = System.nanoTime();
-
-            stream.writeAndFlush(new DefaultHttp3HeadersFrame(headers))
-                    .addListener(QuicStreamChannel.SHUTDOWN_OUTPUT);
+                stream.writeAndFlush(new DefaultHttp3HeadersFrame(headers))
+                        .addListener(QuicStreamChannel.SHUTDOWN_OUTPUT);
+            }else{
+                // POST and WIRE
+                LOGGER.info("Method used: POST and WIRE");
+                fullPath = "/" + path;
+                headers = new DefaultHttp3Headers()
+                        .method("POST")
+                        .scheme("https")
+                        .authority(host)
+                        .path(fullPath)
+                        .add("accept", "application/dns-message")
+                        .add("content-type", "application/dns-message");
+                setMessagesSent(1);
+                startTime = System.nanoTime();
+                // Because I need to put the request in the body, I need to send HEADERS and then DATA
+                stream.write(new DefaultHttp3HeadersFrame(headers));
+                stream.writeAndFlush(new DefaultHttp3DataFrame(Unpooled.wrappedBuffer(getMessageAsBytes())))
+                        .addListener(QuicStreamChannel.SHUTDOWN_OUTPUT);
+            }
 
             LOGGER.info("DoH3 request sent");
             setWasSend(true);
@@ -138,7 +171,9 @@ public class DNSOverHTTPS3Task extends DNSOverHTTPSTask {
             setStopTime(stopTime);
             setDuration(calculateDuration());
 
-            if (!completed || exc != null) {
+            if (!completed || exc != null){
+                if(exc instanceof HttpCodeException)
+                    throw new HttpCodeException(((HttpCodeException) exc).getCode());
                 throw new TimeoutException();
             }
 
@@ -163,6 +198,4 @@ public class DNSOverHTTPS3Task extends DNSOverHTTPSTask {
             return new MessageParser(httpResponse);
         return super.parseResponse(); // wire format path
     }
-    @ChannelHandler.Sharable
-    private static final class SharableInboundHandlerAdapter extends ChannelInboundHandlerAdapter {}
 }
