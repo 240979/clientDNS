@@ -98,8 +98,8 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         // Because ControlD accepted json and returned Wire, I have to check manually what format is given back
         String contentType = response.getFirstHeader("content-type") != null
                 ? response.getFirstHeader("content-type").getValue() : "";
-
-        if (response.getCode() == 200 && contentType.contains("application/dns-json")) {
+        LOGGER.info("For " + hostname + ", content-type: " + contentType);
+        if (response.getCode() == 200 && isReqJsonFormat && !contentType.contains("application/dns-message")) {
             String content = response.getBodyText();
             JSONParser parser = new JSONParser();
             this.httpResponse = (JSONObject) parser.parse(content);

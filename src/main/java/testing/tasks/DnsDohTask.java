@@ -7,6 +7,7 @@ package testing.tasks;
 import exceptions.*;
 import javafx.application.Platform;
 import models.*;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 import tasks.DNSOverHTTPSTask;
@@ -46,6 +47,7 @@ public class DnsDohTask extends DNSOverHTTPSTask {
                 try {
                     // perform certain number of requests
                     exc = null;
+                    httpResponse = null;
                     requests.clear();
                     // prepare request
                     header.setId(generator.generateRandom());
@@ -94,6 +96,7 @@ public class DnsDohTask extends DNSOverHTTPSTask {
                          | ExecutionException e) {
                     result.getExceptions().add(e);
                     result.getSuccess().add(false);
+                    LOGGER.warning("Mass test iteration failed: " + ExceptionUtils.getStackTrace(e));
                 }
             }
         } catch (InterruptedException e){
