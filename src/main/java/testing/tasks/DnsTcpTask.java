@@ -28,7 +28,6 @@ public class DnsTcpTask extends DNSOverTCPTask {
     private Result result;
     private int numberOfRequests;
     private long cooldown;
-    private int i;
     private TCPConnection localConnection;
     public static Logger LOGGER = Logger.getLogger(DnsTcpTask.class.getName());
 
@@ -40,12 +39,12 @@ public class DnsTcpTask extends DNSOverTCPTask {
         this.cooldown = cooldown;
         LOGGER.info("Created DnsUdpTask for " + connectionSettings.getResolverIP());
     }
-
+    @SuppressWarnings("BusyWait")
     @Override
     protected void sendData() {
         try {
             UInt16 generator = new UInt16();
-            for (i = 0; i < numberOfRequests; i++) {
+            for (int i = 0; i < numberOfRequests; i++) {
                 try {
                     LOGGER.info("Sending data to server via TCP: " + i);
                     requests.clear();
@@ -102,8 +101,7 @@ public class DnsTcpTask extends DNSOverTCPTask {
     @Override
     protected void updateResultUI() {
         double duration = calculateDuration();
-        LOGGER.info("Calculated duration to be stored " + duration);
         result.getDurations().add(duration);
-        LOGGER.info("Finished run of DnsTcpTask for " + getResolver() + " with duration " + result.getDurations().getLast());
+        LOGGER.info("Finished run of DnsDoqTask for " + getResolver() + " with duration " + duration);
     }
 }

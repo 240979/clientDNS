@@ -25,7 +25,6 @@ import java.net.UnknownHostException;
 public class DnsUdpTask extends DNSOverUDPTask {
 
     Result result;
-    int i;
     int duration;
     private final long cooldown;
 
@@ -37,12 +36,12 @@ public class DnsUdpTask extends DNSOverUDPTask {
         this.cooldown = cooldown;
         LOGGER.info("Created DnsUdpTask for "+connectionSettings.getResolverIP());
     }
-
+    @SuppressWarnings("BusyWait")
     @Override
     protected void sendData() {
         try{
         UInt16 generator = new UInt16();
-        for (i = 0; i < duration; i++){
+        for (int i = 0; i < duration; i++){
             try {
                 exc = null;
                 LOGGER.info("Sending data to server via UDP: " + i);
@@ -82,8 +81,8 @@ public class DnsUdpTask extends DNSOverUDPTask {
 
     @Override
     protected void updateResultUI() {
-        LOGGER.info("Calculated duration to be stored "+calculateDuration());
-        result.getDurations().add(calculateDuration());
-        LOGGER.info("Finished run of DnsUdpTask for "+getResolver()+" with duration "+result.getDurations().get(i));
+        double duration = calculateDuration();
+        result.getDurations().add(duration);
+        LOGGER.info("Finished run of DnsDoqTask for " + getResolver() + " with duration " + duration);
     }
 }

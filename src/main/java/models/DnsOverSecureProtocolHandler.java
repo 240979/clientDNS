@@ -33,7 +33,8 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
         byte[] pck = new byte[dnsBuf.readableBytes()];
         dnsBuf.readBytes(pck);
         task.setReceiveReply(pck);
-
+        dnsBuf.release();
+        dataLengthBuf.release();
         switch (task) {
             case DNSOverTLS dnsOverTLS -> {
                 dnsOverTLS.getLatch().countDown();

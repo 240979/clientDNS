@@ -26,7 +26,6 @@ public class DnsDoqTask extends DNSOverQUICTask {
     private final Result result;
     private final int numberOfRequests;
     private final long cooldown;
-    private int i;
 
     public DnsDoqTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int numberOfRequests, long cooldown) throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
         super(requestSettings, connectionSettings);
@@ -36,10 +35,10 @@ public class DnsDoqTask extends DNSOverQUICTask {
     }
 
     @Override
-    @SuppressWarnings("BusyWait")
     protected void sendData() {
         try {
             UInt16 generator = new UInt16();
+            int i;
             for (i = 0; i < numberOfRequests; i++) {
                 try {
                     requests.clear();
@@ -84,7 +83,8 @@ public class DnsDoqTask extends DNSOverQUICTask {
 
     @Override
     protected void updateResultUI() {
-        result.getDurations().add(calculateDuration());
-        LOGGER.info("Finished run of DnsDoqTask for " + getResolver() + " with duration " + result.getDurations().get(i));
+        double duration = calculateDuration();
+        result.getDurations().add(duration);
+        LOGGER.info("Finished run of DnsDoqTask for " + getResolver() + " with duration " + duration);
     }
 }

@@ -28,7 +28,6 @@ public class DnsDotTask extends DNSOverTLS {
     private final Result result;
     private final int duration;
     private final long cooldown;
-    private int i;
 
     public DnsDotTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int duration, long cooldown) throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
         super(requestSettings, connectionSettings);
@@ -38,12 +37,11 @@ public class DnsDotTask extends DNSOverTLS {
     }
 
     @Override
-    @SuppressWarnings("BusyWait")
     protected void sendData() {
         try {
             initConnection(resolver);
             UInt16 generator = new UInt16();
-            for (i = 0; i < duration; i++) {
+            for (int i = 0; i < duration; i++) {
                 try {
                     requests.clear();
                     header.setId(generator.generateRandom());
@@ -86,7 +84,8 @@ public class DnsDotTask extends DNSOverTLS {
 
     @Override
     protected void updateResultUI() {
-        result.getDurations().add(calculateDuration());
-        LOGGER.info("Finished run of DnsDotTask for "+getResolver()+" with duration "+result.getDurations().get(i));
+        double duration = calculateDuration();
+        result.getDurations().add(duration);
+        LOGGER.info("Finished run of DnsDoqTask for " + getResolver() + " with duration " + duration);
     }
 }
