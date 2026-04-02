@@ -55,6 +55,8 @@ public class DoHController extends GeneralController {
     @FXML
     @Translation
     public TitledPane httpVersionTitledPane;
+    @FXML
+    private TextField uriTextField;
 
     private Stage helpStage = null;
 
@@ -211,6 +213,7 @@ public class DoHController extends GeneralController {
             responseTreeView.rootProperty().bind(task.responsePropertyProperty());
             querySizeLabel.textProperty().bind(task.querySizeProperty().asString());
             responseSizeLabel.textProperty().bind(task.responseSizeProperty().asString());
+            uriTextField.textProperty().bind(((DNSOverHTTPSTask) task).usedUriProperty());
             task.setController(this);
             thread = new Thread(task);
             // pass new progress bar to Task
@@ -362,5 +365,14 @@ public class DoHController extends GeneralController {
         helpStage.setScene(scene);
         helpStage.show();
         helpStage.setOnCloseRequest(_ -> helpStage = null); // Here I set it to null on close, to be able to open it again
+    }
+    @Override
+    protected boolean isTerminatingThread() {
+        boolean result = super.isTerminatingThread();
+        if (result) {
+            uriTextField.textProperty().unbind();
+            uriTextField.setText("");
+        }
+        return result;
     }
 }

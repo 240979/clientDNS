@@ -111,6 +111,7 @@ public class DNSOverHTTPS3Task extends DNSOverHTTPSTask {
                 uri = addParamsToUriAsBase64Url(target + "/" + path);
             }
             LOGGER.info("Uri used: " + uri);
+            setUsedUri(uri);
             Http3Headers headers;
             String withoutScheme = uri.substring("https://".length());
             String host = withoutScheme.split("/")[0];

@@ -1,6 +1,7 @@
 package tasks;
 
 import exceptions.*;
+import javafx.beans.property.SimpleStringProperty;
 import lombok.Getter;
 import lombok.Setter;
 import models.*;
@@ -62,7 +63,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
     protected final String path;
     @Setter
     protected int responseCode;
-
+    private final SimpleStringProperty usedUriProperty = new SimpleStringProperty("");
     public DNSOverHTTPSTask(RequestSettings requestSettings, ConnectionSettings connectionSettings)
             throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(requestSettings, connectionSettings, null);
@@ -90,6 +91,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         }else{
             uri = createUri(hostname);
         }
+        setUsedUri(uri);
         if (!isDomainNameUsed) determineLocalAddress(resolver);
         updateProgressUI();
         SimpleHttpResponse response = sendAndReceiveDoH(uri, isGet, isReqJsonFormat);
@@ -395,5 +397,12 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
     private void parseResponseDoh(String response) throws ParseException {
         JSONParser parser = new JSONParser();
         this.httpResponse = (JSONObject) parser.parse(response);
+    }
+    public SimpleStringProperty usedUriProperty() {
+        return usedUriProperty;
+    }
+
+    public void setUsedUri(String uri) {
+        Platform.runLater(() -> usedUriProperty.set(uri));
     }
 }
