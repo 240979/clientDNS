@@ -719,6 +719,8 @@ public abstract class GeneralController {
         LOGGER.severe(ExceptionUtils.getStackTrace(exception));
         if(exception instanceof ExecutionException)
             exceptionName = exception.getCause().getClass().getSimpleName(); // Execution exception covers too many things
+        if(exception instanceof HttpCodeException)
+            exceptionName = String.valueOf(((HttpCodeException) exception).getCode()); // HTTP exception should be differentiated by code
         showAlert(exceptionName);
     }
 
