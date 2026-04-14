@@ -24,7 +24,6 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
     }
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) {
-        LOGGER.info("chanelRead0");
         ByteBuf dataLengthBuf = byteBuf.readBytes(2);
         byte[] dataLengthByte = new byte[dataLengthBuf.readableBytes()];
         dataLengthBuf.readBytes(dataLengthByte);

@@ -27,7 +27,6 @@ public class DnsOverHTTPS3Handler extends SimpleChannelInboundHandler<Http3Reque
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Http3RequestStreamFrame frame) {
-        LOGGER.info("DoH3 frame received: " + frame.getClass().getSimpleName());
         if (frame instanceof Http3HeadersFrame headersFrame) {
             int status = Integer.parseInt(Objects.requireNonNull(headersFrame.headers().status()).toString());
             LOGGER.info("DoH3 status: " + status);
@@ -40,7 +39,6 @@ public class DnsOverHTTPS3Handler extends SimpleChannelInboundHandler<Http3Reque
             }
         } else if (frame instanceof Http3DataFrame dataFrame) {
             int readable = dataFrame.content().readableBytes();
-            LOGGER.info("DoH3 DATA bytes: " + readable);
             if (readable > 0) {
                 byte[] data = new byte[readable];
                 dataFrame.content().readBytes(data);

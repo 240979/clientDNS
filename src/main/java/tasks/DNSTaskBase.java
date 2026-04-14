@@ -165,8 +165,6 @@ public abstract class DNSTaskBase extends Task<Void> {
 
     public void setReceiveReply(byte[] receiveReply) {
         this.receiveReply = receiveReply;
-        //System.out.println("setReceiveReply " + receiveReply.length);
-        LOGGER.info("setReceiveReply " + receiveReply.length);
         byteSizeResponse = this.receiveReply.length;
     }
 

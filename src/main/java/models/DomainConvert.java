@@ -8,7 +8,6 @@ package models;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HexFormat;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -143,8 +142,6 @@ public class DomainConvert {
 	}
 
 	private static boolean isDnsNameCompressed(byte[] rawMessage, int currentPosition) {
-//		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[currentPosition], rawMessage[currentPosition + 1]);
-//        return firstTwoBytes.getValue() >= COMPRESS_CONSTANT_NUMBER;
         return (rawMessage[currentPosition] & 0xC0) == 0xC0;
 	}
 
@@ -162,9 +159,6 @@ public class DomainConvert {
 
     public static int getIndexOfLastByteOfName(byte[] wholeAnswerSection, int start) {
         int position = start;
-        LOGGER.info("Whole answer section: ");
-        HexFormat hex = HexFormat.ofDelimiter(" ").withUpperCase();
-        LOGGER.info(hex.formatHex(wholeAnswerSection));
         while (position < wholeAnswerSection.length) {
             int labelLength = wholeAnswerSection[position] & 0xFF;
             if (labelLength == 0) {
@@ -179,18 +173,12 @@ public class DomainConvert {
         }
         LOGGER.warning( "Malformed DNS name: ran off end of buffer starting at index " + start
                 + " (buffer length " + wholeAnswerSection.length + ")");
-//        throw new IllegalArgumentException(
-//                "Malformed DNS name: ran off end of buffer starting at index " + start
-//                        + " (buffer length " + wholeAnswerSection.length + ")"
-//        );
         return 0;
     }
 
 	private static boolean isUTF8Domain(String domain) {
 		try {
-			// domain.getBytes(StandardCharsets.UTF_8);
             String encoded = Punycode.toPunycode(domain);
-
 			return !encoded.equals(domain);
 		} catch (Exception e) {
 			return false;

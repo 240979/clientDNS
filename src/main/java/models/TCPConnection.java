@@ -11,7 +11,6 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
-import java.util.HexFormat;
 import java.util.logging.Logger;
 
 import exceptions.CouldNotUseHoldConnectionException;
@@ -102,8 +101,6 @@ public class TCPConnection {
 			// dns message has first two bytes which is the length of the rest of the
 			// message
 			byte[] sizeReceived = inputStream.readNBytes(2);
-            HexFormat hex = HexFormat.ofDelimiter(" ").withUpperCase();
-            LOGGER.info(hex.formatHex(messagesAsBytes));
             if (sizeReceived.length < 2) {
                 LOGGER.warning("Received size is not 16 bits");
                 throw new CouldNotUseHoldConnectionException(); // connection closed prematurely
