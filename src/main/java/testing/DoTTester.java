@@ -10,7 +10,7 @@ import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.DNSTaskBase;
-import testing.tasks.DnsDotTask;
+import testing.tasks.TestDotTask;
 import ui.GeneralController;
 
 import java.util.List;
@@ -54,7 +54,7 @@ public class DoTTester extends Task<Void> {
             RequestSettings rs = new RequestSettings.RequestSettingsBuilder(this.requestSettings)
                     .domain(result.getDomain())
                     .build();
-            DNSTaskBase task = new DnsDotTask(rs, cs, result, duration, cooldown);
+            DNSTaskBase task = new TestDotTask(rs, cs, result, duration, cooldown);
             LOGGER.info("Setting resolver IP: " + result.getIp());
             LOGGER.info("Set resolver IP: " + this.connectionSettings.getResolverIP());
             task.setMassTesting(true);

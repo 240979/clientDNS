@@ -1,14 +1,16 @@
-/*
-* This is basically copy of DnsDohTask, nothing new here, just needed to change the inheritance
-* */
 package testing.tasks;
 
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * */
 import exceptions.*;
 import javafx.application.Platform;
 import models.*;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
-import tasks.DNSOverHTTPS3Task;
+import tasks.DNSOverHTTPSTask;
 import testing.Result;
 import ui.TesterController;
 
@@ -21,18 +23,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class DnsDoh3Task extends DNSOverHTTPS3Task {
+/**
+ * Class sends multiple requests to given server via specific protocol using method sendData()
+ * from super class
+ */
+public class TestDohTask extends DNSOverHTTPSTask {
     private final Result result;
     private final int numberOfRequests;
     private final long cooldown;
 
-    public DnsDoh3Task(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int numberOfRequests, long cooldown)
-            throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
+    public TestDohTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int numberOfRequests, long cooldown) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
         super(requestSettings, connectionSettings);
         this.result = result;
         this.numberOfRequests = numberOfRequests;
         this.cooldown = cooldown;
-        this.massTesting = true;
     }
 
     @Override
@@ -41,37 +45,49 @@ public class DnsDoh3Task extends DNSOverHTTPS3Task {
             UInt16 generator = new UInt16();
             for (int i = 0; i < numberOfRequests; i++) {
                 try {
+                    // perform certain number of requests
                     exc = null;
+                    httpResponse = null;
                     requests.clear();
+                    // prepare request
                     header.setId(generator.generateRandom());
                     setSize(Header.getSize());
                     addRequests(qcountTypes, checkAndStripFullyQualifyName(domainAsString));
                     messageToBytes();
-                    resetLatch();
-                    httpResponse = null;
+                    // send request via super class method sendData()
                     super.sendData();
-                    result.setResponseSize(byteSizeResponseDoHDecompressed);
-
+                    result.setResponseSize((byteSizeResponseDoHDecompressed));
+                    JSONArray answers = null;
+                    // Select parser -- Wire format, standard parsing, JSON format JSON parsing
                     if (httpResponse != null) {
                         parser = new MessageParser(httpResponse);
-                        JSONArray answers = (JSONArray) httpResponse.get("Answer");
+                        answers = (JSONArray) httpResponse.get("Answer");
+                    } else {
+                        parser = parseResponse();
+                    }
+                    result.getDurations().add(getDuration());
+                    if (responseCode != 200) {
+                        result.getSuccess().add(false);
+                        result.getExceptions().add(new Exception("HTTP " + responseCode));
+                    } else if (httpResponse != null) {
                         List<Response> tmp = new LinkedList<>();
                         tmp.add(new Response(answers));
                         result.getResponses().add(tmp);
                         result.getSuccess().add(true);
                     } else {
-                        parser = parseResponse();
                         result.getResponses().add(parser.getAncountResponses());
                         result.getSuccess().add(true);
                     }
-                    result.getDurations().add(getDuration());
                     Platform.runLater(() -> ((TesterController) controller).getResultsTableView().refresh());
+                    // waiting between requests
                     Thread.sleep(cooldown);
                 } catch (IOException
                          | NotValidIPException
                          | NotValidDomainNameException
+                         | MessageTooBigForUDPException
                          | QueryIdNotMatchException
                          | InterfaceDoesNotHaveIPAddressException
+                         | OtherHttpException
                          | ParseException
                          | HttpCodeException
                          | TimeoutException
@@ -80,16 +96,18 @@ public class DnsDoh3Task extends DNSOverHTTPS3Task {
                          | ExecutionException e) {
                     result.getExceptions().add(e);
                     result.getSuccess().add(false);
-                    result.getDurations().add(getDuration());
+                    LOGGER.warning("Mass test iteration failed: " + ExceptionUtils.getStackTrace(e));
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException e){
+            // handling of the Stop button action
             cleanup();
-            LOGGER.info("DnsDoH3Task interrupted");
+            LOGGER.info("DnsDohTask interrupted");
         }
     }
 
     @Override
-    public void updateResultUI() {
+    public void updateResultUI(){
+
     }
 }

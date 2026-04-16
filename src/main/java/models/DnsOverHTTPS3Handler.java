@@ -54,7 +54,7 @@ public class DnsOverHTTPS3Handler extends SimpleChannelInboundHandler<Http3Reque
                     }
                 } else {
                     LOGGER.info("Detected wire format response");
-                    task.setReceiveReply(data);
+                    task.setReceivedReply(data);
                     task.setByteSizeResponseDoHDecompressed(data.length);
                 }
             }

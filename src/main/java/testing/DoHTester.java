@@ -11,8 +11,8 @@ import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.DNSTaskBase;
-import testing.tasks.DnsDoh3Task;
-import testing.tasks.DnsDohTask;
+import testing.tasks.TestDoh3Task;
+import testing.tasks.TestDohTask;
 import ui.GeneralController;
 
 import java.util.List;
@@ -68,9 +68,9 @@ public class DoHTester extends Task<Void> {
                     .build();
             DNSTaskBase task;
             if(cs.getTransport_protocol() == TRANSPORT_PROTOCOL.UDP){
-                task = new DnsDoh3Task(rs,cs, result, duration, cooldown);
+                task = new TestDoh3Task(rs,cs, result, duration, cooldown);
             }else{
-                task  = new DnsDohTask(rs, cs, result, duration, cooldown);
+                task  = new TestDohTask(rs, cs, result, duration, cooldown);
             }
 
             task.setMassTesting(true);

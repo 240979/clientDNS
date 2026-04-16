@@ -93,7 +93,7 @@ public class DNSOverMulticastTask extends DNSTaskBase {
      * Body of method taken from Martin Biolek thesis
      * */
     private void isResponse() throws SocketTimeoutException {
-        if (!(Byte.toUnsignedInt(receiveReply[2]) > 128)) {
+        if (!(Byte.toUnsignedInt(receivedReply[2]) > 128)) {
             LOGGER.warning("Not a response message");
             throw new SocketTimeoutException("Not a response message Exception");
         }
@@ -121,7 +121,7 @@ public class DNSOverMulticastTask extends DNSTaskBase {
                     startTime = System.nanoTime();
                     setStartTime(startTime);
                     socket.setSoTimeout(TIME_OUT_MILLIS);
-                    DatagramPacket receivePacket = new DatagramPacket(getReceiveReply(), getReceiveReply()
+                    DatagramPacket receivePacket = new DatagramPacket(getReceivedReply(), getReceivedReply()
                             .length);
 
                     if (mdnsType == RESPONSE_MDNS_TYPE.RESPONSE_UNICAST) {
@@ -197,7 +197,7 @@ public class DNSOverMulticastTask extends DNSTaskBase {
      */
     @Override
     protected MessageParser parseResponse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
-        MessageParser parser = new MessageParser(getReceiveReply(), getHeader(), getTransport_protocol());
+        MessageParser parser = new MessageParser(getReceivedReply(), getHeader(), getTransport_protocol());
         parser.parseMDNS();
         return parser;
     }

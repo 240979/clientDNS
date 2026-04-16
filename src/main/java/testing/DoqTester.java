@@ -7,7 +7,7 @@ import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.DNSTaskBase;
-import testing.tasks.DnsDoqTask;
+import testing.tasks.TestDoqTask;
 import ui.GeneralController;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public class DoqTester extends Task<Void> {
             RequestSettings rs = new RequestSettings.RequestSettingsBuilder(this.requestSettings)
                     .domain(result.getDomain())
                     .build();
-            DNSTaskBase task = new DnsDoqTask(rs, cs, result, numberOfRequests, cooldown);
+            DNSTaskBase task = new TestDoqTask(rs, cs, result, numberOfRequests, cooldown);
             LOGGER.info("Setting resolver IP: " + result.getIp());
             LOGGER.info("Set resolver IP: " + cs.getResolverIP());
             LOGGER.info("Setting port: " + result.getPort());

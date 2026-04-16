@@ -110,7 +110,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
             parseResponseDoh(content);
         } else if (response.getCode() == 200) {
             // Code is 200, but !isReqJsonFormat
-            setReceiveReply(response.getBodyBytes());
+            setReceivedReply(response.getBodyBytes());
             byteSizeResponseDoHDecompressed = response.getBodyBytes().length;
         } else {
             throw new HttpCodeException(response.getCode());

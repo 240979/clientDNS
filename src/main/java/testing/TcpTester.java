@@ -13,7 +13,7 @@ import models.ConnectionSettings;
 import models.RequestSettings;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import tasks.DNSTaskBase;
-import testing.tasks.DnsTcpTask;
+import testing.tasks.TestTcpTask;
 import ui.GeneralController;
 
 import java.net.NetworkInterface;
@@ -41,7 +41,7 @@ public class TcpTester extends Task<Void> {
     private int duration;
     private long cooldown;
     private List<Result> results;
-    private List<DnsTcpTask> tasks = new LinkedList<>();
+    private List<TestTcpTask> tasks = new LinkedList<>();
     private static Logger LOGGER = Logger.getLogger(TcpTester.class.getName());
     private GeneralController controller;
     private RequestSettings requestSettings;
@@ -69,7 +69,7 @@ public class TcpTester extends Task<Void> {
             RequestSettings rs = new RequestSettings.RequestSettingsBuilder(this.requestSettings)
                     .domain(result.getDomain())
                     .build();
-            DNSTaskBase task = new DnsTcpTask(rs, cs, result, duration, cooldown);
+            DNSTaskBase task = new TestTcpTask(rs, cs, result, duration, cooldown);
             task.setMassTesting(true);
             task.setController(controller);
             Thread thread = new Thread(task);

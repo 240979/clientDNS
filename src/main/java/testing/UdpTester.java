@@ -12,8 +12,8 @@ import lombok.Setter;
 import models.ConnectionSettings;
 import models.RequestSettings;
 import tasks.DNSTaskBase;
-import testing.tasks.DnsTcpTask;
-import testing.tasks.DnsUdpTask;
+import testing.tasks.TestTcpTask;
+import testing.tasks.TestUdpTask;
 import ui.GeneralController;
 
 import java.net.NetworkInterface;
@@ -39,7 +39,7 @@ public class UdpTester extends Task<Void> {
     private int duration;
     private List<Result> results;
     private long cooldown;
-    private List<DnsTcpTask> tasks = new LinkedList<>();
+    private List<TestTcpTask> tasks = new LinkedList<>();
     private static Logger LOGGER = Logger.getLogger(TcpTester.class.getName());
     private GeneralController controller;
     private RequestSettings requestSettings;
@@ -67,7 +67,7 @@ public class UdpTester extends Task<Void> {
             RequestSettings rs = new RequestSettings.RequestSettingsBuilder(this.requestSettings)
                     .domain(result.getDomain())
                     .build();
-            DNSTaskBase task = new DnsUdpTask(rs, cs, result, duration, cooldown);
+            DNSTaskBase task = new TestUdpTask(rs, cs, result, duration, cooldown);
             Thread thread = new Thread(task);
             task.setMassTesting(true);
             task.setController(controller);

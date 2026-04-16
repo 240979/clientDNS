@@ -21,13 +21,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 
-public class DnsDoqTask extends DNSOverQUICTask {
+public class TestDoqTask extends DNSOverQUICTask {
 
     private final Result result;
     private final int numberOfRequests;
     private final long cooldown;
 
-    public DnsDoqTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int numberOfRequests, long cooldown) throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
+    public TestDoqTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int numberOfRequests, long cooldown) throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
         super(requestSettings, connectionSettings);
         this.result = result;
         this.numberOfRequests = numberOfRequests;

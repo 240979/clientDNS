@@ -178,7 +178,7 @@ public class DNSOverHTTPS3Task extends DNSOverHTTPSTask {
                 throw new TimeoutException();
             }
 
-            byteSizeResponseDoHDecompressed = receiveReply.length;
+            byteSizeResponseDoHDecompressed = receivedReply.length;
             responseCode = 200;
 
             stream.closeFuture();

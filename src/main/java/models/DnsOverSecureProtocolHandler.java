@@ -31,7 +31,7 @@ public class DnsOverSecureProtocolHandler extends SimpleChannelInboundHandler<By
         ByteBuf dnsBuf = byteBuf.readBytes(length);
         byte[] pck = new byte[dnsBuf.readableBytes()];
         dnsBuf.readBytes(pck);
-        task.setReceiveReply(pck);
+        task.setReceivedReply(pck);
         dnsBuf.release();
         dataLengthBuf.release();
         switch (task) {

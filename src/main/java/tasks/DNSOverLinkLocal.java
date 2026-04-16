@@ -52,7 +52,7 @@ public DNSOverLinkLocal(RequestSettings requestSettings, ConnectionSettings conn
                 startTime = System.nanoTime();
                 setStartTime(startTime);
                 socket.setSoTimeout(TIME_OUT_MILLIS);
-                DatagramPacket receivePacket = new DatagramPacket(getReceiveReply(), getReceiveReply()
+                DatagramPacket receivePacket = new DatagramPacket(getReceivedReply(), getReceivedReply()
                         .length,socket.getLocalAddress(),socket.getLocalPort());
                 socket.send(datagramPacket);
                 // first receive to consume ICMP message
@@ -123,7 +123,7 @@ public DNSOverLinkLocal(RequestSettings requestSettings, ConnectionSettings conn
      */
     @Override
     protected MessageParser parseResponse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
-        MessageParser parser = new MessageParser(getReceiveReply(),getHeader(),getTransport_protocol());
+        MessageParser parser = new MessageParser(getReceivedReply(),getHeader(),getTransport_protocol());
         parser.parseLLMNR();
         return parser;
     }

@@ -24,15 +24,15 @@ import java.util.logging.Logger;
  */
 @Getter
 @Setter
-public class DnsTcpTask extends DNSOverTCPTask {
+public class TestTcpTask extends DNSOverTCPTask {
     private Result result;
     private int numberOfRequests;
     private long cooldown;
     private TCPConnection localConnection;
-    public static Logger LOGGER = Logger.getLogger(DnsTcpTask.class.getName());
+    public static Logger LOGGER = Logger.getLogger(TestTcpTask.class.getName());
 
-    public DnsTcpTask(RequestSettings requestSettings, ConnectionSettings connectionSettings,
-                      Result result, int numberOfRequests, long cooldown) throws IOException, NotValidIPException, NotValidDomainNameException {
+    public TestTcpTask(RequestSettings requestSettings, ConnectionSettings connectionSettings,
+                       Result result, int numberOfRequests, long cooldown) throws IOException, NotValidIPException, NotValidDomainNameException {
         super(requestSettings, connectionSettings);
         this.result = result;
         this.numberOfRequests = numberOfRequests;
@@ -58,7 +58,7 @@ public class DnsTcpTask extends DNSOverTCPTask {
                         localConnection = new TCPConnection(InetAddress.getByName(resolver));
                     }
                     setStartTime(System.nanoTime());
-                    setReceiveReply(localConnection.send(getMessageAsBytes(), getIp(), false, getInterfaceToSend()));
+                    setReceivedReply(localConnection.send(getMessageAsBytes(), getIp(), false, getInterfaceToSend()));
                     setStopTime(System.nanoTime());
                     setWasSend(true);
 

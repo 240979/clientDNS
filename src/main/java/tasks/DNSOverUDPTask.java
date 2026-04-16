@@ -68,7 +68,7 @@ public class DNSOverUDPTask extends DNSTaskBase{
                     throw new TimeoutException();
                 }
 
-                DatagramPacket responsePacket = new DatagramPacket(getReceiveReply(), getReceiveReply().length);
+                DatagramPacket responsePacket = new DatagramPacket(getReceivedReply(), getReceivedReply().length);
                 DatagramPacket datagramPacket = new DatagramPacket(getMessageAsBytes(), getMessageAsBytes().length, getIp(), DNSTaskBase.DNS_PORT);
                 // DatagramPacket datagramPacket = new Data
                 LOGGER.info("Sending to resolver: " + getIp() + ":" + DNSTaskBase.DNS_PORT);

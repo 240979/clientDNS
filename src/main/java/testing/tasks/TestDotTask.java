@@ -23,13 +23,13 @@ import java.net.UnknownHostException;
  * Class sends multiple requests to given server via specific protocol using method sendData()
  * from super class
  */
-public class DnsDotTask extends DNSOverTLS {
+public class TestDotTask extends DNSOverTLS {
 
     private final Result result;
     private final int duration;
     private final long cooldown;
 
-    public DnsDotTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int duration, long cooldown) throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
+    public TestDotTask(RequestSettings requestSettings, ConnectionSettings connectionSettings, Result result, int duration, long cooldown) throws UnknownHostException, NotValidDomainNameException, UnsupportedEncodingException, NotValidIPException {
         super(requestSettings, connectionSettings);
         this.result = result;
         this.duration = duration;

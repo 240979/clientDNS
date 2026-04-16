@@ -57,7 +57,7 @@ public abstract class DNSTaskBase extends Task<Void> {
     protected String resolver;
     int size;
     protected Socket socket;
-    protected byte[] receiveReply;
+    protected byte[] receivedReply;
     protected boolean doFlag;
     protected TreeItem<String> root;
     protected long startTime;
@@ -163,9 +163,9 @@ public abstract class DNSTaskBase extends Task<Void> {
         return responseProperty;
     }
 
-    public void setReceiveReply(byte[] receiveReply) {
-        this.receiveReply = receiveReply;
-        byteSizeResponse = this.receiveReply.length;
+    public void setReceivedReply(byte[] receivedReply) {
+        this.receivedReply = receivedReply;
+        byteSizeResponse = this.receivedReply.length;
     }
 
     public void stopExecution(){}
@@ -232,7 +232,7 @@ public abstract class DNSTaskBase extends Task<Void> {
         }
         this.resolver = connectionSettings.getResolverIP();
         LOGGER.info("Resolver IP: " + connectionSettings.getResolverIP());
-        this.receiveReply = new byte[1232];
+        this.receivedReply = new byte[1232];
         this.doFlag = requestSettings.isDoFlag();
         this.adFlag = requestSettings.isAdFlag();
         this.qcountTypes = requestSettings.getTypes();
@@ -407,7 +407,7 @@ public abstract class DNSTaskBase extends Task<Void> {
             sendData();
 
             if (!massTesting) {
-                LOGGER.info("Taskbase " + receiveReply.length);
+                LOGGER.info("Taskbase " + receivedReply.length);
                 setTaskProgress(0.8);
                 parser = parseResponse();
                 GeneralController.requestResponseMap.put("response", parser.getAsJsonString());
@@ -479,7 +479,7 @@ public abstract class DNSTaskBase extends Task<Void> {
     }
 
     protected MessageParser parseResponse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
-        parser = new MessageParser(getReceiveReply(), getHeader(), getTransport_protocol());
+        parser = new MessageParser(getReceivedReply(), getHeader(), getTransport_protocol());
         parser.parse();
         return parser;
     }

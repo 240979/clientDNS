@@ -47,8 +47,8 @@ public class DNSOverTCPTask extends DNSTaskBase {
 			} else if(DNSTaskBase.getTcpConnectionForServer(resolver).isClosed()) {
 				DNSTaskBase.setTcpConnectionForServer(resolver,resolver);
 			}
-			// send data and store them by method setReceiveReply
-			setReceiveReply(DNSTaskBase.getTcpConnectionForServer(resolver).send(getMessageAsBytes(), getIp(), isCloseConnection(), getInterfaceToSend()));
+			// send data and store them by method setReceivedReply
+			setReceivedReply(DNSTaskBase.getTcpConnectionForServer(resolver).send(getMessageAsBytes(), getIp(), isCloseConnection(), getInterfaceToSend()));
 			setWasSend(true);
 			// stop measuring time
 			setStopTime(System.nanoTime());
