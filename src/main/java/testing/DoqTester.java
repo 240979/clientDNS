@@ -1,3 +1,9 @@
+/*
+ * Created by 240979
+ * Based on: https://github.com/xramos00/DNS_client
+ *           https://github.com/mbio16/clientDNS
+ * Heavily based on: https://github.com/xramos00/DNS_client/blob/main/src/main/java/testing/DoTTester.java
+ */
 package testing;
 
 import javafx.concurrent.Task;

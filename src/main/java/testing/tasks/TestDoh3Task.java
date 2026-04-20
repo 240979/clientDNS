@@ -1,6 +1,9 @@
 /*
-* This is basically copy of DnsDohTask, nothing new here, just needed to change the inheritance
-* */
+ * Created by 240979
+ * Based on: https://github.com/xramos00/DNS_client
+ *           https://github.com/mbio16/clientDNS
+ * This is basically copy of DnsDohTask, nothing new here, just needed to change the inheritance
+ */
 package testing.tasks;
 
 import exceptions.*;

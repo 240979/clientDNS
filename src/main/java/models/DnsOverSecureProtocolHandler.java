@@ -1,6 +1,9 @@
 /*
-    This is a class is basically DoTClientHandler, but changed to be used by DoQ also.
-    So, I, Roman Szymutko, am not author of the conversion logic.
+ * original author - xramos00
+ * Link - https://github.com/xramos00/DNS_client
+ * Remake created by 240979
+ * Taken from https://github.com/xramos00/DNS_client/blob/main/src/main/java/models/DoTClientHandler.java
+ * and added option for handling both DoT (original use) and DoQ (new module).
 */
 
 package models;

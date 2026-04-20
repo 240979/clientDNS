@@ -1,3 +1,9 @@
+/*
+ * Created by 240979
+ * Based on: https://github.com/xramos00/DNS_client
+ *           https://github.com/mbio16/clientDNS
+ * This is heavily based on the testing task for DoT: https://github.com/xramos00/DNS_client/blob/main/src/main/java/testing/tasks/DnsDotTask.java
+ */
 package testing.tasks;
 
 import enums.R_CODE;

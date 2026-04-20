@@ -1,3 +1,12 @@
+/*
+ * original author - xramos00
+ * Link - https://github.com/xramos00/DNS_client
+ * Remake created by 240979
+ * Taken from https://github.com/xramos00/DNS_client/blob/main/src/main/java/tasks/DNSOverHTTPSTask.java
+ * and moved from HTTP core 4 to HTTP core 5 to support HTTPS/2.
+ * Added support for JSON and Wire formats.
+ * Added support for GET/POST method choice.
+ */
 package tasks;
 
 import exceptions.*;

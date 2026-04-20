@@ -1,6 +1,8 @@
 /*
-   Created by 240979
-   This class is used for handling text area used for separate log window.
+ * Created by 240979
+ * Based on: https://github.com/xramos00/DNS_client
+ *           https://github.com/mbio16/clientDNS
+ *  This class is used for handling text area used for separate log window.
  */
 package models;
 import javafx.application.Platform;

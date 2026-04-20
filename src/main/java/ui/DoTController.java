@@ -195,7 +195,6 @@ public class DoTController extends GeneralController {
         checkBoxArray.add(nsec3CheckBox);
         nsec3paramCheckBox.setUserData(Q_COUNT.NSEC3PARAM);
         checkBoxArray.add(nsec3paramCheckBox);
-        // 240979
         svcbCheckBox.setUserData(Q_COUNT.SVCB);
         checkBoxArray.add(svcbCheckBox);
         httpsCheckBox.setUserData(Q_COUNT.HTTPS);

@@ -1,7 +1,9 @@
 /*
-    Created by 240979.
-    This was created using knowledge from DoQ module and with respect to:
-    https://github.com/netty/netty-incubator-codec-http3/blob/main/src/test/java/io/netty/incubator/codec/http3/example/Http3ClientExample.java
+ * Created by 240979
+ * Based on: https://github.com/xramos00/DNS_client
+ *           https://github.com/mbio16/clientDNS
+ *   This was created using knowledge from DoQ module and with respect to:
+ *   https://github.com/netty/netty-incubator-codec-http3/blob/main/src/test/java/io/netty/incubator/codec/http3/example/Http3ClientExample.java
 */
 package tasks;
 

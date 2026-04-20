@@ -1,3 +1,8 @@
+/*
+ * Created by 240979
+ * Based on: https://github.com/xramos00/DNS_client
+ *           https://github.com/mbio16/clientDNS
+ */
 package models;
 
 import io.netty.channel.ChannelPipeline;

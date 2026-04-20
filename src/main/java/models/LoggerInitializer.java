@@ -1,7 +1,9 @@
 /*
-    Created by 240979
-    This class is created to store logs into file warning.log.* and also to separate window
-    I did not turn off logging into console, because of debugging reasons.
+ * Created by 240979
+ * Based on: https://github.com/xramos00/DNS_client
+ *           https://github.com/mbio16/clientDNS
+ * This class was created to store logs into file warning.log.* and also to separate window
+ * I did not turn off logging into console, because of debugging reasons.
  */
 package models;
 

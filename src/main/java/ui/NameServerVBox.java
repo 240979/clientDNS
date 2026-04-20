@@ -47,7 +47,6 @@ public class NameServerVBox extends VBox {
 
     private GeneralController controller;
 
-    // 240979: Adding logger
     protected static Logger LOGGER = Logger.getLogger(NameServerVBox.class.getName());
 
     public NameServerVBox(NameServer nameServer, ToggleGroup toggleGroup, GeneralController controller) {

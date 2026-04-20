@@ -221,7 +221,6 @@ public class DNSController extends GeneralController {
         checkBoxArray.add(cdsCheckBox);
         cdnskeyCheckBox.setUserData(Q_COUNT.CDNSKEY);
         checkBoxArray.add(cdnskeyCheckBox);
-        // 240979
         svcbCheckBox.setUserData(Q_COUNT.SVCB);
         checkBoxArray.add(svcbCheckBox);
         httpsCheckBox.setUserData(Q_COUNT.HTTPS);

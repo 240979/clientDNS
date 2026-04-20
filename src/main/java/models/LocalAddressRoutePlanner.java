@@ -1,6 +1,9 @@
 /*
-    240979: Since I am using netty http core5, I can not just assign local address, so I am using this planner
-    This should add IP address from the correct network IF to the route, therefore the App should use it
+ * Created by 240979
+ * Based on: https://github.com/xramos00/DNS_client
+ *           https://github.com/mbio16/clientDNS
+ * Since I am using netty http core5, I can not just assign local address, so I am using this planner
+ *   This adds IP address from the correct network IF to the route, forcing the app to use the selected IF
  */
 package models;
 

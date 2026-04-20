@@ -117,54 +117,40 @@ public abstract class GeneralController {
     @FXML
     @Translation
     protected MenuItem backMenuItem;
-
-    // 240979:
     @FXML
     @Translation
     protected MenuItem filterInterfacesItem;
-
     @FXML
     protected MenuItem logMenuItem;
-
     @FXML
     @Translation
     protected MenuItem helpItem;
-
     @FXML
     @Translation
     protected MenuItem deleteDomainNameHistory;
-
     @FXML
     @Translation
     protected MenuItem deleteDNSServersHistory;
-
     @FXML
     @Translation
     protected TitledPane networkTitledPane;
-
     @FXML
     @Translation
     protected TitledPane recordTypeTitledPane;
-
     @FXML
     @Translation
     protected Button copyRequestJsonButton;
-
     @FXML
     @Translation
     protected Button copyResponseJsonButton;
-
     @FXML
     protected TreeView<String> responseTreeView;
-
     @FXML
     protected TextField domainNameTextField;
-
     @FXML
     protected RadioButton IPv4RadioButton;
     @FXML
     protected RadioButton IPv6RadioButton;
-
     @FXML
     protected CheckBox aCheckBox;
     @FXML
@@ -177,11 +163,9 @@ public abstract class GeneralController {
     protected Label numberOfMessagesLabel;
     @FXML
     protected Label numberOfMessagesValueLabel;
-
     @FXML
     @Translation
     protected Label rootServerLabel;
-
     protected ToggleGroup interfaceToggleGroup;
     @FXML
     protected CheckBox aaaaCheckBox;
@@ -232,24 +216,17 @@ public abstract class GeneralController {
     protected Label responseSizeLabel;
     @FXML
     protected ProgressBar progressBar = new ProgressBar();
-
     @FXML
     protected VBox otherDNSVbox;
-
     protected NameServer nameServer = null;
-
     @FXML
     private ComboBox<String> dnsServerComboBox;
-
     @FXML
     protected ComboBox<String> savedDomainNamesChoiceBox;
-
     @FXML
     protected RadioMenuItem czechRadioButton;
-
     @FXML
     protected RadioMenuItem englishRadioButton;
-
     @FXML
     protected RadioButton englishLangRadioButton;
     @FXML
@@ -260,46 +237,31 @@ public abstract class GeneralController {
     @FXML
     @Translation
     protected RadioButton iterativeQueryRadioButton;
-
-
     @FXML
     protected TitledPane ipTitledPane;
-
     protected ToggleGroup iterativeToggleGroup;
-
     @FXML
     @Translation
     protected TitledPane iterativeTitledPane;
-
     protected Thread thread = null;
-
     protected DNSTaskBase task = null;
-
     protected String buttonText;
-
     @Translation
     protected MenuItem responseMenuItem;
-
     @Translation
     protected MenuItem requestMenuItem;
-
     @FXML
     @Translation
     protected MenuBar darkModeMenu;
-
     @FXML
     @Translation
     protected RadioMenuItem darkModeMenuItem;
-    // 240979:
     @FXML
     @Translation
     protected RadioButton useDomainName;
-
     protected Exception ecx = null;
-
     protected static boolean darkMode=false;
     private boolean filterInterfaces = true;
-
     private Stage mainStage;
     private static  Stage helpStage = null;
     private static Stage logStage = null;
@@ -619,7 +581,6 @@ public abstract class GeneralController {
                 RadioMenuItem pom = new RadioMenuItem();
                 NetworkInterface ni = interfaceEnumeration.nextElement();
                 // Added filtration of network interfaces
-                // 240979 ->
                 Enumeration<InetAddress> addresses = ni.getInetAddresses();
                 boolean isValid = false;
                 while (addresses.hasMoreElements()) {
@@ -646,13 +607,11 @@ public abstract class GeneralController {
                 {
                     LOGGER.info("Saved interface in .../Documents/DNSclient/settings.json not found");
                 }
-                //<- 240979
                 pom.setText(ni.getName() + " -- " + ni.getDisplayName());
                 pom.setUserData(ni);
                 pom.setToggleGroup(interfaceToggleGroup);
                 listMenuItems.add(pom);
             }
-            // 240979 ->
             if(!wasSelected) {
                 // Something in the menu has to be selected, so I opted for first (if filtering is enabled, it is likely to be the only record
                 listMenuItems.getFirst().setSelected(true);
@@ -660,13 +619,11 @@ public abstract class GeneralController {
             this.refreshFilterTick();
             // remove all items and add new collection (otherwise it will append the collection)
             interfaceMenu.getItems().removeAll(interfaceMenu.getItems());
-            //<- 240979
             interfaceMenu.getItems().addAll(listMenuItems);
         } catch (SocketException e) {
             LOGGER.severe(ExceptionUtils.getStackTrace(e));
         }
     }
-    // 240979:
     private void refreshFilterTick()
     {
         // Show that filter is active by adding tick to the option
@@ -697,7 +654,7 @@ public abstract class GeneralController {
      *
      * @param exceptionName name of property containing desired message
      */
-    // 240979: Had to modify this method, because if the exception class is not found, no way you can find what happened
+    // Had to modify this method, because if the exception class is not found, no way you can find what happened
     public void showAlert(String exceptionName) {
         String message;
         try{
@@ -713,7 +670,7 @@ public abstract class GeneralController {
         alert.initOwner( sendButton.getScene().getWindow());
         alert.show();
     }
-   //240979: The same method, but if you give exception as input, it will automatically log it as severe
+   // The same method, but if you give exception as input, it will automatically log it as severe
     public void showAlert(Exception exception) {
         String exceptionName = exception.getClass().getSimpleName();
         LOGGER.severe(ExceptionUtils.getStackTrace(exception));
@@ -1034,7 +991,6 @@ public abstract class GeneralController {
             alert.showAndWait();
         }
     }
-    // 240979:
     @FXML
     protected void filterInterfacesFired() {
         this.filterInterfaces = !this.filterInterfaces;
@@ -1106,7 +1062,6 @@ public abstract class GeneralController {
             englishRadioButton.setSelected(true);
         }
     }
-    //240979
     public int getDnsServerPort(String address)
     {
         //List<NameServer> nsList = Config.getNameServers().stream().filter(NameServer::isDoq).toList();
@@ -1124,7 +1079,6 @@ public abstract class GeneralController {
         }
         return -1;
     }
-    //240979
     public String getDnsServerDomainName(String address)
     {
         List<NameServer> nsList = Config.getNameServers();
@@ -1187,7 +1141,6 @@ public abstract class GeneralController {
             }
         });
     }
-    // 240979:
     protected boolean isDomainNameUsed(){
         return this.useDomainName.isSelected();
     }

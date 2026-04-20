@@ -1,3 +1,9 @@
+/*
+ * Created by 240979
+ * Based on: https://github.com/xramos00/DNS_client
+ *           https://github.com/mbio16/clientDNS
+ * Most parts taken from: https://github.com/xramos00/DNS_client/tree/main/src/main/java/ui
+ */
 package ui;
 
 import application.Config;
@@ -51,7 +57,6 @@ public class DoQController extends GeneralController{
         checkBoxArray.add(nsec3CheckBox);
         nsec3paramCheckBox.setUserData(Q_COUNT.NSEC3PARAM);
         checkBoxArray.add(nsec3paramCheckBox);
-        // 240979
         svcbCheckBox.setUserData(Q_COUNT.SVCB);
         checkBoxArray.add(svcbCheckBox);
         httpsCheckBox.setUserData(Q_COUNT.HTTPS);
