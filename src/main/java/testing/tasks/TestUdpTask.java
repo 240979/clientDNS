@@ -54,7 +54,7 @@ public class TestUdpTask extends DNSOverUDPTask {
                 super.sendData();
                 parser = parseResponse();
                 result.setResponseSize((parser.getByteSizeResponse()));
-                if (parser.getHeader().getAnCount().getValue() == 0 || parser.getHeader().getRCode() != R_CODE.NO_ERROR) {
+                if (parser.getHeader().getRCode() != R_CODE.NO_ERROR) {
                     result.getSuccess().add(false);
                 } else {
                     result.getResponses().add(parser.getAncountResponses());

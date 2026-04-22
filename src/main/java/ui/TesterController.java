@@ -31,6 +31,7 @@ import testing.tasks.TesterTask;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 
 @Getter
@@ -169,6 +170,12 @@ public class TesterController extends GeneralController {
     @FXML
     @Translation
     public TitledPane httpVersionTitledPane;
+    @FXML
+    protected VBox rootServersVBox;
+    @FXML
+    protected VBox leftRootServersVBox;
+    @FXML
+    protected VBox rightRootServersVBox;
 
     private List<NameServerVBox> nameServerVBoxes;
 
@@ -244,6 +251,19 @@ public class TesterController extends GeneralController {
         sizeColumn.setCellValueFactory(new PropertyValueFactory<>("responseSize"));
         failColumn.setCellValueFactory(new PropertyValueFactory<>("failed"));
         dnsserverToggleGroup = new ToggleGroup();
+        // Root servers (same as in DNSController)
+        int i = 0;
+        for (NameServer ns : Config.getRootNameServers()) {
+            CheckBox cb = new CheckBox(ns.getKeyCode().toString().toUpperCase());
+            if (i % 2 == 0) {
+                leftRootServersVBox.getChildren().add(cb);
+            } else {
+                rightRootServersVBox.getChildren().add(cb);
+            }
+            cb.setUserData(ns);
+            cb.setTooltip(new Tooltip(ns.getIpv4() + "\n" + ns.getIpv6()));
+            i++;
+        }
 
         IPprotToggleGroup = new ToggleGroup();
         IPv4RadioButton.setToggleGroup(IPprotToggleGroup);
@@ -399,7 +419,18 @@ public class TesterController extends GeneralController {
             }
         });
         setDisabledDOH(false);
-        // setWiresharkMenuItems();
+        // Root servers -- clear selected boxes and disable
+        leftRootServersVBox.getChildren().forEach(node -> {
+            if (node instanceof CheckBox cb) {
+                cb.setSelected(false);
+            }
+        });
+        rightRootServersVBox.getChildren().forEach(node -> {
+            if (node instanceof CheckBox cb) {
+                cb.setSelected(false);
+            }
+        });
+        rootServersVBox.setDisable(true);
     }
 
     protected void enableDoTServers() {
@@ -413,7 +444,17 @@ public class TesterController extends GeneralController {
             }
         });
         setDisabledDOH(true);
-        // setWiresharkMenuItems();
+        leftRootServersVBox.getChildren().forEach(node -> {
+            if (node instanceof CheckBox cb) {
+                cb.setSelected(false);
+            }
+        });
+        rightRootServersVBox.getChildren().forEach(node -> {
+            if (node instanceof CheckBox cb) {
+                cb.setSelected(false);
+            }
+        });
+        rootServersVBox.setDisable(true);
     }
     protected void enableDoqServers() {
         otherDNSVbox.getChildren().forEach(node -> {
@@ -426,7 +467,17 @@ public class TesterController extends GeneralController {
             }
         });
         setDisabledDOH(true);
-        // setWiresharkMenuItems();
+        leftRootServersVBox.getChildren().forEach(node -> {
+            if (node instanceof CheckBox cb) {
+                cb.setSelected(false);
+            }
+        });
+        rightRootServersVBox.getChildren().forEach(node -> {
+            if (node instanceof CheckBox cb) {
+                cb.setSelected(false);
+            }
+        });
+        rootServersVBox.setDisable(true);
     }
 
     protected void enableDnsServers() {
@@ -441,8 +492,8 @@ public class TesterController extends GeneralController {
                 nameServerVBox.getIPv6radioButton().setSelected(false);
             }
         });
+        rootServersVBox.setDisable(false);
         setDisabledDOH(true);
-        // setWiresharkMenuItems();
     }
 
     @Override
@@ -612,6 +663,21 @@ public class TesterController extends GeneralController {
                     observableList.addAll(aux);
                 }
             });
+            // Root servers
+            Stream.of(leftRootServersVBox, rightRootServersVBox).forEach(vbox ->
+                    vbox.getChildren().forEach(node -> {
+                        if (node instanceof CheckBox cb && cb.isSelected() && cb.getUserData() instanceof NameServer rootNs) {
+                            List<String> ips = isIPv4 ? rootNs.getIpv4() : rootNs.getIpv6();
+                            if (ips != null && !ips.isEmpty()) {
+                                String rootIp = ips.getFirst();
+                                List<Result> aux = new LinkedList<>();
+                                domains.forEach(s -> aux.add(new Result(rootNs, rootIp, s)));
+                                results.add(aux);
+                                observableList.addAll(aux);
+                            }
+                        }
+                    })
+            );
             if (observableList.isEmpty()) {
                 showAlert("ChooseDNSServer");
                 return;
