@@ -20,8 +20,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import models.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -32,8 +32,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.logging.Logger;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+
+@Getter
+@Setter
 @SuppressWarnings("unchecked")
 public class TesterController extends GeneralController {
 
