@@ -8,9 +8,11 @@
   },
   {
     "name":"Cloudflare",
-    "domainName":"one.one.one.one",
+    "domainName":"cloudflare-dns.com",
     "ipv4":["1.1.1.1","1.0.0.1"],
-    "ipv6":["2606:4700:4700::1111","2606:4700:4700::1001"]
+    "ipv6":["2606:4700:4700::1111","2606:4700:4700::1001"],
+    "path": "dns-query",
+    "doh": true
   },
   {
     "name":"CZ.NIC",
@@ -35,16 +37,6 @@
     "ipv6":["2620:fe::10"],
     "dot": true,
     "dotOnly": true
-  },
-  {
-    "name":"Cloudflare (GET)",
-    "domainName":"one.one.one.one",
-    "path": "dns-query",
-    "ipv4":["1.1.1.1","1.0.0.1"],
-    "ipv6":["2606:4700:4700::1111","2606:4700:4700::1001"],
-    "doh": true,
-    "isGetOnly": true,
-    "dohOnly": true
   },
   {
     "name":"Google (Json)",

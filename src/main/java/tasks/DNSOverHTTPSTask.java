@@ -234,7 +234,7 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
                 "?dns=" +
                 query;
     }
-    private String createUri(String hostName){
+    protected String createUri(String hostName){
         String[] split = hostName.split("/");
         if (Ip.isIpv6Address(split[0])) {
             hostName = "[" + split[0] + "]";
@@ -268,7 +268,9 @@ public class DNSOverHTTPSTask extends DNSTaskBase {
         } else {
             request = SimpleRequestBuilder.post(uri).build();
             if(!isReqJsonFormat && !isGet){
-                request.setBody(getMessageAsBytes(), ContentType.create("application/dns-message"));
+                request.setBody(getMessageAsBytes(), ContentType.parse("application/dns-message"));
+                request.addHeader("Content-Type", "application/dns-message");
+                request.addHeader("Content-Length", String.valueOf(getMessageAsBytes().length));
             }
         }
 

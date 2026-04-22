@@ -109,8 +109,10 @@ public class DNSOverHTTPS3Task extends DNSOverHTTPSTask {
             String uri;
             if (isReqJsonFormat) {
                 uri = addParamsToUriAsJson(target + "/" + path, new String[] {domainAsString, qcountAsString(), "" + doFlag, "" + cdFlag} );
-            } else {
+            } else if (isGet){
                 uri = addParamsToUriAsBase64Url(target + "/" + path);
+            } else {
+                uri = createUri(target + "/" + path);
             }
             LOGGER.info("Uri used: " + uri);
             setUsedUri(uri);
@@ -156,7 +158,8 @@ public class DNSOverHTTPS3Task extends DNSOverHTTPSTask {
                         .authority(host)
                         .path(fullPath)
                         .add("accept", "application/dns-message")
-                        .add("content-type", "application/dns-message");
+                        .add("content-type", "application/dns-message")
+                        .add("content-length", String.valueOf(getMessageAsBytes().length));
                 setMessagesSent(1);
                 startTime = System.nanoTime();
                 // Because I need to put the request in the body, I need to send HEADERS and then DATA

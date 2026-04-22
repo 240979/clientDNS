@@ -95,8 +95,6 @@ public class DoHController extends GeneralController {
         getPostToggleGroup = new ToggleGroup();
         get.setToggleGroup(getPostToggleGroup);
         post.setToggleGroup(getPostToggleGroup);
-        post.setOnMouseClicked(_ -> disableGetOnlyServers(true));
-        get.setOnMouseClicked(_ -> disableGetOnlyServers(false));
         ToggleGroup httpVersionToggleGroup = new ToggleGroup();
         http2RadioButton.setToggleGroup(httpVersionToggleGroup);
         http3RadioButton.setToggleGroup(httpVersionToggleGroup);
@@ -120,13 +118,6 @@ public class DoHController extends GeneralController {
         otherDNSVbox.getChildren().add(customDNS);
 
         setLanguageRadioButton();
-    }
-
-    private void disableGetOnlyServers(boolean disable) {
-        otherDNSVbox.getChildren().stream()
-                .filter(node -> node instanceof NameServerVBox)
-                .map(node -> (NameServerVBox) node)
-                .forEach(nameServerVBox -> nameServerVBox.setDisable(nameServerVBox.getNameServer().isGetOnly() && disable));
     }
 
 
