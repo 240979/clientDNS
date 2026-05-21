@@ -1,5 +1,5 @@
 # Client DNS
-GUI for DNS Client. This repository contains code from:
+GUI application for DNS client role. This repository contains code from:
 
 https://github.com/mbio16/clientDNS
 
