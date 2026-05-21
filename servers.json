@@ -77,7 +77,7 @@
     "path": "dns-query"
   },
   {
-    "name": "DNS4EU (unfiltered)",
+    "name": "DNS4EU (Unfiltered)",
     "domainName": "unfiltered.joindns4.eu",
     "ipv4":["86.54.11.100","86.54.11.200"],
     "ipv6":["2a13:1001::86:54:11:100", "2a13:1001::86:54:11:200"],
@@ -86,7 +86,7 @@
     "path": "dns-query"
   },
   {
-    "name": "DNS4EU (protective)",
+    "name": "DNS4EU (Protective)",
     "domainName": "protective.joindns4.eu",
     "ipv4":["86.54.11.1","86.54.11.201"],
     "ipv6":["2a13:1001::86:54:11:1","2a13:1001::86:54:11:201"],
@@ -95,7 +95,7 @@
     "path": "dns-query"
   },
   {
-    "name": "DNS4EU (child protection)",
+    "name": "DNS4EU (Child protection)",
     "domainName": "child.joindns4.eu",
     "ipv4":["86.54.11.12","86.54.11.212"],
     "ipv6":["2a13:1001::86:54:11:12", "2a13:1001::86:54:11:212"],
