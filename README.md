@@ -24,7 +24,7 @@ https://github.com/xramos00/DNS_client
   - if build on Windows
 - .sh is located in ./target/clientDNS/clientDNS.sh
   - if build on Linux
-- Or using GitHub Worflows:
+- Or using GitHub Workflows:
   - ``git tag -a v<version_number> -m "<message>"``
   - ``git push origin v<version_number>``
   - This creates release with both Windows and Linux apps.
