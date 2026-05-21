@@ -1,5 +1,9 @@
 # Client DNS
-GUI for DNS Client
+GUI for DNS Client. This repository contains code from:
+
+https://github.com/mbio16/clientDNS
+
+https://github.com/xramos00/DNS_client
 
 ## Setup
 - JAVA version 25
@@ -17,6 +21,13 @@ GUI for DNS Client
   - Maven clean 
   - Maven package
 - .exe is located in ./target/clientDNS/clientDNS.exe
+  - if build on Windows
+- .sh is located in ./target/clientDNS/clientDNS.sh
+  - if build on Linux
+- Or using GitHub Worflows:
+  - ``git tag -a v<version_number> -m "<message>"``
+  - ``git push origin v<version_number>``
+  - This creates release with both Windows and Linux apps.
 
 ## Convention
 
