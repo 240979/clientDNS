@@ -72,7 +72,7 @@ public class MainController extends GeneralController
     @Translation
     protected Label encryptedDNSLabel;
 
-    private static final String BUG_URL = "https://github.com/xramos00/DNS_client/issues";
+    private static final String BUG_URL = "https://github.com/240979/clientDNS/issues";
 
     private static Map<String, String> defaultPropertyValues = null;
 
